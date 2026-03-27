@@ -292,27 +292,12 @@
 <body>
 
 <header>
-  <svg viewBox="0 0 480 160" height="54" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg">
-    <g transform="translate(8,8) scale(0.72)">
-      <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="6"/>
-      <line x1="12" y1="100" x2="188" y2="100" stroke="rgba(255,255,255,0.9)" stroke-width="6"/>
-      <circle cx="48" cy="72" r="14" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="6"/>
-      <circle cx="48" cy="72" r="5" fill="rgba(255,255,255,0.9)"/>
-      <rect x="95" y="118" width="60" height="9" rx="4" fill="rgba(255,255,255,0.9)"/>
-      <rect x="95" y="135" width="50" height="9" rx="4" fill="rgba(255,255,255,0.9)"/>
-      <rect x="95" y="152" width="38" height="9" rx="4" fill="rgba(255,255,255,0.9)"/>
-      <rect x="95" y="55" width="60" height="9" rx="4" fill="rgba(255,255,255,0.9)"/>
-      <rect x="95" y="38" width="50" height="9" rx="4" fill="rgba(255,255,255,0.9)"/>
-      <rect x="95" y="21" width="38" height="9" rx="4" fill="rgba(255,255,255,0.9)"/>
-    </g>
-    <text x="152" y="88" font-family="'Segoe UI',Arial,sans-serif" font-size="44" font-weight="700" fill="#fff" letter-spacing="-1">Ped</text>
-    <text x="232" y="88" font-family="'Segoe UI',Arial,sans-serif" font-size="44" font-weight="700" fill="#fca5a5" letter-spacing="-1">Card</text>
-    <polyline points="329,88 340,88 344,96 353,28 361,100 366,88 450,88" fill="none" stroke="#fca5a5" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" transform="translate(-6,-1.8)"/>
-  </svg>
-  <div style="display:flex;flex-direction:column;justify-content:center;">
-    <div class="header-desc">Imperium Serca &mdash; Oddział Kardiologii Dziecięcej</div>
-    <div style="font-size:0.72rem;opacity:0.75;letter-spacing:0.1em;text-transform:uppercase;color:#fff;margin-top:0.2rem;">Imperialne narzędzie do kontrolowania wymiarów</div>
+  <div class="header-brand">
+    <h1>PedCard</h1>
+    <div class="subtitle">Imperialne narzędzie do kontrolowania wymiarów</div>
   </div>
+  <div class="header-divider"></div>
+  <div class="header-desc">Imperium Serca &mdash; Oddział Kardiologii Dziecięcej</div>
 </header>
 
 <div class="tabs">
@@ -924,8 +909,7 @@
     },
     { type: 'text',    text: 'Wymiary komór prawidłowe. Funkcja skurczowa komór prawidłowa.' },
     { type: 'valve',   before: 'Zastawka AV ', valveId: 'av', ref: '²', after: ' - prawidłowa, trójpłatkowa, przepływ aortalny Vmax=  m/s' },
-    { type: 'text',    text: 'Ujścia tętnic wieńcowych prawidłowe.' },
-    { type: 'coronary' },
+    { type: 'text',    text: 'Ujścia tętnic płucnych prawidłowe.' },
     { type: 'valve',   before: 'Zastawka PV ', valveId: 'pv', ref: '²', after: ' prawidłowa budowa i funkcja, przepływ płucny Vmax=\u2002\u2002m/s' },
     { type: 'text',    text: 'Łuk aorty prawidłowy lewostronny. Przepływ w ao-abd. pulsacyjny.' },
   ];
@@ -950,23 +934,6 @@
       } else if (item.type === 'text_variant') {
         const txt = VARIANTS[item.key] ? item['text_' + item.key] : item.text_default;
         htmlLines.push(txt);
-      } else if (item.type === 'coronary') {
-        // wieńcowe inline w szablonie
-        const _caIds = [
-          {id:'LMCA',input:'CA_LMCA'},{id:'LAD',input:'CA_LAD'},
-          {id:'Cx',input:'CA_Cx'},{id:'RCAprox',input:'CA_RCAprox'},
-          {id:'RCAmed',input:'CA_RCAmed'},{id:'RCAdist',input:'CA_RCAdist'}
-        ];
-        const _caParts = [];
-        _caIds.forEach(s => {
-          const mm = parseFloat(document.getElementById(s.input).value);
-          const zTxt = document.getElementById('CA_' + s.id + '_z').textContent;
-          const z = parseFloat(zTxt.replace(',', '.'));
-          if (!isNaN(mm) && !isNaN(z)) {
-            _caParts.push('<b>' + s.id + '</b> <i>' + mm.toFixed(1) + ' mm (' + z.toFixed(2) + 'z)⁴</i>');
-          }
-        });
-        if (_caParts.length) htmlLines.push(_caParts.join('; ') + ';');
       } else if (item.type === 'valve' || item.type === 'valve_variant') {
         const mm = parseFloat(document.getElementById(item.valveId + '_val').value);
         const zTxt = document.getElementById(item.valveId + '_z').textContent;
