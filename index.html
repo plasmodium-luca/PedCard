@@ -33,7 +33,7 @@
     .tabs{
       display:flex;
       gap:0.5rem;
-      padding:0.4rem 2.5rem 0;
+      padding:0.4rem 2.5rem 0 220px;
       background:linear-gradient(135deg,#c53030 0%,#9b2c2c 60%,#742a2a 100%);
       overflow-x:auto;
     }
@@ -292,7 +292,7 @@
 <body>
 
 <header>
-  <svg viewBox="0 0 480 160" height="54" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg">
+  <svg viewBox="0 0 480 160" height="72" style="flex-shrink:0;" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(8,8) scale(0.72)">
       <circle cx="100" cy="100" r="88" fill="none" stroke="rgba(255,255,255,0.9)" stroke-width="6"/>
       <line x1="12" y1="100" x2="188" y2="100" stroke="rgba(255,255,255,0.9)" stroke-width="6"/>
@@ -448,6 +448,18 @@
                 <div class="zbar-labels"><span id="LVPWd_bar_m2">—</span><span id="LVPWd_bar_0">—</span><span id="LVPWd_bar_p2">—</span></div>
               </div>
             </div>
+          </div>
+        </div>
+
+        <!-- EF i FS -->
+        <div style="border-top:1px solid #fed7d7;margin-top:0.4rem;padding-top:0.3rem;display:flex;gap:1.5rem;flex-wrap:wrap;">
+          <div style="display:flex;align-items:center;gap:0.4rem;">
+            <span class="var-name">FS</span>
+            <span class="result-cell" id="fs_result">—</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:0.4rem;">
+            <span class="var-name">EF <span style="font-size:0.6rem;font-weight:400;">(Teich.)</span></span>
+            <span class="result-cell" id="ef_result">—</span>
           </div>
         </div>
       </div>
@@ -993,7 +1005,7 @@
     });
 
     // linia M-mode
-    const mmIds = ['IVSd','LVEDD','LVESD','LVPWd','RVDD'];
+    const mmIds = ['RVDD','IVSd','LVEDD','LVESD','LVPWd'];
     const mmParts = [];
     mmIds.forEach(id => {
       const mm = parseFloat(document.getElementById(id).value);
@@ -1005,6 +1017,17 @@
     });
 
     if (mmParts.length) {
+      // EF i FS
+      const _lvedd = parseFloat(document.getElementById('LVEDD').value);
+      const _lvesd = parseFloat(document.getElementById('LVESD').value);
+      if (!isNaN(_lvedd) && !isNaN(_lvesd) && _lvedd > 0 && _lvesd > 0 && _lvesd < _lvedd) {
+        const _fs = ((_lvedd - _lvesd) / _lvedd * 100).toFixed(1);
+        const _edv = (7 * Math.pow(_lvedd/10, 3)) / (2.4 + _lvedd/10);
+        const _esv = (7 * Math.pow(_lvesd/10, 3)) / (2.4 + _lvesd/10);
+        const _ef = ((_edv - _esv) / _edv * 100).toFixed(1);
+        mmParts.push('<b>FS</b> <i>' + _fs + '%</i>');
+        mmParts.push('<b>EF</b> <i>' + _ef + '%</i>');
+      }
       htmlLines.push('');
       htmlLines.push(mmParts.join('; ') + ';');
     }
@@ -1369,6 +1392,27 @@
 
     const notesBox = document.getElementById('echo_notes_box');
     notesBox.innerHTML = buildEchoDescription(bsa, sex);
+
+    // FS i EF Teichholtz
+    const lvedd = parseFloat(document.getElementById('LVEDD').value);
+    const lvesd = parseFloat(document.getElementById('LVESD').value);
+    const fsEl = document.getElementById('fs_result');
+    const efEl = document.getElementById('ef_result');
+    if (!isNaN(lvedd) && !isNaN(lvesd) && lvedd > 0 && lvesd > 0 && lvesd < lvedd) {
+      const fs = (lvedd - lvesd) / lvedd * 100;
+      const edv = (7 * Math.pow(lvedd/10, 3)) / (2.4 + lvedd/10);
+      const esv = (7 * Math.pow(lvesd/10, 3)) / (2.4 + lvesd/10);
+      const ef  = (edv - esv) / edv * 100;
+      // FS
+      fsEl.textContent = fs.toFixed(1) + ' %';
+      fsEl.className = 'result-cell ' + (fs < 28 ? 'error' : fs > 44 ? 'warning' : 'normal');
+      // EF
+      efEl.textContent = ef.toFixed(1) + ' %';
+      efEl.className = 'result-cell ' + (ef < 55 ? 'error' : 'normal');
+    } else {
+      fsEl.textContent = '—'; fsEl.className = 'result-cell';
+      efEl.textContent = '—'; efEl.className = 'result-cell';
+    }
 
     // ─ paski z-score M-mode ─
     if (bsa) {
