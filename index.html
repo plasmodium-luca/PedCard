@@ -718,8 +718,8 @@
         <h2>Aorta</h2>
         <div class="reference">Lopez L, Colan S, Stylianou M, et al. 2017</div>
         <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
-        <div class="tbl-row mm-cols"><div class="var-name">ANN</div><div class="input-wrap"><input type="number" id="phn_ANN" step="0.1" min="0" placeholder="—" oninput="recalcPHN()"/><span class="unit">mm</span></div><div class="result-cell" id="phn_ANN_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">ROOT</div><div class="input-wrap"><input type="number" id="phn_ROOT" step="0.1" min="0" placeholder="—" oninput="recalcPHN()"/><span class="unit">mm</span></div><div class="result-cell" id="phn_ROOT_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">AV</div><div class="input-wrap"><input type="number" id="phn_ANN" step="0.1" min="0" placeholder="—" oninput="recalcPHN()"/><span class="unit">mm</span></div><div class="result-cell" id="phn_ANN_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">SAo</div><div class="input-wrap"><input type="number" id="phn_ROOT" step="0.1" min="0" placeholder="—" oninput="recalcPHN()"/><span class="unit">mm</span></div><div class="result-cell" id="phn_ROOT_z">—</div></div>
         <div class="tbl-row mm-cols"><div class="var-name">STJ</div><div class="input-wrap"><input type="number" id="phn_STJ" step="0.1" min="0" placeholder="—" oninput="recalcPHN()"/><span class="unit">mm</span></div><div class="result-cell" id="phn_STJ_z">—</div></div>
         <div class="tbl-row mm-cols"><div class="var-name">AAO</div><div class="input-wrap"><input type="number" id="phn_AAO" step="0.1" min="0" placeholder="—" oninput="recalcPHN()"/><span class="unit">mm</span></div><div class="result-cell" id="phn_AAO_z">—</div></div>
         <div class="tbl-row mm-cols"><div class="var-name">ARCH prox</div><div class="input-wrap"><input type="number" id="phn_ARCHPROX" step="0.1" min="0" placeholder="—" oninput="recalcPHN()"/><span class="unit">mm</span></div><div class="result-cell" id="phn_ARCHPROX_z">—</div></div>
@@ -748,7 +748,9 @@
     <div class="calc-card" style="margin-top:1rem;">
       <h2>Opis Echo</h2>
       <div class="reference" style="margin-bottom:0.5rem;">Szablon opisu — wartości i z-score wpisują się automatycznie po wprowadzeniu pomiarów.</div>
-      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.7rem;" id="phn_variant_buttons">
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.7rem;">
+        <button id="phn_btn_mvi" onclick="togglePHNVariant('mvi')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">MVI</button>
+        <button id="phn_btn_tvi" onclick="togglePHNVariant('tvi')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">TVI</button>
       </div>
       <div id="phn_notes_box" contenteditable="true"
         style="width:100%;border:1.5px solid #feb2b2;border-radius:8px;
@@ -1104,6 +1106,7 @@
     },
     { type: 'text',    text: 'Wymiary komór prawidłowe. Funkcja skurczowa komór prawidłowa.' },
     { type: 'valve',   before: 'Zastawka AV ', valveId: 'av', ref: '²', after: ' - prawidłowa, trójpłatkowa, przepływ aortalny Vmax=  m/s' },
+    { type: 'aorta_line' },
     { type: 'text',    text: 'Ujścia tętnic wieńcowych prawidłowe.' },
     { type: 'coronary' },
     { type: 'valve',   before: 'Zastawka PV ', valveId: 'pv', ref: '²', after: ' prawidłowa budowa i funkcja, przepływ płucny Vmax=\u2002\u2002m/s' },
@@ -1130,6 +1133,24 @@
       } else if (item.type === 'text_variant') {
         const txt = VARIANTS[item.key] ? item['text_' + item.key] : item.text_default;
         htmlLines.push(txt);
+      } else if (item.type === 'aorta_line') {
+        // Sinus, STJ, TArch, Isthm z boxa Aorta (Pettersen) — tylko jeśli wpisane
+        const aortaIds = [
+          {id:'Sinus',  label:'Sinus'},
+          {id:'STJ',    label:'STJ'},
+          {id:'TArch',  label:'TArch'},
+          {id:'Isthm',  label:'Isthm'},
+        ];
+        const aortaParts = [];
+        aortaIds.forEach(a => {
+          const mm = parseFloat(document.getElementById(a.id).value);
+          const zTxt = document.getElementById(a.id + '_z').textContent;
+          const z = parseFloat(zTxt.replace(',', '.'));
+          if (!isNaN(mm) && !isNaN(z)) {
+            aortaParts.push('<b>' + a.label + '</b> <i>' + mm.toFixed(1) + ' mm (' + z.toFixed(2) + 'z)³</i>');
+          }
+        });
+        if (aortaParts.length) htmlLines.push(aortaParts.join('; ') + ';');
       } else if (item.type === 'coronary') {
         // wieńcowe inline w szablonie
         const _caIds = [
@@ -1738,10 +1759,8 @@
       const pEdv = (7 * Math.pow(pLvedd/10, 3)) / (2.4 + pLvedd/10);
       const pEsv = (7 * Math.pow(pLvesd/10, 3)) / (2.4 + pLvesd/10);
       const pEf  = (pEdv - pEsv) / pEdv * 100;
-      pFsEl.textContent = pFs.toFixed(1) + ' %';
-      pFsEl.className = 'result-cell ' + (pFs < 28 ? 'error' : pFs > 44 ? 'warning' : 'normal');
-      pEfEl.textContent = pEf.toFixed(1) + ' %';
-      pEfEl.className = 'result-cell ' + (pEf < 55 ? 'error' : 'normal');
+      if(pFsEl){pFsEl.textContent=pFs.toFixed(1)+' %';pFsEl.className='result-cell '+(pFs<28?'error':pFs>44?'warning':'normal');}
+      if(pEfEl){pEfEl.textContent=pEf.toFixed(1)+' %';pEfEl.className='result-cell '+(pEf<55?'error':'normal');}
     } else {
       if(pFsEl){pFsEl.textContent='—';pFsEl.className='result-cell';}
       if(pEfEl){pEfEl.textContent='—';pEfEl.className='result-cell';}
@@ -1759,51 +1778,213 @@
     });
   }
 
+  // PHN warianty
+  const PHN_VARIANTS = { mvi: false, tvi: false };
+
+  function togglePHNVariant(name) {
+    PHN_VARIANTS[name] = !PHN_VARIANTS[name];
+    const btn = document.getElementById('phn_btn_' + name);
+    if (PHN_VARIANTS[name]) {
+      btn.style.background='#c53030';btn.style.color='#fff';btn.style.borderColor='#c53030';
+    } else {
+      btn.style.background='#fff';btn.style.color='#742a2a';btn.style.borderColor='#feb2b2';
+    }
+    recalcPHN();
+  }
+
+  function phnMeasure(inputId, zId, unit) {
+    const el = document.getElementById(inputId);
+    if (!el) return null;
+    const val = parseFloat(el.value);
+    if (isNaN(val) || val <= 0) return null;
+    // Oblicz z-score bezpośrednio
+    const h = parseFloat(document.getElementById('phn_height').value)
+           || parseFloat(document.getElementById('height').value);
+    const w = parseFloat(document.getElementById('phn_weight').value)
+           || parseFloat(document.getElementById('weight').value);
+    let bsa = null;
+    if (!isNaN(h) && !isNaN(w) && h > 0 && w > 0) {
+      bsa = 0.024265 * Math.pow(h, 0.3964) * Math.pow(w, 0.5378);
+    }
+    // Klucz PHN: wytnij prefix "phn_"
+    const key = zId.replace('phn_', '');
+    const z = bsa ? phnZ(key, val, bsa) : null;
+    return { val, z, unit };
+  }
+
+  function phnFmtVal(val, z, unit) {
+    if (z !== null && !isNaN(z)) {
+      return '<i>' + val.toFixed(1) + ' ' + unit + ' (' + z.toFixed(2) + 'z)</i>';
+    }
+    return '<i>' + val.toFixed(1) + ' ' + unit + '</i>';
+  }
+
+  function phnFmt(label, m, bold=true) {
+    if (!m) return null;
+    const lbl = bold ? '<b>' + label + '</b>' : label;
+    return lbl + ' ' + phnFmtVal(m.val, m.z, m.unit);
+  }
+
   function updatePHNNotes(bsa) {
     const box = document.getElementById('phn_notes_box');
     if (!box) return;
-    const parts = [];
-    const refs = [];
-    const groups = [
-      { label: 'Zastawka MV AP', id: 'phn_MVAP', unit: 'cm' },
-      { label: 'Zastawka MV LAT', id: 'phn_MVLAT', unit: 'cm' },
-      { label: 'Zastawka TV AP', id: 'phn_TVAP', unit: 'cm' },
-      { label: 'Zastawka TV LAT', id: 'phn_TVLAT', unit: 'cm' },
-      { label: 'ANN', id: 'phn_ANN', unit: 'cm' },
-      { label: 'ROOT', id: 'phn_ROOT', unit: 'cm' },
-      { label: 'STJ', id: 'phn_STJ', unit: 'cm' },
-      { label: 'AAO', id: 'phn_AAO', unit: 'cm' },
-      { label: 'ARCH prox', id: 'phn_ARCHPROX', unit: 'cm' },
-      { label: 'ARCH dist', id: 'phn_ARCHDIST', unit: 'cm' },
-      { label: 'ISTH', id: 'phn_ISTH', unit: 'cm' },
-      { label: 'PV SAX', id: 'phn_PVSAX', unit: 'cm' },
-      { label: 'PV LAX', id: 'phn_PVLAX', unit: 'cm' },
-      { label: 'MPA', id: 'phn_MPA', unit: 'cm' },
-      { label: 'RPA', id: 'phn_RPA', unit: 'cm' },
-      { label: 'LPA', id: 'phn_LPA', unit: 'cm' },
-      { label: 'LMCA', id: 'phn_LMCA', unit: 'mm' },
-      { label: 'LAD', id: 'phn_LAD', unit: 'mm' },
-      { label: 'RCA', id: 'phn_RCA', unit: 'mm' },
-      { label: 'LVEDD', id: 'phn_LVEDD', unit: 'cm' },
-      { label: 'LVESD', id: 'phn_LVESD', unit: 'cm' },
-      { label: 'LVPWT', id: 'phn_LVPWT', unit: 'cm' },
-      { label: 'LVST', id: 'phn_LVST', unit: 'cm' },
+
+    const lines = [];
+
+    // Nagłówek danych
+    const h = parseFloat(document.getElementById('phn_height').value) || parseFloat(document.getElementById('height').value);
+    const w = parseFloat(document.getElementById('phn_weight').value) || parseFloat(document.getElementById('weight').value);
+    if (bsa && !isNaN(h) && !isNaN(w)) {
+      lines.push('<b>Masa: ' + w + ' kg  Wzrost: ' + h + ' cm  BSA: ' + bsa.toFixed(3) + ' m² (Haycock)</b>');
+      lines.push('');
+    }
+
+    // Stałe linie szablonu
+    lines.push('Płyn w worku osierdziowym w ilości fizjologicznej.');
+    lines.push('Situs solitus. Spływ żył systemowych do RA, spływ żył płucnych do LA. Zgodne połączenia przedsionkowo-komorowe, komorowo-tętnicze.');
+    lines.push('RA i LA niepowiększone.');
+    lines.push('IAS ciągła');
+    lines.push('IVS ciągła o prawidłowy ruchu w skurczu.');
+
+    // MV - format: "Zastawka MV AP x mm (z), LAT y mm (z) ..."
+    const mvAP  = phnMeasure('phn_MVAP',  'phn_MVAP',  'mm');
+    const mvLAT = phnMeasure('phn_MVLAT', 'phn_MVLAT', 'mm');
+    const mvA   = phnMeasure('phn_MVA',   'phn_MVA',   'cm²');
+    const mvParts = [];
+    if (mvAP)  mvParts.push('<b>AP</b> ' + phnFmtVal(mvAP.val, mvAP.z, 'mm'));
+    if (mvLAT) mvParts.push('<b>LAT</b> ' + phnFmtVal(mvLAT.val, mvLAT.z, 'mm'));
+    if (mvA)   mvParts.push('<b>MVA</b> ' + phnFmtVal(mvA.val, mvA.z, 'cm²'));
+    let mvLine = 'Zastawka <b>MV</b>';
+    if (mvParts.length) mvLine += ' ' + mvParts.join(', ');
+    if (PHN_VARIANTS.mvi) {
+      mvLine += ' prawidłowa budowa, śladowa niedomykalność bez znaczenia klinicznego, napływ E > A w/n.';
+    } else {
+      mvLine += ' prawidłowa budowa i funkcja, napływ E > A w/n.';
+    }
+    lines.push(mvLine);
+
+    // TV - format: "Zastawka TV AP x mm (z), LAT y mm (z) ..."
+    const tvAP  = phnMeasure('phn_TVAP',  'phn_TVAP',  'mm');
+    const tvLAT = phnMeasure('phn_TVLAT', 'phn_TVLAT', 'mm');
+    const tvA   = phnMeasure('phn_TVA',   'phn_TVA',   'cm²');
+    const tvParts = [];
+    if (tvAP)  tvParts.push('<b>AP</b> ' + phnFmtVal(tvAP.val, tvAP.z, 'mm'));
+    if (tvLAT) tvParts.push('<b>LAT</b> ' + phnFmtVal(tvLAT.val, tvLAT.z, 'mm'));
+    if (tvA)   tvParts.push('<b>TVA</b> ' + phnFmtVal(tvA.val, tvA.z, 'cm²'));
+    let tvLine = 'Zastawka <b>TV</b>';
+    if (tvParts.length) tvLine += ' ' + tvParts.join(', ');
+    if (PHN_VARIANTS.tvi) {
+      tvLine += ' prawidłowa budowa, czynnościowa niedomykalność z PGmax  mmHg';
+    } else {
+      tvLine += ' prawidłowa budowa i funkcja';
+    }
+    lines.push(tvLine);
+
+    lines.push('Wymiary komór prawidłowe. Funkcja skurczowa komór prawidłowa.');
+
+    // AV (ANN=AV w PHN)
+    const av = phnMeasure('phn_ANN', 'phn_ANN', 'mm');
+    lines.push('Zastawka' + (av ? ' <b>AV</b> ' + phnFmtVal(av.val, av.z, 'mm') : ' AV') + ' - prawidłowa, trójpłatkowa, przepływ aortalny Vmax=  m/s');
+
+    lines.push('Ujścia tętnic wieńcowych prawidłowe.');
+
+    // PV - format: "Zastawka PV SAX x mm (z), LAX y mm (z) ..."
+    const pvSAX = phnMeasure('phn_PVSAX', 'phn_PVSAX', 'mm');
+    const pvLAX = phnMeasure('phn_PVLAX', 'phn_PVLAX', 'mm');
+    const pvParts = [];
+    if (pvSAX) pvParts.push('<b>SAX</b> ' + phnFmtVal(pvSAX.val, pvSAX.z, 'mm'));
+    if (pvLAX) pvParts.push('<b>LAX</b> ' + phnFmtVal(pvLAX.val, pvLAX.z, 'mm'));
+    let pvLine = 'Zastawka <b>PV</b>';
+    if (pvParts.length) pvLine += ' ' + pvParts.join(', ');
+    pvLine += ' prawidłowa budowa i funkcja, przepływ płucny Vmax=  m/s';
+    lines.push(pvLine);
+
+    lines.push('Łuk aorty prawidłowy lewostronny. Przepływ w ao-abd. pulsacyjny.');
+
+    // Lewa komora - wymiary PHN
+    const lvParams = [
+      {id:'phn_LVEDD',label:'LVEDD',unit:'mm'},
+      {id:'phn_LVESD',label:'LVESD',unit:'mm'},
+      {id:'phn_LVPWT',label:'LVPWT',unit:'mm'},
+      {id:'phn_LVST', label:'LVST', unit:'mm'},
+      {id:'phn_LVEDL',label:'LVEDL',unit:'mm'},
     ];
-    groups.forEach(g => {
-      const el = document.getElementById(g.id);
-      const zEl = document.getElementById(g.id + '_z');
-      if (!el || !zEl) return;
+    const lvParts = [];
+    lvParams.forEach(p => {
+      const el = document.getElementById(p.id);
+      const zEl = document.getElementById(p.id + '_z');
+      if (!el) return;
       const val = parseFloat(el.value);
-      const z = parseFloat(zEl.textContent.replace(',', '.'));
-      if (!isNaN(val) && !isNaN(z)) {
-        parts.push('<b>' + g.label + '</b> <i>' + val.toFixed(g.unit==='mm'?1:2) + ' ' + g.unit + ' (' + z.toFixed(2) + 'z)</i>');
+      if (isNaN(val)) return;
+      const zTxt = zEl ? zEl.textContent.replace(',','.') : '';
+      const z = parseFloat(zTxt);
+      if (!isNaN(z)) {
+        lvParts.push('<b>' + p.label + '</b> <i>' + val.toFixed(1) + ' mm (' + z.toFixed(2) + 'z)</i>');
+      } else if (!isNaN(val)) {
+        lvParts.push('<b>' + p.label + '</b> <i>' + val.toFixed(1) + ' mm</i>');
       }
     });
-    if (parts.length) refs.push('Lopez L, Colan S, Stylianou M, et al. Circ Cardiovasc Imaging 2017;10:e006979');
-    let html = parts.join('; ');
-    if (refs.length) html += '<br><br>' + refs.join('; ');
-    box.innerHTML = html || '';
+    // EF
+    const pLvedd = parseFloat(document.getElementById('phn_LVEDD').value);
+    const pLvesd = parseFloat(document.getElementById('phn_LVESD').value);
+    if (!isNaN(pLvedd) && !isNaN(pLvesd) && pLvesd < pLvedd) {
+      const edv = (7*Math.pow(pLvedd/10,3))/(2.4+pLvedd/10);
+      const esv = (7*Math.pow(pLvesd/10,3))/(2.4+pLvesd/10);
+      const ef = ((edv-esv)/edv*100).toFixed(1);
+      lvParts.push('<b>EF</b> <i>' + ef + '%</i>');
+    }
+    if (lvParts.length) {
+      lines.push('');
+      lines.push(lvParts.join('; ') + ';');
+    }
+
+    // Aorta
+    // AV już jest w szablonie (wiersz zastawki AV) - nie dubluj
+    const aoParams = [
+      {id:'phn_ROOT',label:'SAo',unit:'mm'},
+      {id:'phn_STJ',label:'STJ',unit:'mm'},
+      {id:'phn_AAO',label:'AAO',unit:'mm'},
+      {id:'phn_ARCHPROX',label:'ARCH prox',unit:'mm'},
+      {id:'phn_ARCHDIST',label:'ARCH dist',unit:'mm'},
+      {id:'phn_ISTH',label:'ISTH',unit:'mm'},
+    ];
+    const aoParts = [];
+    aoParams.forEach(p => {
+      const m = phnMeasure(p.id, p.id, p.unit);
+      if (m) aoParts.push('<b>' + p.label + '</b> <i>' + m.val.toFixed(1) + ' mm (' + m.z.toFixed(2) + 'z)</i>');
+    });
+    if (aoParts.length) {
+      lines.push('');
+      lines.push(aoParts.join('; ') + ';');
+    }
+
+    // Tętnica płucna
+    // PV SAX/LAX już jest w szablonie (wiersz zastawki PV) - nie dubluj
+    const paParams = [
+      {id:'phn_MPA',label:'MPA',unit:'mm'},
+      {id:'phn_RPA',label:'RPA',unit:'mm'},
+      {id:'phn_LPA',label:'LPA',unit:'mm'},
+    ];
+    const paParts = [];
+    paParams.forEach(p => {
+      const m = phnMeasure(p.id, p.id, p.unit);
+      if (m) paParts.push('<b>' + p.label + '</b> <i>' + m.val.toFixed(1) + ' mm (' + m.z.toFixed(2) + 'z)</i>');
+    });
+    if (paParts.length) {
+      lines.push('');
+      lines.push(paParts.join('; ') + ';');
+    }
+
+    // Źródło
+    const hasAny = lvParts.length || aoParts.length || paParts.length || mvParts.length || tvParts.length || pvParts.length || av;
+    if (hasAny) {
+      lines.push('');
+      lines.push('Lopez L, Colan S, Stylianou M, et al. Circ Cardiovasc Imaging 2017;10:e006979');
+    }
+
+    box.innerHTML = lines.join('<br>');
   }
+
   // ────────────────────────────────────────────────────────────────────
 
   function parseAgeToYears(str){
