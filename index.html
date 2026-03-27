@@ -1,0 +1,1635 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>PedCard Imperial v7.5</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="PedCard">
+  <meta name="theme-color" content="#c53030">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Segoe UI', sans-serif; background: #1a0000; color: #1a202c; min-height: 100vh; }
+
+    header {
+      background: linear-gradient(135deg,#c53030 0%,#9b2c2c 60%,#742a2a 100%);
+      color:#fff;
+      padding:0.85rem 2.5rem;
+      display:flex;
+      align-items:center;
+      gap:2rem;
+      border-bottom:3px solid #fc8181;
+    }
+    .header-brand{display:flex;flex-direction:column;}
+    .header-brand h1{font-size:2rem;font-weight:800;letter-spacing:0.06em;line-height:1;}
+    .header-brand .subtitle{font-size:0.72rem;opacity:0.75;letter-spacing:0.1em;text-transform:uppercase;margin-top:0.15rem;}
+    .header-divider{width:2px;height:40px;background:rgba(255,255,255,0.25);}
+    .header-desc{font-size:2rem;font-weight:800;opacity:0.95;line-height:1.1;}
+
+    .tabs{
+      display:flex;
+      gap:0.5rem;
+      padding:0.4rem 2.5rem 0;
+      background:linear-gradient(135deg,#c53030 0%,#9b2c2c 60%,#742a2a 100%);
+      overflow-x:auto;
+    }
+    .tab-button{
+      border:none;
+      padding:0.45rem 1.1rem;
+      font-size:0.82rem;
+      font-weight:600;
+      letter-spacing:0.06em;
+      text-transform:uppercase;
+      border-radius:6px 6px 0 0;
+      background:rgba(255,255,255,0.15);
+      color:#fff;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+    .tab-button.active{
+      background:#fff;
+      color:#c53030;
+    }
+    .tab-panel{display:none;}
+    .tab-panel.active-tab{display:block;}
+
+    .container{max-width:1600px;margin:1.2rem auto;padding:0 1.5rem;}
+
+    .patient-card{
+      background:#fff5f5;
+      border:1.5px solid #feb2b2;
+      border-radius:10px;
+      padding:0.8rem 1.6rem;
+      margin-bottom:1.1rem;
+      display:flex;
+      align-items:flex-end;
+      gap:1.4rem;
+      flex-wrap:wrap;
+    }
+    .patient-card h2{
+      font-size:0.78rem;
+      color:#c53030;
+      font-weight:800;
+      white-space:nowrap;
+      align-self:center;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+    }
+    .field{display:flex;flex-direction:column;gap:0.15rem;}
+    .field label{
+      font-size:0.68rem;
+      font-weight:700;
+      color:#742a2a;
+      text-transform:uppercase;
+      letter-spacing:0.05em;
+    }
+    .field input,.field select{
+      padding:0.45rem 0.7rem;
+      border:1.5px solid #feb2b2;
+      border-radius:7px;
+      font-size:0.9rem;
+      width:140px;
+      background:#fff;
+    }
+    .field input:focus,.field select:focus{
+      outline:none;
+      border-color:#c53030;
+      box-shadow:0 0 0 3px rgba(197,48,48,0.12);
+    }
+    .bsa-result{
+      font-size:0.9rem;
+      color:#c53030;
+      font-weight:800;
+      padding:0.45rem 1.1rem;
+      background:#fff;
+      border-radius:7px;
+      border:2px solid #fc8181;
+      white-space:nowrap;
+    }
+
+    .boxes-row{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:1.2rem;
+    }
+
+    .calc-card{
+      background:#fff;
+      border-radius:10px;
+      box-shadow:0 4px 20px rgba(197,48,48,0.10);
+      border-top:4px solid #c53030;
+      padding:1.1rem 1.4rem;
+    }
+    .calc-card h2{
+      font-size:0.82rem;
+      color:#c53030;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:0.08em;
+      margin-bottom:0.1rem;
+    }
+    .calc-card .reference{
+      font-size:0.65rem;
+      color:#a0aec0;
+      font-style:italic;
+      margin-bottom:0.8rem;
+    }
+
+    .tbl-header,.tbl-row{display:grid;align-items:center;gap:0.4rem;padding:0.28rem 0.2rem;}
+    .mm-cols{grid-template-columns:70px 110px 1fr;}
+    .vv-cols{grid-template-columns:50px 110px 1fr;}
+    .tbl-header{border-bottom:2px solid #fed7d7;padding-bottom:0.3rem;margin-bottom:0.1rem;}
+    .tbl-header span{
+      font-size:0.65rem;
+      font-weight:800;
+      color:#c53030;
+      text-transform:uppercase;
+      letter-spacing:0.06em;
+      text-align:center;
+    }
+    .tbl-header span:first-child{text-align:left;}
+    .tbl-row{border-bottom:1px solid #fff5f5;transition:background 0.12s;align-items:start;}
+    .tbl-row:last-child{border-bottom:none;}
+    .tbl-row:hover{background:#fff5f5;border-radius:6px;}
+
+    .var-name{font-size:0.88rem;font-weight:800;color:#2d3748;letter-spacing:0.02em;}
+    .input-wrap{display:flex;align-items:center;gap:0.3rem;}
+    .input-wrap input{
+      width:68px;
+      padding:0.3rem 0.45rem;
+      border:1.5px solid #feb2b2;
+      border-radius:6px;
+      font-size:0.88rem;
+      text-align:right;
+      background:#fff;
+    }
+    .input-wrap input:focus{
+      outline:none;
+      border-color:#c53030;
+      box-shadow:0 0 0 3px rgba(197,48,48,0.12);
+    }
+    .input-wrap .unit{font-size:0.68rem;color:#a0aec0;}
+
+    .result-cell{text-align:center;font-size:0.9rem;font-weight:700;color:#e2e8f0;transition:color 0.2s;}
+    .result-cell.normal{color:#276749;}
+    .result-cell.warning{color:#b7791f;}
+    .result-cell.error{color:#c53030;}
+
+    footer{text-align:center;color:#742a2a;font-size:0.65rem;padding:1.2rem 0;opacity:0.6;}
+
+    /* pasek z-score */
+    .zbar-wrap{display:none;padding:0.1rem 0.2rem 0.3rem 0;}
+    .zbar-wrap.visible{display:block;}
+    .zbar-track{
+      position:relative;height:4px;background:#e2e8f0;
+      border-radius:2px;margin:0.35rem 0 0.15rem;
+    }
+    .zbar-fill{
+      position:absolute;top:0;left:0;height:4px;
+      border-radius:2px;
+      background:#e2e8f0;
+    }
+    .zbar-fill.normal { background:#276749; }
+    .zbar-fill.warning{ background:#b7791f; }
+    .zbar-fill.error  { background:#c53030; }
+    .zbar-dot{
+      position:absolute;top:-4px;
+      width:10px;height:10px;
+      border-radius:50%;background:#c53030;
+      transform:translateX(-50%);
+      border:2px solid #fff;
+      box-shadow:0 0 0 1.5px #c53030;
+    }
+    .zbar-dot.normal{background:#276749;box-shadow:0 0 0 1.5px #276749;}
+    .zbar-dot.warning{background:#b7791f;box-shadow:0 0 0 1.5px #b7791f;}
+    .zbar-dot.error{background:#c53030;box-shadow:0 0 0 1.5px #c53030;}
+    .zbar-labels{
+      display:flex;justify-content:space-between;
+      font-size:0.6rem;color:#a0aec0;margin-top:0.1rem;
+    }
+    .zbar-val{
+      position:absolute;top:-18px;
+      font-size:0.62rem;font-weight:700;
+      transform:translateX(-50%);
+      white-space:nowrap;
+    }
+    .zbar-val.normal{color:#276749;}
+    .zbar-val.warning{color:#b7791f;}
+    .zbar-val.error{color:#c53030;}
+
+    @media (max-width: 991.98px) {
+      header{
+        flex-direction:column;
+        align-items:flex-start;
+        padding:0.8rem 1rem;
+        gap:0.5rem;
+      }
+      .header-desc{
+        font-size:1.2rem;
+      }
+      .container{
+        padding:0 0.75rem;
+        margin:0.8rem auto;
+      }
+      .patient-card{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0.6rem;
+        padding:0.7rem 0.9rem;
+      }
+      .field input,.field select{
+        width:100%;
+      }
+      .bsa-result{
+        width:100%;
+        text-align:center;
+      }
+      .boxes-row{
+        grid-template-columns:1fr 1fr;
+        gap:0.9rem;
+      }
+      .tab-button{
+        padding:0.5rem 1.2rem;
+        font-size:0.9rem;
+      }
+    }
+
+    @media (max-width: 575.98px) {
+      header{
+        padding:0.6rem 0.75rem;
+      }
+      .header-brand h1{font-size:1.5rem;}
+      .header-desc{font-size:1.0rem;}
+      .tabs{
+        padding:0.3rem 0.75rem 0;
+      }
+      .container{
+        padding:0 0.5rem;
+      }
+      .boxes-row{
+        grid-template-columns:1fr;
+      }
+      .calc-card{
+        padding:0.9rem 0.9rem;
+      }
+      .mm-cols,.vv-cols{
+        grid-template-columns:70px 1fr 70px;
+      }
+      .input-wrap input{
+        width:100%;
+      }
+      .tab-button{
+        padding:0.55rem 1.3rem;
+        font-size:1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-brand">
+    <h1>PedCard</h1>
+    <div class="subtitle">Imperialne narzędzie do kontrolowania wymiarów</div>
+  </div>
+  <div class="header-divider"></div>
+  <div class="header-desc">Imperium Serca &mdash; Oddział Kardiologii Dziecięcej</div>
+</header>
+
+<div class="tabs">
+  <button class="tab-button active" onclick="switchTab('echo')">Echo</button>
+  <button class="tab-button" onclick="switchTab('ekg')">EKG</button>
+  <button class="tab-button" onclick="switchTab('refs')">Źródła</button>
+</div>
+
+<div class="container">
+
+  <!-- KARTA ECHO -->
+  <div id="tab-echo" class="tab-panel active-tab">
+
+    <div class="patient-card">
+      <div class="field">
+        <label>Płeć</label>
+        <select id="sex" onchange="recalcAll()">
+          <option value="girl">Dziewczynka</option>
+          <option value="boy">Chłopiec</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Wzrost (cm)</label>
+        <input type="number" id="height" step="0.1" min="30" max="250"
+               placeholder="np. 120" oninput="recalcAll()" />
+      </div>
+      <div class="field">
+        <label>Masa ciała (kg)</label>
+        <input type="number" id="weight" step="0.1" min="0.5" max="200"
+               placeholder="np. 22" oninput="recalcAll()" />
+      </div>
+      <div class="field">
+        <label>Wiek (lata)</label>
+        <input type="number" id="pt_age" step="0.1" min="0" max="18" placeholder="np. 8" oninput="recalcAll()" style="width:90px;"/>
+      </div>
+      <div class="bsa-result" id="bsa_display">BSA: — m²</div>
+      <div class="bsa-result" id="bmi_display">BMI: — kg/m²</div>
+      <div class="bsa-result" id="height_pct_display" style="display:none;">Wzrost: —</div>
+      <div class="bsa-result" id="weight_pct_display" style="display:none;">Masa: —</div>
+      <div class="bsa-result" id="bmi_pct_display" style="display:none;">BMI: —</div>
+    </div>
+
+    <div class="boxes-row">
+
+      <!-- BOX 1: M-mode -->
+      <div class="calc-card">
+        <h2>Wymiary M-mode</h2>
+        <div class="reference">Kampmann et al. 2000</div>
+
+        <div class="tbl-header mm-cols">
+          <span>Symbol</span><span>Pomiar</span><span>Z-score</span>
+        </div>
+        <div class="tbl-row mm-cols">
+          <div class="var-name">RVDD</div>
+          <div class="input-wrap"><input type="number" id="RVDD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+            <div class="result-cell" id="RVDD_z">—</div>
+            <div class="zbar-wrap" id="RVDD_bar" style="padding:0;">
+              <div style="position:relative;padding-top:18px;">
+                <div class="zbar-track">
+                  <div class="zbar-fill" id="RVDD_bar_fill"></div>
+                  <div class="zbar-dot" id="RVDD_bar_dot"></div>
+                  <div class="zbar-val" id="RVDD_bar_val"></div>
+                </div>
+                <div class="zbar-labels"><span id="RVDD_bar_m2">—</span><span id="RVDD_bar_0">—</span><span id="RVDD_bar_p2">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-row mm-cols">
+          <div class="var-name">IVSd</div>
+          <div class="input-wrap"><input type="number" id="IVSd" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+            <div class="result-cell" id="IVSd_z">—</div>
+            <div class="zbar-wrap" id="IVSd_bar" style="padding:0;">
+              <div style="position:relative;padding-top:18px;">
+                <div class="zbar-track">
+                  <div class="zbar-fill" id="IVSd_bar_fill"></div>
+                  <div class="zbar-dot" id="IVSd_bar_dot"></div>
+                  <div class="zbar-val" id="IVSd_bar_val"></div>
+                </div>
+                <div class="zbar-labels"><span id="IVSd_bar_m2">—</span><span id="IVSd_bar_0">—</span><span id="IVSd_bar_p2">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-row mm-cols">
+          <div class="var-name">LVEDD</div>
+          <div class="input-wrap"><input type="number" id="LVEDD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+            <div class="result-cell" id="LVEDD_z">—</div>
+            <div class="zbar-wrap" id="LVEDD_bar" style="padding:0;">
+              <div style="position:relative;padding-top:18px;">
+                <div class="zbar-track">
+                  <div class="zbar-fill" id="LVEDD_bar_fill"></div>
+                  <div class="zbar-dot" id="LVEDD_bar_dot"></div>
+                  <div class="zbar-val" id="LVEDD_bar_val"></div>
+                </div>
+                <div class="zbar-labels"><span id="LVEDD_bar_m2">—</span><span id="LVEDD_bar_0">—</span><span id="LVEDD_bar_p2">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-row mm-cols">
+          <div class="var-name">LVESD</div>
+          <div class="input-wrap"><input type="number" id="LVESD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+            <div class="result-cell" id="LVESD_z">—</div>
+            <div class="zbar-wrap" id="LVESD_bar" style="padding:0;">
+              <div style="position:relative;padding-top:18px;">
+                <div class="zbar-track">
+                  <div class="zbar-fill" id="LVESD_bar_fill"></div>
+                  <div class="zbar-dot" id="LVESD_bar_dot"></div>
+                  <div class="zbar-val" id="LVESD_bar_val"></div>
+                </div>
+                <div class="zbar-labels"><span id="LVESD_bar_m2">—</span><span id="LVESD_bar_0">—</span><span id="LVESD_bar_p2">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-row mm-cols">
+          <div class="var-name">LVPWd</div>
+          <div class="input-wrap"><input type="number" id="LVPWd" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+            <div class="result-cell" id="LVPWd_z">—</div>
+            <div class="zbar-wrap" id="LVPWd_bar" style="padding:0;">
+              <div style="position:relative;padding-top:18px;">
+                <div class="zbar-track">
+                  <div class="zbar-fill" id="LVPWd_bar_fill"></div>
+                  <div class="zbar-dot" id="LVPWd_bar_dot"></div>
+                  <div class="zbar-val" id="LVPWd_bar_val"></div>
+                </div>
+                <div class="zbar-labels"><span id="LVPWd_bar_m2">—</span><span id="LVPWd_bar_0">—</span><span id="LVPWd_bar_p2">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOX 2: Valve annuli -->
+      <div class="calc-card">
+        <h2>Pierścienie zastawek</h2>
+        <div class="reference">Cantinotti et al. 2014</div>
+
+        <div class="tbl-header vv-cols">
+          <span>Symbol</span><span>Pomiar</span><span>Z-score</span>
+        </div>
+        <div class="tbl-row vv-cols">
+          <div class="var-name">MV</div>
+          <div class="input-wrap"><input type="number" id="mv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+            <div class="result-cell" id="mv_z">—</div>
+            <div class="zbar-wrap" id="mv_bar" style="padding:0;">
+              <div style="position:relative;padding-top:18px;">
+                <div class="zbar-track">
+                  <div class="zbar-fill" id="mv_bar_fill"></div>
+                  <div class="zbar-dot" id="mv_bar_dot"></div>
+                  <div class="zbar-val" id="mv_bar_val"></div>
+                </div>
+                <div class="zbar-labels"><span id="mv_bar_m2">—</span><span id="mv_bar_0">—</span><span id="mv_bar_p2">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-row vv-cols">
+          <div class="var-name">TV</div>
+          <div class="input-wrap"><input type="number" id="tv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+            <div class="result-cell" id="tv_z">—</div>
+            <div class="zbar-wrap" id="tv_bar" style="padding:0;">
+              <div style="position:relative;padding-top:18px;">
+                <div class="zbar-track">
+                  <div class="zbar-fill" id="tv_bar_fill"></div>
+                  <div class="zbar-dot" id="tv_bar_dot"></div>
+                  <div class="zbar-val" id="tv_bar_val"></div>
+                </div>
+                <div class="zbar-labels"><span id="tv_bar_m2">—</span><span id="tv_bar_0">—</span><span id="tv_bar_p2">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-row vv-cols">
+          <div class="var-name">AV</div>
+          <div class="input-wrap"><input type="number" id="av_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+            <div class="result-cell" id="av_z">—</div>
+            <div class="zbar-wrap" id="av_bar" style="padding:0;">
+              <div style="position:relative;padding-top:18px;">
+                <div class="zbar-track">
+                  <div class="zbar-fill" id="av_bar_fill"></div>
+                  <div class="zbar-dot" id="av_bar_dot"></div>
+                  <div class="zbar-val" id="av_bar_val"></div>
+                </div>
+                <div class="zbar-labels"><span id="av_bar_m2">—</span><span id="av_bar_0">—</span><span id="av_bar_p2">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tbl-row vv-cols">
+          <div class="var-name">PV</div>
+          <div class="input-wrap"><input type="number" id="pv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+            <div class="result-cell" id="pv_z">—</div>
+            <div class="zbar-wrap" id="pv_bar" style="padding:0;">
+              <div style="position:relative;padding-top:18px;">
+                <div class="zbar-track">
+                  <div class="zbar-fill" id="pv_bar_fill"></div>
+                  <div class="zbar-dot" id="pv_bar_dot"></div>
+                  <div class="zbar-val" id="pv_bar_val"></div>
+                </div>
+                <div class="zbar-labels"><span id="pv_bar_m2">—</span><span id="pv_bar_0">—</span><span id="pv_bar_p2">—</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BOX 3: Aorta (Pettersen) -->
+      <div class="calc-card">
+        <h2>Aorta</h2>
+        <div class="reference">Pettersen et al. 2008</div>
+        <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
+        <div class="tbl-row mm-cols"><div class="var-name">AoAnn</div><div class="input-wrap"><input type="number" id="AoAnn" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="AoAnn_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">Sinus</div><div class="input-wrap"><input type="number" id="Sinus" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Sinus_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">STJ</div><div class="input-wrap"><input type="number" id="STJ" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="STJ_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">TArch</div><div class="input-wrap"><input type="number" id="TArch" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="TArch_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">Isthm</div><div class="input-wrap"><input type="number" id="Isthm" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Isthm_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">DistAo</div><div class="input-wrap"><input type="number" id="DistAo" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="DistAo_z">—</div></div>
+      </div>
+
+      <!-- BOX 4: Pulmonary (Pettersen) -->
+      <div class="calc-card">
+        <h2>Tętnica płucna</h2>
+        <div class="reference">Pettersen et al. 2008</div>
+        <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
+        <div class="tbl-row mm-cols"><div class="var-name">PVAnn</div><div class="input-wrap"><input type="number" id="PVAnn" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="PVAnn_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">MPA</div><div class="input-wrap"><input type="number" id="MPA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="MPA_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">RPA</div><div class="input-wrap"><input type="number" id="RPA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="RPA_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">LPA</div><div class="input-wrap"><input type="number" id="LPA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="LPA_z">—</div></div>
+      </div>
+
+      <!-- BOX 5: Coronary arteries (Dallaire) -->
+      <div class="calc-card">
+        <h2>Tętnice wieńcowe</h2>
+        <div class="reference">
+          Dallaire &amp; Dahdah 2011
+        </div>
+
+        <div class="tbl-header mm-cols">
+          <span>Segment</span><span>Pomiar</span><span>Z-score</span>
+        </div>
+
+        <div class="tbl-row mm-cols">
+          <div class="var-name">LMCA</div>
+          <div class="input-wrap">
+            <input type="number" id="CA_LMCA" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
+            <span class="unit">mm</span>
+          </div>
+          <div class="result-cell" id="CA_LMCA_z">—</div>
+        </div>
+
+        <div class="tbl-row mm-cols">
+          <div class="var-name">LAD prox</div>
+          <div class="input-wrap">
+            <input type="number" id="CA_LAD" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
+            <span class="unit">mm</span>
+          </div>
+          <div class="result-cell" id="CA_LAD_z">—</div>
+        </div>
+
+        <div class="tbl-row mm-cols">
+          <div class="var-name">Cx prox</div>
+          <div class="input-wrap">
+            <input type="number" id="CA_Cx" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
+            <span class="unit">mm</span>
+          </div>
+          <div class="result-cell" id="CA_Cx_z">—</div>
+        </div>
+
+        <div class="tbl-row mm-cols">
+          <div class="var-name">RCA prox</div>
+          <div class="input-wrap">
+            <input type="number" id="CA_RCAprox" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
+            <span class="unit">mm</span>
+          </div>
+          <div class="result-cell" id="CA_RCAprox_z">—</div>
+        </div>
+
+        <div class="tbl-row mm-cols">
+          <div class="var-name">RCA med</div>
+          <div class="input-wrap">
+            <input type="number" id="CA_RCAmed" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
+            <span class="unit">mm</span>
+          </div>
+          <div class="result-cell" id="CA_RCAmed_z">—</div>
+        </div>
+
+        <div class="tbl-row mm-cols">
+          <div class="var-name">RCA dist</div>
+          <div class="input-wrap">
+            <input type="number" id="CA_RCAdist" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
+            <span class="unit">mm</span>
+          </div>
+          <div class="result-cell" id="CA_RCAdist_z">—</div>
+        </div>
+      </div>
+
+    </div><!-- /boxes-row -->
+
+    <!-- Opis Echo -->
+    <div class="calc-card" style="margin-top:1rem;">
+      <h2>Opis Echo</h2>
+      <div class="reference" style="margin-bottom:0.5rem;">Szablon opisu — wartości i z-score wpisują się automatycznie po wprowadzeniu pomiarów.</div>
+
+      <!-- Modyfikatory szablonu -->
+      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.7rem;">
+        <button id="btn_tvi" onclick="toggleVariant('tvi')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">TVI</button>
+        <button id="btn_pfo" onclick="toggleVariant('pfo')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">PFO</button>
+        <button id="btn_mvi" onclick="toggleVariant('mvi')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">MVI</button>
+      </div>
+      <div id="echo_notes_box" contenteditable="true"
+        style="width:100%;border:1.5px solid #feb2b2;border-radius:8px;
+               padding:0.7rem;font-size:0.85rem;font-family:'Segoe UI',sans-serif;
+               line-height:1.8;min-height:14rem;background:#fff;
+               outline:none;white-space:pre-wrap;"></div>
+      <button onclick="copyEchoNotes()" style="margin-top:0.5rem;padding:0.4rem 1.1rem;
+        background:#c53030;color:#fff;border:none;border-radius:7px;font-size:0.82rem;
+        font-weight:700;cursor:pointer;letter-spacing:0.05em;">Kopiuj do schowka</button>
+    </div>
+
+  </div><!-- /tab-echo -->
+
+  <!-- KARTA EKG -->
+  <div id="tab-ekg" class="tab-panel">
+
+    <!-- układ: lewa kolumna = QTc + Holter, prawa = Schwartz -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:start;">
+
+      <!-- LEWA KOLUMNA -->
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
+
+        <!-- BOX QTc -->
+        <div class="calc-card">
+          <h2>QTc</h2>
+          <div style="display:flex;flex-direction:column;gap:0.6rem;margin-top:0.6rem;">
+            <div class="field">
+              <label>RR (ms)</label>
+              <input type="number" id="qtc_rr" step="1" min="200" max="2000" placeholder="np. 700" oninput="recalcQTc()" style="width:140px;"/>
+            </div>
+            <div class="field">
+              <label>QT (ms)</label>
+              <input type="number" id="qtc_qt" step="1" min="100" max="800" placeholder="np. 360" oninput="recalcQTc()" style="width:140px;"/>
+            </div>
+          </div>
+          <div style="margin-top:1rem;display:flex;flex-direction:column;gap:0.45rem;font-size:0.9rem;">
+            <div style="font-weight:700;">Bazett: <span id="qtc_bazett" style="color:#c53030;">—</span> ms <span id="qtc_bazett_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
+            <div style="font-weight:700;">Fridericia: <span id="qtc_fridericia" style="color:#c53030;">—</span> ms <span id="qtc_fridericia_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
+            <div style="font-weight:700;">Framingham: <span id="qtc_framingham" style="color:#c53030;">—</span> ms <span id="qtc_framingham_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
+            <div style="font-weight:700;">Hodges: <span id="qtc_hodges" style="color:#c53030;">—</span> ms <span id="qtc_hodges_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
+          </div>
+        </div>
+
+        <!-- BOX Holter EKG -->
+        <div class="calc-card">
+          <h2>Normy Holter EKG</h2>
+          <div class="reference">Salameh, Aida et al. 2008</div>
+          <div style="display:flex;gap:1rem;margin-bottom:0.8rem;flex-wrap:wrap;align-items:flex-end;margin-top:0.5rem;">
+            <div class="field">
+              <label>Płeć</label>
+              <select id="hr_sex" onchange="recalcHR()" style="width:120px;">
+                <option value="M">Chłopiec</option>
+                <option value="F">Dziewczynka</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Wiek (lata)</label>
+              <input type="text" id="hr_age" placeholder="np. 10 lub 7/12" oninput="recalcHR()" style="width:130px;"/>
+            </div>
+          </div>
+          <div id="hr_header" style="font-size:0.75rem;font-weight:700;margin-bottom:0.4rem;color:#2d3748;">—</div>
+          <div style="display:grid;grid-template-columns:90px 70px 50px 50px 100px;gap:0.3rem;align-items:center;padding:0.2rem 0;border-bottom:2px solid #fed7d7;margin-bottom:0.1rem;">
+            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;"></span>
+            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">1/min</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">Wart.</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">%</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">Norma P5–P95</span>
+          </div>
+          <div style="display:grid;grid-template-columns:90px 70px 50px 50px 100px;gap:0.3rem;align-items:center;padding:0.25rem 0;border-bottom:1px solid #fff5f5;">
+            <div class="var-name" style="font-size:0.82rem;">Średnio</div>
+            <div class="input-wrap"><input type="number" id="hr_mean" step="1" min="20" max="250" placeholder="—" oninput="recalcHR()" style="width:62px;"/></div>
+            <div class="result-cell" id="hr_mean_val">—</div>
+            <div class="result-cell" id="hr_mean_pct">—</div>
+            <div class="result-cell" id="hr_mean_norm" style="font-size:0.75rem;">—</div>
+          </div>
+          <div style="display:grid;grid-template-columns:90px 70px 50px 50px 100px;gap:0.3rem;align-items:center;padding:0.25rem 0;border-bottom:1px solid #fff5f5;">
+            <div class="var-name" style="font-size:0.82rem;">Minimalne</div>
+            <div class="input-wrap"><input type="number" id="hr_min" step="1" min="20" max="250" placeholder="—" oninput="recalcHR()" style="width:62px;"/></div>
+            <div class="result-cell" id="hr_min_val">—</div>
+            <div class="result-cell" id="hr_min_pct">—</div>
+            <div class="result-cell" id="hr_min_norm" style="font-size:0.75rem;">—</div>
+          </div>
+          <div style="display:grid;grid-template-columns:90px 70px 50px 50px 100px;gap:0.3rem;align-items:center;padding:0.25rem 0;">
+            <div class="var-name" style="font-size:0.82rem;">Maksymalne</div>
+            <div class="input-wrap"><input type="number" id="hr_max" step="1" min="20" max="250" placeholder="—" oninput="recalcHR()" style="width:62px;"/></div>
+            <div class="result-cell" id="hr_max_val">—</div>
+            <div class="result-cell" id="hr_max_pct">—</div>
+            <div class="result-cell" id="hr_max_norm" style="font-size:0.75rem;">—</div>
+          </div>
+        </div>
+
+      </div><!-- /lewa kolumna -->
+
+      <!-- PRAWA KOLUMNA: Schwartz -->
+      <div class="calc-card">
+        <h2>Schwartz Score (LQTS)</h2>
+        <div class="reference">Schwartz PJ, Crotti L. Circulation 2011;124:2181–2184</div>
+        <div style="margin-top:0.7rem;font-size:0.82rem;display:flex;flex-direction:column;gap:0.1rem;">
+          <div style="font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin:0.5rem 0 0.2rem;">Historia pacjenta</div>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" id="sw_syncope_stress" data-pts="2" data-group="syncope" onchange="recalcSchwartz()"> Omdlenie w sytuacji stresowej†</span><span style="color:#742a2a;font-weight:700;">2</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" id="sw_syncope_nostress" data-pts="1" data-group="syncope" onchange="recalcSchwartz()"> Omdlenie bez sytuacji stresowej†</span><span style="color:#742a2a;font-weight:700;">1</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="0.5" onchange="recalcSchwartz()"> Wrodzona głuchota</span><span style="color:#742a2a;font-weight:700;">0.5</span></label>
+          <div style="font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin:0.5rem 0 0.2rem;">Historia rodzinna</div>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" id="sw_family_lqts" data-pts="1" data-group="family" onchange="recalcSchwartz()"> Członek rodziny z potwierdzonym LQTS‡</span><span style="color:#742a2a;font-weight:700;">1</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" id="sw_family_death" data-pts="0.5" data-group="family" onchange="recalcSchwartz()"> Nagły zgon sercowy członka rodziny &lt;30 r.ż.‡</span><span style="color:#742a2a;font-weight:700;">0.5</span></label>
+          <div style="font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin:0.5rem 0 0.2rem;">EKG</div>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="3" data-group="qtc" onchange="recalcSchwartz()"> QTc ≥ 480 ms</span><span style="color:#742a2a;font-weight:700;">3</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="2" data-group="qtc" onchange="recalcSchwartz()"> QTc 460–479 ms</span><span style="color:#742a2a;font-weight:700;">2</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="1" data-group="qtc" onchange="recalcSchwartz()"> QTc 450–459 ms (tylko chłopcy)</span><span style="color:#742a2a;font-weight:700;">1</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="1" onchange="recalcSchwartz()"> QTc ≥ 480 ms w 4. min próby wysiłkowej</span><span style="color:#742a2a;font-weight:700;">1</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" id="sw_tdp" data-pts="2" data-group="tdp" onchange="recalcSchwartz()"> Torsades de pointes§</span><span style="color:#742a2a;font-weight:700;">2</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="1" onchange="recalcSchwartz()"> Alternacja załamka T</span><span style="color:#742a2a;font-weight:700;">1</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="1" onchange="recalcSchwartz()"> Wcięty załamek T w ≥3 odprowadzeniach</span><span style="color:#742a2a;font-weight:700;">1</span></label>
+          <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="0.5" onchange="recalcSchwartz()"> Spoczynkowe HR &lt; 2. percentyla dla wieku</span><span style="color:#742a2a;font-weight:700;">0.5</span></label>
+        </div>
+        <div style="margin-top:1rem;padding-top:0.7rem;border-top:2px solid #fed7d7;display:flex;align-items:center;gap:0.7rem;flex-wrap:nowrap;">
+          <div style="font-size:0.9rem;font-weight:700;white-space:nowrap;">Suma: <span id="schwartz_total" style="color:#c53030;font-size:1.1rem;">0</span> pkt</div>
+          <div id="schwartz_interp" style="font-size:0.78rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:6px;background:#e2e8f0;color:#2d3748;white-space:nowrap;">niskie prawdopodobieństwo</div>
+          <button onclick="resetSchwartz()" style="margin-left:auto;padding:0.25rem 0.7rem;background:#e2e8f0;border:none;border-radius:6px;font-size:0.75rem;cursor:pointer;font-weight:600;white-space:nowrap;">Reset</button>
+        </div>
+        <div id="schwartz_summary" style="margin-top:0.6rem;font-size:0.8rem;color:#2d3748;background:#fff5f5;border-radius:7px;padding:0.5rem 0.7rem;border-left:3px solid #c53030;display:none;"></div>
+        <div style="font-size:0.68rem;color:#a0aec0;margin-top:0.5rem;">
+          † Wzajemnie wykluczające się &nbsp;‡ Wzajemnie wykluczające się &nbsp;§ Jeśli TdP — nie punktuj omdlenia
+        </div>
+      </div><!-- /Schwartz -->
+
+    </div><!-- /grid EKG -->
+  </div>
+
+  <!-- KARTA ŹRÓDŁA -->
+  <div id="tab-refs" class="tab-panel">
+    <div class="calc-card">
+      <h2>Źródła</h2>
+      <div class="reference">
+        Kluczowe publikacje użyte do wyznaczania norm i z-score.
+      </div>
+
+      <div style="font-size:0.8rem; line-height:1.5; display:flex; flex-direction:column; gap:0.8rem;">
+
+        <p>
+          Kampmann C, Wiethoff CM, Wenzel A, Stolz G, Betancor M, Wippermann CF, et al.
+          Normal values of M mode echocardiographic measurements of more than 2000 healthy infants and children in central Europe.
+          Heart. 2000;83(6):667–672.[file:134]<br/>
+          <a href="https://doi.org/10.1136/heart.83.6.667" target="_blank" rel="noopener noreferrer">
+            https://doi.org/10.1136/heart.83.6.667
+          </a>
+        </p>
+
+        <p>
+          Pettersen MD, Du W, Skeens ME, Humes RA.
+          Regression equations for calculation of z scores of cardiac structures in a large cohort of healthy infants, children, and adolescents: an echocardiographic study.
+          J Am Soc Echocardiogr. 2008;21(8):922–934.[file:136]<br/>
+          <a href="https://doi.org/10.1016/j.echo.2008.02.006" target="_blank" rel="noopener noreferrer">
+            https://doi.org/10.1016/j.echo.2008.02.006
+          </a>
+        </p>
+
+        <p>
+          Dallaire F, Dahdah N.
+          New equations and a critical appraisal of coronary artery z scores in healthy children.
+          J Am Soc Echocardiogr. 2011;24(1):60–74.[file:135]<br/>
+          <a href="https://doi.org/10.1016/j.echo.2010.10.004" target="_blank" rel="noopener noreferrer">
+            https://doi.org/10.1016/j.echo.2010.10.004
+          </a>
+        </p>
+
+        <!-- miejsca na kolejne źródła, jeśli później dodasz np. Cantinotti, Fleming itp. -->
+      </div>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<footer>Wyniki mają charakter pomocniczy — decyzje kliniczne należą wyłącznie do lekarza. | PedCard Imperial v7.5 | Powered by SBJP</footer>
+
+<script>
+  function normalCDF(z){
+    const a1=0.254829592,a2=-0.284496736,a3=1.421413741,a4=-1.453152027,a5=1.061405429,p=0.3275911;
+    const sign=z<0?-1:1,x=Math.abs(z)/Math.sqrt(2);
+    const t=1/(1+p*x);
+    const erf=1-t*(a1+t*(a2+t*(a3+t*(a4+t*a5))))*Math.exp(-x*x);
+    return 0.5*(1+sign*erf);
+  }
+
+  function cls(z){
+    if(z<-3||z>3)return"error";
+    if(z<-2||z>2)return"warning";
+    return"normal";
+  }
+  function setCell(id,val,c){
+    const el=document.getElementById(id);
+    el.textContent=val;
+    el.className="result-cell"+(c?" "+c:"");
+  }
+
+  function mmPred(id,bsa){
+    switch(id){
+      case"RVDD":return 7.4461*Math.exp(0.4587*bsa);
+      case"IVSd":return 5.8055*Math.pow(bsa,0.3688);
+      case"LVEDD":return 38.537*Math.pow(bsa,0.4509);
+      case"LVESD":return 24.231*Math.pow(bsa,0.4469);
+      case"LVPWd":return 6.0963*Math.pow(bsa,0.3988);
+    }
+  }
+  const mmSD={RVDD:0.20,IVSd:0.18,LVEDD:0.12,LVESD:0.14,LVPWd:0.18};
+  const mmVars=["RVDD","IVSd","LVEDD","LVESD","LVPWd"];
+  const vf={
+    mv:{girl:[0.733,0.408,0.180],boy:[0.765,0.425,0.169]},
+    tv:{girl:[0.755,0.364,0.186],boy:[0.817,0.391,0.171]},
+    av:{girl:[0.437,0.461,0.127],boy:[0.472,0.492,0.141]},
+    pv:{girl:[0.597,0.476,0.144],boy:[0.618,0.498,0.152]},
+  };
+
+  const pettersen = {
+    AoAnn:[-0.874, 2.708, -1.841, 0.452, 0.010],
+    Sinus:[-0.500, 2.537, -1.707, 0.420, 0.012],
+    STJ:[-0.759, 2.643, -1.797, 0.442, 0.018],
+    TArch:[-0.790, 3.020, -2.484, 0.712, 0.023],
+    Isthm:[-1.072, 2.539, -1.627, 0.368, 0.027],
+    DistAo:[-0.976, 2.469, -1.746, 0.445, 0.026],
+    PVAnn:[-0.761, 2.774, -1.808, 0.436, 0.023],
+    MPA:[-0.707, 2.746, -1.807, 0.424, 0.024],
+    RPA:[-1.360, 3.394, -2.508, 0.660, 0.027],
+    LPA:[-1.348, 2.884, -1.954, 0.466, 0.028]
+  };
+
+  const dallaireCoeff = {
+    LMCA:   { a: -0.1817, b: 2.9238, aSE: 0.1801, bSE: 0.2530 },
+    LAD:    { a: -0.1502, b: 2.2672, aSE: 0.1709, bSE: 0.2293 },
+    Cx:     { a: -0.2716, b: 2.3458, aSE: 0.1142, bSE: 0.3423 },
+    RCAprox:{ a: -0.3039, b: 2.7521, aSE: 0.1626, bSE: 0.2881 },
+    RCAmed: { a: -0.3060, b: 2.4078, aSE: 0.1324, bSE: 0.3259 },
+    RCAdist:{ a: -0.3185, b: 2.3295, aSE: 0.1099, bSE: 0.3198 }
+  };
+
+  function pettersenZ(id, mm, bsa){
+    const [b0,b1,b2,b3,mse] = pettersen[id];
+    const yMean = b0 + b1*bsa + b2*bsa*bsa + b3*bsa*bsa*bsa;
+    const z = (Math.log(mm/10) - yMean) / Math.sqrt(mse);
+    return z;
+  }
+
+  function dallaireZ(seg, mm, bsa){
+    if(!bsa || !dallaireCoeff[seg] || isNaN(mm) || mm<=0) return null;
+    const c = dallaireCoeff[seg];
+    const x = Math.sqrt(bsa);
+    const mean = c.a + c.b * x;
+    const se   = c.aSE + c.bSE * x;
+    if(se <= 0) return null;
+    return (mm - mean) / se;
+  }
+
+  function formatVal(label, mm, z, refMark){
+    if(isNaN(mm) || isNaN(z)) return null;
+    return label + " " + mm.toFixed(1) + " mm (" + z.toFixed(2) + "z)" + refMark;
+  }
+
+  // ── Szablon opisu Echo ──────────────────────────────────────────────
+  // warianty modyfikujące linie szablonu
+  const VARIANTS = { tvi: false, pfo: false, mvi: false };
+
+  function toggleVariant(name) {
+    VARIANTS[name] = !VARIANTS[name];
+    const btn = document.getElementById('btn_' + name);
+    if (VARIANTS[name]) {
+      btn.style.background = '#c53030'; btn.style.color = '#fff'; btn.style.borderColor = '#c53030';
+    } else {
+      btn.style.background = '#fff'; btn.style.color = '#742a2a'; btn.style.borderColor = '#feb2b2';
+    }
+    recalcAll();
+  }
+
+  const ECHO_TEMPLATE_LINES = [
+    { type: 'text',    text: 'Płyn w worku osierdziowym w ilości fizjologicznej.' },
+    { type: 'text',    text: 'Situs solitus. Spływ żył systemowych do RA, spływ żył płucnych do LA. Zgodne połączenia przedsionkowo-komorowe, komorowo-tętnicze.' },
+    { type: 'text',    text: 'RA i LA niepowiększone.' },
+    { type: 'text_variant', key: 'pfo',
+      text_default: 'IAS ciągła',
+      text_pfo:     'W IAS drożny otwór owalny z L-P przeciekiem o średnicy  mm'
+    },
+    { type: 'text',    text: 'IVS ciągła o prawidłowy ruchu w skurczu.' },
+    { type: 'valve_variant', before: 'Zastawka MV ', valveId: 'mv', ref: '²',
+      after_default: ' prawidłowa budowa i funkcja, napływ E > A w/n.',
+      after_mvi:     ' prawidłowa budowa, śladowa niedomykalność bez znaczenia klinicznego, napływ E > A w/n.'
+    },
+    { type: 'valve_variant',
+      before: 'Zastawka TV ', valveId: 'tv', ref: '²',
+      after_default: ' prawidłowa budowa i funkcja',
+      after_tvi:     ' prawidłowa budowa, czynnościowa niedomykalność z PGmax  mmHg'
+    },
+    { type: 'text',    text: 'Wymiary komór prawidłowe. Funkcja skurczowa komór prawidłowa.' },
+    { type: 'valve',   before: 'Zastawka AV ', valveId: 'av', ref: '²', after: ' - prawidłowa, trójpłatkowa, przepływ aortalny Vmax=  m/s' },
+    { type: 'text',    text: 'Ujścia tętnic płucnych prawidłowe.' },
+    { type: 'valve',   before: 'Zastawka PV ', valveId: 'pv', ref: '²', after: ' prawidłowa budowa i funkcja, przepływ płucny Vmax=\u2002\u2002m/s' },
+    { type: 'text',    text: 'Łuk aorty prawidłowy lewostronny. Przepływ w ao-abd. pulsacyjny.' },
+  ];
+
+  function buildEchoDescription(bsa, sex) {
+    const htmlLines = [];
+
+    // nagłówek z danymi pacjenta
+    const h = parseFloat(document.getElementById('height').value);
+    const w = parseFloat(document.getElementById('weight').value);
+    const bsaVal = (!isNaN(h) && !isNaN(w) && h > 0 && w > 0) ? Math.sqrt((h * w) / 3600) : null;
+    const headerParts = [];
+    if (!isNaN(w) && w > 0)   headerParts.push('Masa: ' + w + ' kg');
+    if (!isNaN(h) && h > 0)   headerParts.push('Wzrost: ' + h + ' cm');
+    if (bsaVal !== null)       headerParts.push('BSA: ' + bsaVal.toFixed(3) + ' m²');
+    if (headerParts.length)    htmlLines.push('<b>' + headerParts.join('  ') + '</b>');
+    htmlLines.push('');
+
+    ECHO_TEMPLATE_LINES.forEach(item => {
+      if (item.type === 'text') {
+        htmlLines.push(item.text);
+      } else if (item.type === 'text_variant') {
+        const txt = VARIANTS[item.key] ? item['text_' + item.key] : item.text_default;
+        htmlLines.push(txt);
+      } else if (item.type === 'valve' || item.type === 'valve_variant') {
+        const mm = parseFloat(document.getElementById(item.valveId + '_val').value);
+        const zTxt = document.getElementById(item.valveId + '_z').textContent;
+        const z = parseFloat(zTxt.replace(',', '.'));
+        const abbr = item.valveId.toUpperCase();
+        // wybierz wariant tekstu — sprawdź wszystkie klucze after_*
+        let after = item.after || item.after_default;
+        if (item.type === 'valve_variant') {
+          for (const key of Object.keys(VARIANTS)) {
+            if (VARIANTS[key] && item['after_' + key] !== undefined) {
+              after = item['after_' + key];
+              break;
+            }
+          }
+        }
+        if (!isNaN(mm) && !isNaN(z)) {
+          const boldBefore = item.before.replace(abbr, '<b>' + abbr + '</b>');
+          const measure = '<i>' + mm.toFixed(1) + ' mm (' + z.toFixed(2) + 'z)' + item.ref + '</i>';
+          htmlLines.push(boldBefore + measure + after);
+        } else {
+          htmlLines.push(item.before.trimEnd() + after);
+        }
+      }
+    });
+
+    // linia M-mode
+    const mmIds = ['IVSd','LVEDD','LVESD','LVPWd','RVDD'];
+    const mmParts = [];
+    mmIds.forEach(id => {
+      const mm = parseFloat(document.getElementById(id).value);
+      const zTxt = document.getElementById(id + '_z').textContent;
+      const z = parseFloat(zTxt.replace(',', '.'));
+      if (!isNaN(mm) && !isNaN(z)) {
+        mmParts.push('<b>' + id + '</b> <i>' + mm.toFixed(1) + ' mm (' + z.toFixed(2) + 'z)\u00B9</i>');
+      }
+    });
+
+    if (mmParts.length) {
+      htmlLines.push('');
+      htmlLines.push(mmParts.join('; ') + ';');
+    }
+
+    // źródła
+    const usedRefs = [];
+    const hasMMMode = mmParts.length > 0;
+    const hasValve = ['mv','tv','av','pv'].some(id => {
+      const mm = parseFloat(document.getElementById(id + '_val').value);
+      return !isNaN(mm) && mm > 0;
+    });
+    const hasPettersen = ['AoAnn','Sinus','STJ','TArch','Isthm','DistAo','PVAnn','MPA','RPA','LPA'].some(id => {
+      const mm = parseFloat(document.getElementById(id).value);
+      return !isNaN(mm) && mm > 0;
+    });
+    const hasDallaire = ['CA_LMCA','CA_LAD','CA_Cx','CA_RCAprox','CA_RCAmed','CA_RCAdist'].some(id => {
+      const mm = parseFloat(document.getElementById(id).value);
+      return !isNaN(mm) && mm > 0;
+    });
+    if (hasMMMode)    usedRefs.push('1) Kampmann et al. 2000');
+    if (hasValve)     usedRefs.push('2) Cantinotti et al. 2014');
+    if (hasPettersen) usedRefs.push('3) Pettersen et al. 2008');
+    if (hasDallaire)  usedRefs.push('4) Dallaire & Dahdah 2011');
+    if (usedRefs.length) {
+      htmlLines.push('');
+      htmlLines.push(usedRefs.join('; ') + ';');
+    }
+
+    return htmlLines.join('<br>');
+  }
+
+  function copyEchoNotes() {
+    const box = document.getElementById('echo_notes_box');
+    // kopiuj czysty tekst (bez tagów HTML)
+    const plain = box.innerText;
+    navigator.clipboard.writeText(plain).catch(() => {
+      const ta = document.createElement('textarea');
+      ta.value = plain;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+    });
+  }
+  // ────────────────────────────────────────────────────────────────────
+
+  // ── Tabele LMS OLA/OLAF ─────────────────────────────────────────
+  // Wiek w latach (półroczne dla BMI, roczne dla wzrostu/masy)
+  // [wiek, L, M, S]
+  const LMS_HEIGHT = {
+    boy:  [[3,1,97.5,0.038],[3.5,1,101.1,0.039],[4,1,104.9,0.039],[4.5,1,108.4,0.040],
+           [5,1,111.8,0.041],[5.5,1,115.1,0.041],[6,1,118.4,0.042],[6.5,1,121.4,0.042],
+           [7,1,124.5763,0.0407],[8,1,130.5084,0.0422],[9,1,136.2700,0.0441],
+           [10,1,141.4685,0.0457],[11,1,146.7490,0.0473],[12,1,152.9406,0.0499],
+           [13,1,160.2044,0.0511],[14,1,167.2116,0.0481],[15,1,172.4996,0.0430],
+           [16,1,175.7266,0.0392],[17,1,177.6036,0.0370],[18,1,178.6756,0.0357]],
+    girl: [[3,1,96.3,0.040],[3.5,1,99.9,0.040],[4,1,103.6,0.040],[4.5,1,107.1,0.041],
+           [5,1,110.4,0.042],[5.5,1,113.7,0.042],[6,1,117.0,0.043],[6.5,1,120.2,0.043],
+           [7,1,123.0195,0.0419],[8,1,129.3683,0.0440],[9,1,135.2446,0.0457],
+           [10,1,140.7839,0.0471],[11,1,147.1313,0.0472],[12,1,153.8132,0.0444],
+           [13,1,159.0773,0.0406],[14,1,162.2376,0.0380],[15,1,163.7435,0.0368],
+           [16,1,164.3511,0.0363],[17,1,164.7437,0.0360],[18,1,165.0598,0.0358]]
+  };
+  const LMS_WEIGHT = {
+    boy:  [[3,-1.289,15.5,0.131],[3.5,-1.350,16.0,0.131],[4,-1.382,17.1,0.130],
+           [4.5,-1.379,18.4,0.134],[5,-1.369,19.7,0.142],[5.5,-1.384,21.1,0.152],
+           [6,-1.416,22.4,0.163],[6.5,-1.390,23.5,0.169],
+           [7,-1.3451,24.4425,0.1739],[8,-1.2241,27.5948,0.1853],
+           [9,-1.1007,30.8200,0.1969],[10,-0.9733,34.2322,0.2077],
+           [11,-0.8410,38.1082,0.2164],[12,-0.7093,42.7117,0.2205],
+           [13,-0.6043,48.1026,0.2164],[14,-0.5548,53.7776,0.2034],
+           [15,-0.5641,59.0021,0.1864],[16,-0.6093,63.3307,0.1716],
+           [17,-0.6625,66.8807,0.1601],[18,-0.7110,69.8692,0.1510]],
+    girl: [[3,-1.211,14.9,0.129],[3.5,-1.202,15.4,0.135],[4,-1.192,16.2,0.141],
+           [4.5,-1.182,17.0,0.147],[5,-1.170,18.0,0.153],[5.5,-1.157,19.1,0.158],
+           [6,-1.142,20.2,0.164],[6.5,-1.130,21.3,0.168],
+           [7,-1.0642,23.4756,0.1703],[8,-1.0484,26.6216,0.1825],
+           [9,-0.9785,29.9233,0.1940],[10,-0.8443,33.5526,0.2050],
+           [11,-0.6766,37.8737,0.2133],[12,-0.5461,42.8172,0.2095],
+           [13,-0.5460,47.6669,0.1936],[14,-0.7062,51.3003,0.1742],
+           [15,-0.9209,53.6394,0.1589],[16,-1.0647,54.9580,0.1506],
+           [17,-1.1518,55.7267,0.1461],[18,-1.2035,56.1779,0.1434]]
+  };
+  const LMS_BMI = {
+    boy:  [[7,-2.22,15.8,0.119],[7.5,-2.19,16.0,0.124],[8,-2.16,16.2,0.129],
+           [8.5,-2.13,16.4,0.135],[9,-2.09,16.7,0.140],[9.5,-2.06,16.9,0.144],
+           [10,-2.03,17.1,0.148],[10.5,-1.99,17.3,0.151],[11,-1.96,17.6,0.154],
+           [11.5,-1.92,17.8,0.155],[12,-1.88,18.1,0.155],[12.5,-1.84,18.3,0.154],
+           [13,-1.80,18.6,0.152],[13.5,-1.76,18.9,0.149],[14,-1.72,19.2,0.146],
+           [14.5,-1.67,19.5,0.143],[15,-1.63,19.8,0.140],[15.5,-1.58,20.1,0.138],
+           [16,-1.53,20.4,0.136],[16.5,-1.49,20.8,0.135],[17,-1.44,21.1,0.134],
+           [17.5,-1.39,21.5,0.134],[18,-1.34,21.8,0.133]],
+    girl: [[7,-2.06,15.5,0.119],[7.5,-1.99,15.7,0.124],[8,-1.93,16.0,0.129],
+           [8.5,-1.86,16.2,0.134],[9,-1.79,16.4,0.139],[9.5,-1.72,16.7,0.143],
+           [10,-1.66,16.9,0.147],[10.5,-1.59,17.2,0.151],[11,-1.53,17.5,0.153],
+           [11.5,-1.48,17.8,0.154],[12,-1.44,18.1,0.154],[12.5,-1.42,18.4,0.153],
+           [13,-1.42,18.8,0.150],[13.5,-1.43,19.1,0.147],[14,-1.46,19.4,0.143],
+           [14.5,-1.50,19.7,0.139],[15,-1.54,19.9,0.136],[15.5,-1.58,20.1,0.133],
+           [16,-1.62,20.3,0.130],[16.5,-1.66,20.4,0.128],[17,-1.69,20.5,0.126],
+           [17.5,-1.71,20.6,0.125],[18,-1.74,20.7,0.124]]
+  };
+
+  function getLMS(table, sex, age) {
+    const rows = table[sex === 'boy' ? 'boy' : 'girl'];
+    if (!rows) return null;
+    // interpolacja liniowa
+    for (let i = 0; i < rows.length - 1; i++) {
+      const [a1, l1, m1, s1] = rows[i];
+      const [a2, l2, m2, s2] = rows[i+1];
+      if (age >= a1 && age <= a2) {
+        const t = (age - a1) / (a2 - a1);
+        return [l1 + t*(l2-l1), m1 + t*(m2-m1), s1 + t*(s2-s1)];
+      }
+    }
+    // poza zakresem: użyj skrajnych wartości
+    if (age < rows[0][0]) return [rows[0][1], rows[0][2], rows[0][3]];
+    const last = rows[rows.length-1];
+    return [last[1], last[2], last[3]];
+  }
+
+  function lmsToPct(x, L, M, S) {
+    if (!x || !M || !S) return null;
+    let z;
+    if (Math.abs(L) < 0.0001) {
+      z = Math.log(x / M) / S;
+    } else {
+      z = (Math.pow(x / M, L) - 1) / (L * S);
+    }
+    return normalCDF(z) * 100;
+  }
+
+  function calcAndShowPct(val, table, sexKey, age, elId) {
+    const el = document.getElementById(elId);
+    if (!el) return;
+    if (!val || !age || isNaN(val) || isNaN(age)) { el.textContent = ''; return; }
+    const lms = getLMS(table, sexKey, age);
+    if (!lms) { el.textContent = ''; return; }
+    const [L, M, S] = lms;
+    const pct = lmsToPct(val, L, M, S);
+    if (pct === null) { el.textContent = ''; return; }
+    const p = pct.toFixed(1);
+    let color = '#276749';
+    if (pct < 3 || pct > 97) color = '#c53030';
+    else if (pct < 10 || pct > 90) color = '#b7791f';
+    el.innerHTML = '<span style="font-size:0.72rem;font-weight:700;color:' + color + ';">' + p + 'c</span>';
+  }
+  // ────────────────────────────────────────────────────────────
+
+  // ── Pasek z-score ─────────────────────────────────────────────────
+  function updateZbar(id, z, mmAt) {
+    const wrap = document.getElementById(id + '_bar');
+    const zCell = document.getElementById(id + '_z');
+    if (!wrap) return;
+    if (z === null || isNaN(z)) {
+      wrap.classList.remove('visible');
+      if (zCell) zCell.style.display = '';
+      return;
+    }
+    if (zCell) zCell.style.display = 'none';
+
+    const zm2 = mmAt(-2), z0 = mmAt(0), zp2 = mmAt(2);
+    if (zm2 === null || z0 === null || zp2 === null) return;
+
+    // pozycja na pasku: od z=-3 do z=+3
+    const minZ = -3, maxZ = 3;
+    const pct = Math.max(0, Math.min(100, (z - minZ) / (maxZ - minZ) * 100));
+    const c = z < -2 ? 'error' : z > 2 ? 'error' : z < -1 || z > 1 ? 'warning' : 'normal';
+
+    const fill = document.getElementById(id + '_bar_fill');
+    fill.style.width = pct + '%';
+    fill.className = 'zbar-fill ' + c;
+
+    const dot = document.getElementById(id + '_bar_dot');
+    dot.style.left = pct + '%';
+    dot.className = 'zbar-dot ' + c;
+
+    const val = document.getElementById(id + '_bar_val');
+    val.textContent = z.toFixed(2) + 'z';
+    val.style.left = pct + '%';
+    val.className = 'zbar-val ' + c;
+
+    document.getElementById(id + '_bar_m2').textContent = zm2.toFixed(1);
+    document.getElementById(id + '_bar_0').textContent  = z0.toFixed(1);
+    document.getElementById(id + '_bar_p2').textContent = zp2.toFixed(1);
+
+    wrap.classList.add('visible');
+  }
+  // ────────────────────────────────────────────────────────────────────
+
+  function recalcAll(){
+    const h=parseFloat(document.getElementById("height").value);
+    const w=parseFloat(document.getElementById("weight").value);
+    const sex=document.getElementById("sex").value;
+    let bsa=null;
+    let bmi=null;
+
+    if(!isNaN(h)&&!isNaN(w)&&h>0&&w>0){
+      bsa=Math.sqrt((h*w)/3600);
+      document.getElementById("bsa_display").textContent =
+        "BSA: " + bsa.toFixed(3) + " m²";
+
+      const h_m = h/100;
+      bmi = w / (h_m*h_m);
+      document.getElementById("bmi_display").textContent =
+        "BMI: " + bmi.toFixed(1) + " kg/m²";
+    } else {
+      document.getElementById("bsa_display").textContent = "BSA: — m²";
+      document.getElementById("bmi_display").textContent = "BMI: — kg/m²";
+    }
+
+    // Percentyle OLA/OLAF
+    const age = parseFloat(document.getElementById('pt_age').value);
+    const sexKey = sex === 'girl' ? 'girl' : 'boy';
+    function showPct(val, table, elId, label) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      if (isNaN(val) || isNaN(age) || age <= 0) { el.style.display='none'; return; }
+      const lms = getLMS(table, sexKey, age);
+      if (!lms) { el.style.display='none'; return; }
+      const [L, M, S] = lms;
+      const pct = lmsToPct(val, L, M, S);
+      if (pct === null) { el.style.display='none'; return; }
+      const p = pct.toFixed(1);
+      let color = '#276749';
+      if (pct < 3 || pct > 97) color = '#c53030';
+      else if (pct < 10 || pct > 90) color = '#b7791f';
+      el.style.display = '';
+      el.style.borderColor = color;
+      el.style.color = color;
+      el.innerHTML = label + ': <b>' + p + 'c</b>';
+    }
+    showPct(h, LMS_HEIGHT, 'height_pct_display', 'Wzrost');
+    showPct(w, LMS_WEIGHT, 'weight_pct_display', 'Masa');
+    if (!isNaN(bmi)) showPct(bmi, LMS_BMI, 'bmi_pct_display', 'BMI');
+    else document.getElementById('bmi_pct_display').style.display='none';
+
+    mmVars.forEach(id=>{
+      const m=parseFloat(document.getElementById(id).value);
+      if(bsa&&!isNaN(m)&&m>0){
+        const pred=mmPred(id,bsa);
+        const z=(m-pred)/(pred*mmSD[id]);
+        setCell(id+"_z",z.toFixed(2),cls(z));
+      } else {
+        setCell(id+"_z","—","");
+      }
+    });
+
+    ["mv","tv","av","pv"].forEach(id=>{
+      const m=parseFloat(document.getElementById(id+"_val").value);
+      if(bsa&&!isNaN(m)&&m>0){
+        const[a,b,sd]=vf[id][sex];
+        const z=(Math.log(m/10)-(a+b*Math.log(bsa)))/sd;
+        setCell(id+"_z",z.toFixed(2),cls(z));
+      } else {
+        setCell(id+"_z","—","");
+      }
+    });
+
+    if(bsa){
+      ["AoAnn","Sinus","STJ","TArch","Isthm","DistAo","PVAnn","MPA","RPA","LPA"].forEach(id=>{
+        const m = parseFloat(document.getElementById(id).value);
+        if(!isNaN(m) && m>0){
+          const z = pettersenZ(id, m, bsa);
+          setCell(id+"_z", z.toFixed(2), cls(z));
+        } else {
+          setCell(id+"_z", "—", "");
+        }
+      });
+    } else {
+      ["AoAnn","Sinus","STJ","TArch","Isthm","DistAo","PVAnn","MPA","RPA","LPA"].forEach(id=> setCell(id+"_z","—",""));
+    }
+
+    const caSegs = [
+      {id: "LMCA",    input: "CA_LMCA"},
+      {id: "LAD",     input: "CA_LAD"},
+      {id: "Cx",      input: "CA_Cx"},
+      {id: "RCAprox", input: "CA_RCAprox"},
+      {id: "RCAmed",  input: "CA_RCAmed"},
+      {id: "RCAdist", input: "CA_RCAdist"}
+    ];
+
+    if(bsa){
+      caSegs.forEach(s => {
+        const m = parseFloat(document.getElementById(s.input).value);
+        const z = dallaireZ(s.id, m, bsa);
+        if(z === null){
+          setCell("CA_" + s.id + "_z", "—", "");
+        } else {
+          setCell("CA_" + s.id + "_z", z.toFixed(2), cls(z));
+        }
+      });
+    } else {
+      caSegs.forEach(s => setCell("CA_" + s.id + "_z", "—", ""));
+    }
+
+    const parts = [];
+
+    (function(){
+      const ids = ["IVSd","LVEDD","LVESD","LVPWd","RVDD"];
+      const labels = {IVSd:"IVSd", LVEDD:"LVEDD", LVESD:"LVESD", LVPWd:"LVPWd", RVDD:"RVDD"};
+      ids.forEach(id=>{
+        const mm = parseFloat(document.getElementById(id).value);
+        const cellTxt = document.getElementById(id + "_z").textContent;
+        const z = parseFloat(cellTxt.replace(",", "."));
+        if(!isNaN(mm) && !isNaN(z)){
+          const txt = formatVal(labels[id], mm, z, "¹");
+          if(txt) parts.push(txt);
+        }
+      });
+    })();
+
+    (function(){
+      const ids = ["mv","tv","av","pv"];
+      const labels = {mv:"MV", tv:"TV", av:"AV", pv:"PV"};
+      ids.forEach(id=>{
+        const mm = parseFloat(document.getElementById(id + "_val").value);
+        const cellTxt = document.getElementById(id + "_z").textContent;
+        const z = parseFloat(cellTxt.replace(",", "."));
+        if(!isNaN(mm) && !isNaN(z)){
+          const txt = formatVal(labels[id], mm, z, "²");
+          if(txt) parts.push(txt);
+        }
+      });
+    })();
+
+    (function(){
+      const ids = ["AoAnn","Sinus","STJ","TArch","Isthm","DistAo","PVAnn","MPA","RPA","LPA"];
+      ids.forEach(id=>{
+        const mm = parseFloat(document.getElementById(id).value);
+        const cellTxt = document.getElementById(id + "_z").textContent;
+        const z = parseFloat(cellTxt.replace(",", "."));
+        if(!isNaN(mm) && !isNaN(z)){
+          const txt = formatVal(id, mm, z, "³");
+          if(txt) parts.push(txt);
+        }
+      });
+    })();
+
+    (function(){
+      const ids = ["LMCA","LAD","Cx","RCAprox","RCAmed","RCAdist"];
+      ids.forEach(id=>{
+        const mm = parseFloat(document.getElementById("CA_"+id).value);
+        const cellTxt = document.getElementById("CA_"+id+"_z").textContent;
+        const z = parseFloat(cellTxt.replace(",", "."));
+        if(!isNaN(mm) && !isNaN(z)){
+          const txt = formatVal(id, mm, z, "⁴");
+          if(txt) parts.push(txt);
+        }
+      });
+    })();
+
+    const line = parts.join("; ");
+
+    let sources = "";
+    if(parts.length){
+      sources =
+        "\n\n1) Kampmann et al. 2000; " +
+        "2) Cantinotti et al. 2014; " +
+        "3) Pettersen et al. 2008; " +
+        "4) Dallaire & Dahdah 2011";
+    }
+
+    const notesBox = document.getElementById('echo_notes_box');
+    notesBox.innerHTML = buildEchoDescription(bsa, sex);
+
+    // ─ paski z-score M-mode ─
+    if (bsa) {
+      mmVars.forEach(id => {
+        const m = parseFloat(document.getElementById(id).value);
+        const z = bsa ? (isNaN(m) ? NaN : (m - mmPred(id,bsa)) / (mmPred(id,bsa)*mmSD[id])) : NaN;
+        updateZbar(id, isNaN(z)?null:z, zv => {
+          const pred = mmPred(id, bsa);
+          return pred * (1 + zv * mmSD[id]);
+        });
+      });
+      // zastawki Cantinotti
+      ['mv','tv','av','pv'].forEach(id => {
+        const m = parseFloat(document.getElementById(id+'_val').value);
+        const [a,b,sd] = vf[id][sex];
+        const z = (!isNaN(m)&&m>0) ? (Math.log(m/10)-(a+b*Math.log(bsa)))/sd : NaN;
+        updateZbar(id, isNaN(z)?null:z, zv => {
+          return 10 * Math.exp(a + b*Math.log(bsa) + zv*sd);
+        });
+      });
+    } else {
+      mmVars.forEach(id => updateZbar(id, null, ()=>null));
+      ['mv','tv','av','pv'].forEach(id => updateZbar(id, null, ()=>null));
+    }
+  }
+
+  function parseAgeToYears(str){
+    if(!str) return NaN;
+    str = String(str).trim().replace(",", ".");
+    if(str.includes("/")){
+      const parts = str.split("/");
+      if(parts.length !== 2) return NaN;
+      const num = parseFloat(parts[0]);
+      const den = parseFloat(parts[1]);
+      if(!isNaN(num) && !isNaN(den) && den !== 0){
+        return num / den;
+      }
+      return NaN;
+    }
+    const age = parseFloat(str);
+    return isNaN(age) ? NaN : age;
+  }
+
+  function flemingMean(age, sex){
+    const x = age;
+    if(sex === 'M'){
+      const p5  = 51.69 + 63.74 * Math.exp(-0.18*x);
+      const p50 = 70.83 + 63.89 * Math.exp(-0.18*x);
+      const p95 = 89.98 + 64.04 * Math.exp(-0.18*x);
+      return [p5,p50,p95];
+    } else {
+      const p5  = 54.78 + 60.12 * Math.exp(-0.16*x);
+      const p50 = 75.03 + 60.35 * Math.exp(-0.16*x);
+      const p95 = 95.28 + 60.57 * Math.exp(-0.16*x);
+      return [p5,p50,p95];
+    }
+  }
+
+  function flemingMin(age, sex){
+    const x = age;
+    if(sex === 'M'){
+      const p5  = 33.36 + 46.43 * Math.exp(-0.14*x);
+      const p50 = 44.97 + 45.48 * Math.exp(-0.14*x);
+      const p95 = 56.59 + 44.52 * Math.exp(-0.14*x);
+      return [p5,p50,p95];
+    } else {
+      const p5  = 37.76 + 44.64 * Math.exp(-0.12*x);
+      const p50 = 50.21 + 43.74 * Math.exp(-0.12*x);
+      const p95 = 62.66 + 42.84 * Math.exp(-0.12*x);
+      return [p5,p50,p95];
+    }
+  }
+
+  function flemingMax(age, sex){
+    const x = age;
+    if(sex === 'M'){
+      const p5  = 111.41 + 69.21 * Math.exp(-0.06*x);
+      const p50 = 139.12 + 62.77 * Math.exp(-0.06*x);
+      const p95 = 166.83 + 56.32 * Math.exp(-0.06*x);
+      return [p5,p50,p95];
+    } else {
+      const p5  = 115.11 + 73.84 * Math.exp(-0.05*x);
+      const p50 = 143.07 + 67.88 * Math.exp(-0.05*x);
+      const p95 = 171.02 + 61.93 * Math.exp(-0.05*x);
+      return [p5,p50,p95];
+    }
+  }
+
+  function valueToPercent(val, p5, p50, p95){
+    if(isNaN(val)) return null;
+    const sd = (p95 - p5) / (2*1.645);
+    if(sd <= 0) return null;
+    const z = (val - p50) / sd;
+    const pct = normalCDF(z) * 100;
+    return pct;
+  }
+
+  function setQTcResult(elId, flagId, val) {
+    const el   = document.getElementById(elId);
+    const flag = document.getElementById(flagId);
+    if (val === null) {
+      el.textContent = '—'; el.style.color = '#a0aec0'; flag.textContent = ''; return;
+    }
+    el.textContent = val.toFixed(0);
+    if (val > 480) {
+      el.style.color = '#c53030'; flag.textContent = '⚠ wydłużone'; flag.style.color = '#c53030';
+    } else if (val > 450) {
+      el.style.color = '#b7791f'; flag.textContent = '⚠ graniczne'; flag.style.color = '#b7791f';
+    } else {
+      el.style.color = '#276749'; flag.textContent = ''; flag.style.color = '';
+    }
+  }
+
+  function setDisabled(id, disabled) {
+    const cb = document.getElementById(id);
+    if (!cb) return;
+    cb.disabled = disabled;
+    const lbl = cb.closest('label');
+    if (lbl) lbl.style.opacity = disabled ? '0.35' : '1';
+    if (disabled) cb.checked = false;
+  }
+
+  function recalcSchwartz() {
+    const stress    = document.getElementById('sw_syncope_stress');
+    const noStress  = document.getElementById('sw_syncope_nostress');
+    const famLqts   = document.getElementById('sw_family_lqts');
+    const famDeath  = document.getElementById('sw_family_death');
+    const tdp       = document.getElementById('sw_tdp');
+
+    // † omdlenie: wzajemnie wykluczające
+    setDisabled('sw_syncope_nostress', stress.checked);
+    setDisabled('sw_syncope_stress',   noStress.checked);
+
+    // ‡ rodzina: wzajemnie wykluczające
+    setDisabled('sw_family_death', famLqts.checked);
+    setDisabled('sw_family_lqts',  famDeath.checked);
+
+    // § TdP: zablokuj oba omdlenia
+    setDisabled('sw_syncope_stress',   tdp.checked || noStress.checked);
+    setDisabled('sw_syncope_nostress', tdp.checked || stress.checked);
+
+    // Liczenie punktów
+    let total = 0;
+    document.querySelectorAll('.schwartz-cb').forEach(cb => {
+      if (cb.checked && !cb.disabled) total += parseFloat(cb.dataset.pts);
+    });
+
+    const totalStr = total % 1 === 0 ? total : total.toFixed(1);
+    document.getElementById('schwartz_total').textContent = totalStr;
+
+    const interpEl = document.getElementById('schwartz_interp');
+    let interpText, interpWord;
+    if (total <= 1) {
+      interpText = 'niskie prawdopodobieństwo'; interpWord = 'niskie';
+      interpEl.style.background = '#c6f6d5'; interpEl.style.color = '#276749';
+    } else if (total <= 3) {
+      interpText = 'pośrednie prawdopodobieństwo'; interpWord = 'pośrednie';
+      interpEl.style.background = '#fefcbf'; interpEl.style.color = '#744210';
+    } else {
+      interpText = 'wysokie prawdopodobieństwo'; interpWord = 'wysokie';
+      interpEl.style.background = '#fed7d7'; interpEl.style.color = '#c53030';
+    }
+    interpEl.textContent = interpText;
+
+    // Zdanie kliniczne
+    const summaryEl = document.getElementById('schwartz_summary');
+    if (total > 0) {
+      // zbierz zaznaczone kryteria
+      const labels = [];
+      document.querySelectorAll('.schwartz-cb').forEach(cb => {
+        if (cb.checked && !cb.disabled) {
+          const lbl = cb.closest('label');
+          if (lbl) {
+            // pobierz tekst bez symboli †‡§
+            let txt = lbl.querySelector('span > span') ? lbl.querySelector('span').textContent : lbl.textContent;
+            txt = txt.replace(cb.closest('label').querySelector('span:last-child')?.textContent || '', '')
+                     .replace(/[†‡§]/g, '').replace(/\s+/g, ' ').trim();
+            // usuń liczbę punktów z końca (np. "2" albo "0.5")
+            txt = txt.replace(/\s*\d+(\.\d+)?\s*$/, '').trim();
+            if (txt) labels.push(txt.toLowerCase());
+          }
+        }
+      });
+      const criteriaStr = labels.length ? labels.join('; ') : '—';
+      summaryEl.innerHTML = 'Pacjent uzyskał <b>' + totalStr + ' pkt</b> w skali Schwartza'
+        + ' (' + criteriaStr + '),'
+        + ' co określa prawdopodobieństwo występowania zespołu wydłużonego QT jako <b>' + interpWord + '</b>.';
+      summaryEl.style.display = 'block';
+    } else {
+      summaryEl.style.display = 'none';
+    }
+  }
+
+  function resetSchwartz() {
+    document.querySelectorAll('.schwartz-cb').forEach(cb => {
+      cb.checked = false;
+      cb.disabled = false;
+      const lbl = cb.closest('label');
+      if (lbl) lbl.style.opacity = '1';
+    });
+    document.getElementById('schwartz_total').textContent = '0';
+    const interpEl = document.getElementById('schwartz_interp');
+    interpEl.textContent = 'niskie prawdopodobieństwo';
+    interpEl.style.background = '#e2e8f0'; interpEl.style.color = '#2d3748';
+    document.getElementById('schwartz_summary').style.display = 'none';
+  }
+
+  function recalcQTc(){
+    const rr = parseFloat(document.getElementById('qtc_rr').value);
+    const qt = parseFloat(document.getElementById('qtc_qt').value);
+    if (!isNaN(rr) && rr > 0 && !isNaN(qt) && qt > 0) {
+      const rrS = rr / 1000; // RR w sekundach
+      setQTcResult('qtc_bazett',     'qtc_bazett_flag',     qt / Math.sqrt(rrS));
+      setQTcResult('qtc_fridericia', 'qtc_fridericia_flag', qt / Math.cbrt(rrS));
+      setQTcResult('qtc_framingham', 'qtc_framingham_flag', qt + 154 * (1 - rrS));
+      setQTcResult('qtc_hodges',     'qtc_hodges_flag',     qt + 1.75 * ((60 / rrS) - 60));
+    } else {
+      ['qtc_bazett','qtc_fridericia','qtc_framingham','qtc_hodges'].forEach(id => {
+        setQTcResult(id, id + '_flag', null);
+      });
+    }
+  }
+
+  function recalcHR(){
+    const sex = document.getElementById('hr_sex').value;
+    const age = parseAgeToYears(document.getElementById('hr_age').value);
+    const mean = parseFloat(document.getElementById('hr_mean').value);
+    const minv = parseFloat(document.getElementById('hr_min').value);
+    const maxv = parseFloat(document.getElementById('hr_max').value);
+
+    const header = document.getElementById('hr_header');
+    if(!isNaN(age)){
+      const sexTxt = sex === 'M' ? 'Chłopiec' : 'Dziewczynka';
+      const months = Math.round(age * 12);
+      let ageText = age.toFixed(2) + " lat";
+      if(months > 0 && age < 2){
+        ageText += " ≈ " + months + " mies.";
+      }
+      header.textContent = sexTxt + ", wiek " + ageText;
+    } else {
+      header.textContent = '—';
+    }
+
+    if(isNaN(age)){
+      ['hr_mean_val','hr_mean_pct','hr_mean_norm',
+       'hr_min_val','hr_min_pct','hr_min_norm',
+       'hr_max_val','hr_max_pct','hr_max_norm'].forEach(id=>{
+        document.getElementById(id).textContent = '—';
+      });
+      return;
+    }
+
+    const [m5,m50,m95] = flemingMean(age, sex);
+    const [n5,n50,n95] = flemingMin(age, sex);
+    const [x5,x50,x95] = flemingMax(age, sex);
+
+    function setHRCell(valId, pctId, normId, val, p5, p50, p95) {
+      document.getElementById(valId).textContent  = isNaN(val) ? '—' : val.toFixed(0);
+      document.getElementById(normId).textContent = p5.toFixed(0) + '–' + p95.toFixed(0);
+      const pct = valueToPercent(val, p5, p50, p95);
+      const pctEl = document.getElementById(pctId);
+      pctEl.textContent = pct === null ? '—' : pct.toFixed(0);
+      if (pct !== null) {
+        if (pct < 5 || pct > 95)  { pctEl.className = 'result-cell error'; }
+        else if (pct < 10 || pct > 90) { pctEl.className = 'result-cell warning'; }
+        else { pctEl.className = 'result-cell normal'; }
+      } else { pctEl.className = 'result-cell'; }
+    }
+
+    setHRCell('hr_mean_val','hr_mean_pct','hr_mean_norm', mean, m5, m50, m95);
+    setHRCell('hr_min_val', 'hr_min_pct', 'hr_min_norm',  minv, n5, n50, n95);
+    setHRCell('hr_max_val', 'hr_max_pct', 'hr_max_norm',  maxv, x5, x50, x95);
+  }
+
+  // inicjalizacja szablonu przy starcie
+  window.addEventListener('DOMContentLoaded', function(){
+    const notesBox = document.getElementById('echo_notes_box');
+    notesBox.innerHTML = buildEchoDescription(null, 'girl');
+  });
+
+  function switchTab(name){
+    document.querySelectorAll('.tab-button').forEach(btn=>{
+      btn.classList.toggle('active', btn.textContent.trim().toLowerCase() === name.toLowerCase());
+    });
+    document.querySelectorAll('.tab-panel').forEach(panel=>{
+      panel.classList.toggle('active-tab', panel.id === 'tab-' + name);
+    });
+  }
+  // Rejestracja Service Worker (PWA)
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch(() => {});
+    });
+  }
+</script>
+</body>
+</html>
