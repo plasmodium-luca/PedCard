@@ -543,17 +543,21 @@
         </div>
       </div>
 
-      <!-- BOX 3: Aorta (Pettersen) -->
+      <!-- BOX 3: Aorta (Gautier + Pettersen) -->
       <div class="calc-card">
         <h2>Aorta</h2>
-        <div class="reference">Pettersen et al. 2008</div>
+        <div class="reference">Gautier et al. 2010; Pettersen et al. 2008</div>
         <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
-        <div class="tbl-row mm-cols"><div class="var-name">AoAnn</div><div class="input-wrap"><input type="number" id="AoAnn" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="AoAnn_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">Sinus</div><div class="input-wrap"><input type="number" id="Sinus" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Sinus_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">AV</div><div class="input-wrap"><input type="number" id="AoAnn" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="AoAnn_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">SoV</div><div class="input-wrap"><input type="number" id="Sinus" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Sinus_z">—</div></div>
         <div class="tbl-row mm-cols"><div class="var-name">STJ</div><div class="input-wrap"><input type="number" id="STJ" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="STJ_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">TArch</div><div class="input-wrap"><input type="number" id="TArch" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="TArch_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">Isthm</div><div class="input-wrap"><input type="number" id="Isthm" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Isthm_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">DistAo</div><div class="input-wrap"><input type="number" id="DistAo" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="DistAo_z">—</div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">AoAsc</div><div class="input-wrap"><input type="number" id="AoAsc" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="AoAsc_z">—</div></div>
+        <!-- separator -->
+        <div style="border-top:1px solid #fed7d7;margin-top:0.4rem;padding-top:0.3rem;">
+          <div class="tbl-row mm-cols"><div class="var-name">TArch</div><div class="input-wrap"><input type="number" id="TArch" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="TArch_z">—</div></div>
+          <div class="tbl-row mm-cols"><div class="var-name">Isthm</div><div class="input-wrap"><input type="number" id="Isthm" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Isthm_z">—</div></div>
+          <div class="tbl-row mm-cols"><div class="var-name">DistAo</div><div class="input-wrap"><input type="number" id="DistAo" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="DistAo_z">—</div></div>
+        </div>
       </div>
 
       <!-- BOX 4: Pulmonary (Pettersen) -->
@@ -645,6 +649,9 @@
         <button id="btn_tvi" onclick="toggleVariant('tvi')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">TVI</button>
         <button id="btn_pfo" onclick="toggleVariant('pfo')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">PFO</button>
         <button id="btn_mvi" onclick="toggleVariant('mvi')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">MVI</button>
+        <button id="btn_coro" onclick="toggleVariant('coro')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">coro</button>
+        <button id="btn_ivc" onclick="toggleVariant('ivc')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">IVC</button>
+        <button id="btn_struna" onclick="toggleVariant('struna')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">struna</button>
       </div>
       <div id="echo_notes_box" contenteditable="true"
         style="width:100%;border:1.5px solid #feb2b2;border-radius:8px;
@@ -900,6 +907,15 @@
         </p>
 
         <p>
+          Gautier M, Detaint D, Fermanian C, et al.
+          Nomograms for aortic root diameters in children using two-dimensional echocardiography.
+          Am J Cardiol. 2010;105(6):888–894.<br/>
+          <a href="https://doi.org/10.1016/j.amjcard.2009.11.040" target="_blank" rel="noopener noreferrer">
+            https://doi.org/10.1016/j.amjcard.2009.11.040
+          </a>
+        </p>
+
+        <p>
           Pettersen MD, Du W, Skeens ME, Humes RA.
           Regression equations for calculation of z scores of cardiac structures in a large cohort of healthy infants, children, and adolescents: an echocardiographic study.
           J Am Soc Echocardiogr. 2008;21(8):922–934.[file:136]<br/>
@@ -1027,6 +1043,21 @@
     pv:{girl:[0.597,0.476,0.144],boy:[0.618,0.498,0.152]},
   };
 
+  // Gautier 2010 — Z = [ln(d) - A - B*ln(BSA)] / C
+  // Format: {boy:[A,B,C], girl:[A,B,C]}
+  const gautierCoeff = {
+    AoAnn: { boy:[2.78,0.47,0.10], girl:[2.75,0.44,0.10] },
+    Sinus: { boy:[3.10,0.49,0.10], girl:[3.10,0.44,0.09] },
+    STJ:   { boy:[2.90,0.47,0.10], girl:[2.90,0.42,0.09] },
+    AoAsc: { boy:[2.90,0.46,0.11], girl:[2.90,0.46,0.10] },
+  };
+  function gautierZ(id, mm, bsa, sex) {
+    const c = gautierCoeff[id];
+    if (!c) return NaN;
+    const [A, B, C] = sex === 'boy' ? c.boy : c.girl;
+    return (Math.log(mm) - A - B * Math.log(bsa)) / C;
+  }
+
   const pettersen = {
     AoAnn:[-0.874, 2.708, -1.841, 0.452, 0.010],
     Sinus:[-0.500, 2.537, -1.707, 0.420, 0.012],
@@ -1073,7 +1104,7 @@
 
   // ── Szablon opisu Echo ──────────────────────────────────────────────
   // warianty modyfikujące linie szablonu
-  const VARIANTS = { tvi: false, pfo: false, mvi: false };
+  const VARIANTS = { tvi: false, pfo: false, mvi: false, coro: false, ivc: false, struna: false };
 
   function toggleVariant(name) {
     VARIANTS[name] = !VARIANTS[name];
@@ -1088,7 +1119,10 @@
 
   const ECHO_TEMPLATE_LINES = [
     { type: 'text',    text: 'Płyn w worku osierdziowym w ilości fizjologicznej.' },
-    { type: 'text',    text: 'Situs solitus. Spływ żył systemowych do RA, spływ żył płucnych do LA. Zgodne połączenia przedsionkowo-komorowe, komorowo-tętnicze.' },
+    { type: 'text_variant', key: 'ivc',
+      text_default: 'Situs solitus. Spływ żył systemowych do RA, spływ żył płucnych do LA. Zgodne połączenia przedsionkowo-komorowe, komorowo-tętnicze.',
+      text_ivc:     'Situs solitus. Spływ żył systemowych do RA, IVC nieposzerzona podatna oddechowo, spływ żył płucnych do LA. Zgodne połączenia przedsionkowo-komorowe, komorowo-tętnicze.'
+    },
     { type: 'text',    text: 'RA i LA niepowiększone.' },
     { type: 'text_variant', key: 'pfo',
       text_default: 'IAS ciągła',
@@ -1104,12 +1138,19 @@
       after_default: ' prawidłowa budowa i funkcja',
       after_tvi:     ' prawidłowa budowa, czynnościowa niedomykalność z PGmax  mmHg'
     },
-    { type: 'text',    text: 'Wymiary komór prawidłowe. Funkcja skurczowa komór prawidłowa.' },
+    { type: 'text_variant', key: 'struna',
+      text_default: 'Wymiary komór prawidłowe. Funkcja skurczowa komór prawidłowa.',
+      text_struna:  'Wymiary komór prawidłowe. W świetle LV struna rzekoma. Funkcja skurczowa komór prawidłowa.'
+    },
     { type: 'valve',   before: 'Zastawka AV ', valveId: 'av', ref: '²', after: ' - prawidłowa, trójpłatkowa, przepływ aortalny Vmax=  m/s' },
     { type: 'aorta_line' },
-    { type: 'text',    text: 'Ujścia tętnic wieńcowych prawidłowe.' },
+    { type: 'text_variant', key: 'coro',
+      text_default: 'Ujścia tętnic wieńcowych prawidłowe.',
+      text_coro:    'Ujścia tętnic wieńcowych prawidłowe — w widocznym przebiegu nieposzerzone'
+    },
     { type: 'coronary' },
     { type: 'valve',   before: 'Zastawka PV ', valveId: 'pv', ref: '²', after: ' prawidłowa budowa i funkcja, przepływ płucny Vmax=\u2002\u2002m/s' },
+    { type: 'pa_line' },
     { type: 'text',    text: 'Łuk aorty prawidłowy lewostronny. Przepływ w ao-abd. pulsacyjny.' },
   ];
 
@@ -1134,20 +1175,32 @@
         const txt = VARIANTS[item.key] ? item['text_' + item.key] : item.text_default;
         htmlLines.push(txt);
       } else if (item.type === 'aorta_line') {
-        // Sinus, STJ, TArch, Isthm z boxa Aorta (Pettersen) — tylko jeśli wpisane
-        const aortaIds = [
-          {id:'Sinus',  label:'Sinus'},
+        // AV, SoV, STJ, AoAsc (Gautier ³) + TArch, Isthm (Pettersen ⁴) — tylko jeśli wpisane
+        const gautierAortaIds = [
+          {id:'AoAnn',  label:'AV'},
+          {id:'Sinus',  label:'SoV'},
           {id:'STJ',    label:'STJ'},
+          {id:'AoAsc',  label:'AoAsc'},
+        ];
+        const pettersenAortaIds = [
           {id:'TArch',  label:'TArch'},
           {id:'Isthm',  label:'Isthm'},
         ];
         const aortaParts = [];
-        aortaIds.forEach(a => {
+        gautierAortaIds.forEach(a => {
           const mm = parseFloat(document.getElementById(a.id).value);
           const zTxt = document.getElementById(a.id + '_z').textContent;
           const z = parseFloat(zTxt.replace(',', '.'));
           if (!isNaN(mm) && !isNaN(z)) {
             aortaParts.push('<b>' + a.label + '</b> <i>' + mm.toFixed(1) + ' mm (' + z.toFixed(2) + 'z)³</i>');
+          }
+        });
+        pettersenAortaIds.forEach(a => {
+          const mm = parseFloat(document.getElementById(a.id).value);
+          const zTxt = document.getElementById(a.id + '_z').textContent;
+          const z = parseFloat(zTxt.replace(',', '.'));
+          if (!isNaN(mm) && !isNaN(z)) {
+            aortaParts.push('<b>' + a.label + '</b> <i>' + mm.toFixed(1) + ' mm (' + z.toFixed(2) + 'z)⁴</i>');
           }
         });
         if (aortaParts.length) htmlLines.push(aortaParts.join('; ') + ';');
@@ -1168,6 +1221,23 @@
           }
         });
         if (_caParts.length) htmlLines.push(_caParts.join('; ') + ';');
+      } else if (item.type === 'pa_line') {
+        // MPA, RPA, LPA z boxa Tętnica płucna (Pettersen) — tylko jeśli wpisane
+        const paIds = [
+          {id:'MPA', label:'MPA'},
+          {id:'RPA', label:'RPA'},
+          {id:'LPA', label:'LPA'},
+        ];
+        const paParts = [];
+        paIds.forEach(a => {
+          const mm = parseFloat(document.getElementById(a.id).value);
+          const zTxt = document.getElementById(a.id + '_z').textContent;
+          const z = parseFloat(zTxt.replace(',', '.'));
+          if (!isNaN(mm) && !isNaN(z)) {
+            paParts.push('<b>' + a.label + '</b> <i>' + mm.toFixed(1) + ' mm (' + z.toFixed(2) + 'z)⁴</i>');
+          }
+        });
+        if (paParts.length) htmlLines.push(paParts.join('; ') + ';');
       } else if (item.type === 'valve' || item.type === 'valve_variant') {
         const mm = parseFloat(document.getElementById(item.valveId + '_val').value);
         const zTxt = document.getElementById(item.valveId + '_z').textContent;
@@ -1215,10 +1285,10 @@
         const _esv = (7 * Math.pow(_lvesd/10, 3)) / (2.4 + _lvesd/10);
         const _ef = ((_edv - _esv) / _edv * 100).toFixed(1);
         mmParts.push('<b>FS</b> <i>' + _fs + '%</i>');
-        mmParts.push('<b>EF</b> <i>' + _ef + '%</i>');
+        mmParts.push('<b>EF (Teich.)</b> <i>' + _ef + '%</i>');
       }
       htmlLines.push('');
-      htmlLines.push(mmParts.join('; ') + ';');
+      htmlLines.push('M-Mode: ' + mmParts.join('; ') + ';');
     }
 
     // źródła
@@ -1228,7 +1298,11 @@
       const mm = parseFloat(document.getElementById(id + '_val').value);
       return !isNaN(mm) && mm > 0;
     });
-    const hasPettersen = ['AoAnn','Sinus','STJ','TArch','Isthm','DistAo','PVAnn','MPA','RPA','LPA'].some(id => {
+    const hasGautier = ['AoAnn','Sinus','STJ','AoAsc'].some(id => {
+      const mm = parseFloat(document.getElementById(id).value);
+      return !isNaN(mm) && mm > 0;
+    });
+    const hasPettersen = ['TArch','Isthm','DistAo','PVAnn','MPA','RPA','LPA'].some(id => {
       const mm = parseFloat(document.getElementById(id).value);
       return !isNaN(mm) && mm > 0;
     });
@@ -1238,8 +1312,9 @@
     });
     if (hasMMMode)    usedRefs.push('1) Kampmann et al. 2000');
     if (hasValve)     usedRefs.push('2) Cantinotti et al. 2014');
-    if (hasPettersen) usedRefs.push('3) Pettersen et al. 2008');
-    if (hasDallaire)  usedRefs.push('4) Dallaire & Dahdah 2011');
+    if (hasGautier)   usedRefs.push('3) Gautier et al. 2010');
+    if (hasPettersen) usedRefs.push('4) Pettersen et al. 2008');
+    if (hasDallaire)  usedRefs.push('5) Dallaire & Dahdah 2011');
     if (usedRefs.length) {
       htmlLines.push('');
       htmlLines.push(usedRefs.join('; ') + ';');
@@ -1495,7 +1570,18 @@
     });
 
     if(bsa){
-      ["AoAnn","Sinus","STJ","TArch","Isthm","DistAo","PVAnn","MPA","RPA","LPA"].forEach(id=>{
+      // Gautier 2010: AoAnn, Sinus, STJ, AoAsc
+      [{id:"AoAnn",gKey:"AoAnn"},{id:"Sinus",gKey:"Sinus"},{id:"STJ",gKey:"STJ"},{id:"AoAsc",gKey:"AoAsc"}].forEach(({id,gKey})=>{
+        const m = parseFloat(document.getElementById(id).value);
+        if(!isNaN(m) && m>0){
+          const z = gautierZ(gKey, m, bsa, sex);
+          setCell(id+"_z", isNaN(z)?"—":z.toFixed(2), isNaN(z)?"":cls(z));
+        } else {
+          setCell(id+"_z", "—", "");
+        }
+      });
+      // Pettersen 2008: TArch, Isthm, DistAo + tętnica płucna
+      ["TArch","Isthm","DistAo","PVAnn","MPA","RPA","LPA"].forEach(id=>{
         const m = parseFloat(document.getElementById(id).value);
         if(!isNaN(m) && m>0){
           const z = pettersenZ(id, m, bsa);
@@ -1505,7 +1591,7 @@
         }
       });
     } else {
-      ["AoAnn","Sinus","STJ","TArch","Isthm","DistAo","PVAnn","MPA","RPA","LPA"].forEach(id=> setCell(id+"_z","—",""));
+      ["AoAnn","Sinus","STJ","AoAsc","TArch","Isthm","DistAo","PVAnn","MPA","RPA","LPA"].forEach(id=> setCell(id+"_z","—",""));
     }
 
     const caSegs = [
@@ -1594,8 +1680,9 @@
       sources =
         "\n\n1) Kampmann et al. 2000; " +
         "2) Cantinotti et al. 2014; " +
-        "3) Pettersen et al. 2008; " +
-        "4) Dallaire & Dahdah 2011";
+        "3) Gautier et al. 2010; " +
+        "4) Pettersen et al. 2008; " +
+        "5) Dallaire & Dahdah 2011";
     }
 
     const notesBox = document.getElementById('echo_notes_box');
@@ -2256,66 +2343,5 @@
     });
   }
 </script>
-<script data-pplx-inline-edit>
-(function(){
-  if(window===window.top)return;
-  function inlineAll(orig,clone){
-    if(orig.nodeType!==1)return;
-    try{
-      var cs=getComputedStyle(orig);
-      var t='';
-      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
-      clone.style.cssText=t;
-    }catch(e){}
-    var oc=orig.children,cc=clone.children;
-    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
-  }
-  function stripExternal(clone){
-    var imgs=clone.querySelectorAll('img');
-    for(var i=0;i<imgs.length;i++){
-      var s=imgs[i].getAttribute('src');
-      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
-    }
-    var all=clone.querySelectorAll('*');
-    for(var i=0;i<all.length;i++){
-      var st=all[i].style.cssText;
-      if(st&&st.indexOf('url(')>=0){
-        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
-      }
-    }
-  }
-  window.addEventListener('message',function(e){
-    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
-    var scrollX=window.scrollX||window.pageXOffset||0;
-    var scrollY=window.scrollY||window.pageYOffset||0;
-    var w=window.innerWidth,h=window.innerHeight;
-    try{
-      var clone=document.documentElement.cloneNode(true);
-      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
-      for(var i=0;i<rm.length;i++){rm[i].remove();}
-      inlineAll(document.documentElement,clone);
-      stripExternal(clone);
-      var html=new XMLSerializer().serializeToString(clone);
-      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
-        +'<foreignObject width="100%" height="100%">'
-        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
-        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
-        +html+'</div></div></foreignObject></svg>';
-      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
-      var img=new Image();
-      img.onload=function(){
-        var c=document.createElement('canvas');c.width=w;c.height=h;
-        c.getContext('2d').drawImage(img,0,0);
-        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
-      };
-      img.onerror=function(){
-        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
-      };
-      img.src=svgUrl;
-    }catch(err){
-      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
-    }
-  });
-})();
-</script></body>
+</body>
 </html>
