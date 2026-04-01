@@ -116,6 +116,12 @@
       grid-template-columns:repeat(4,1fr);
       gap:1.2rem;
     }
+    .ekg-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:1.2rem;
+      align-items:start;
+    }
 
     .calc-card{
       background:#fff;
@@ -252,6 +258,10 @@
         grid-template-columns:1fr 1fr;
         gap:0.9rem;
       }
+      .ekg-grid{
+        grid-template-columns:1fr 1fr;
+        gap:0.9rem;
+      }
       .tab-button{
         padding:0.5rem 1.2rem;
         font-size:0.9rem;
@@ -271,6 +281,9 @@
         padding:0 0.5rem;
       }
       .boxes-row{
+        grid-template-columns:1fr;
+      }
+      .ekg-grid{
         grid-template-columns:1fr;
       }
       .calc-card{
@@ -652,6 +665,8 @@
         <button id="btn_coro" onclick="toggleVariant('coro')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">coro</button>
         <button id="btn_ivc" onclick="toggleVariant('ivc')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">IVC</button>
         <button id="btn_struna" onclick="toggleVariant('struna')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">struna</button>
+        <button id="btn_niepokoj" onclick="toggleVariant('niepokoj')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">niepokój</button>
+        <button id="btn_kolana" onclick="toggleVariant('kolana')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">kolana</button>
       </div>
       <div id="echo_notes_box" contenteditable="true"
         style="width:100%;border:1.5px solid #feb2b2;border-radius:8px;
@@ -684,7 +699,7 @@
       <div style="font-size:0.68rem;color:#a0aec0;align-self:center;">BSA: Haycock | współczynniki niezależne od płci</div>
     </div>
 
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;">
+    <div class="boxes-row">
 
       <!-- BOX 1: Lewa komora -->
       <div class="calc-card">
@@ -775,7 +790,7 @@
   <div id="tab-ekg" class="tab-panel">
 
     <!-- układ: lewa kolumna = QTc + Holter, prawa = Schwartz -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;align-items:start;">
+    <div class="ekg-grid">
 
       <!-- LEWA KOLUMNA -->
       <div style="display:flex;flex-direction:column;gap:1.2rem;">
@@ -846,6 +861,69 @@
             <div class="result-cell" id="hr_max_val">—</div>
             <div class="result-cell" id="hr_max_pct">—</div>
             <div class="result-cell" id="hr_max_norm" style="font-size:0.75rem;">—</div>
+          </div>
+        </div>
+
+        <!-- BOX Spoczynkowe EKG -->
+        <div class="calc-card">
+          <h2>Spoczynkowe EKG</h2>
+          <div class="reference">Bratincsák A, et al. Circ Arrhythm Electrophysiol. 2020;13:e008253</div>
+          <!-- wiek i płeć -->
+          <div style="display:flex;gap:1rem;margin-bottom:0.8rem;flex-wrap:wrap;align-items:flex-end;margin-top:0.5rem;">
+            <div class="field">
+              <label>Płeć</label>
+              <select id="rekg_sex" onchange="recalcREKG()" style="width:120px;">
+                <option value="M">Chłopiec</option>
+                <option value="F">Dziewczynka</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Wiek (lata)</label>
+              <input type="text" id="rekg_age" placeholder="np. 10 lub 7/12" oninput="recalcREKG()" style="width:130px;"/>
+            </div>
+          </div>
+          <div id="rekg_group_label" style="font-size:0.75rem;font-weight:700;margin-bottom:0.5rem;color:#2d3748;">—</div>
+          <!-- tabela parametrów -->
+          <div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0.3rem;align-items:center;padding:0.2rem 0;border-bottom:2px solid #fed7d7;margin-bottom:0.1rem;">
+            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;">Parametr</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">Wartość</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">Z-score [norma Z±2.5]</span>
+          </div>
+          <!-- HR -->
+          <div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0.3rem;align-items:center;padding:0.25rem 0;border-bottom:1px solid #fff5f5;">
+            <div class="var-name" style="font-size:0.82rem;">HR (1/min)</div>
+            <div class="input-wrap"><input type="number" id="rekg_hr" step="1" min="20" max="300" placeholder="—" oninput="recalcREKG()" style="width:80px;"/></div>
+            <div class="result-cell" id="rekg_hr_z">—</div>
+          </div>
+          <!-- QTc Bazett -->
+          <div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0.3rem;align-items:center;padding:0.25rem 0;border-bottom:1px solid #fff5f5;">
+            <div class="var-name" style="font-size:0.82rem;">QTc Bazett (ms)</div>
+            <div class="input-wrap"><input type="number" id="rekg_qtc" step="1" min="200" max="700" placeholder="—" oninput="recalcREKG()" style="width:80px;"/></div>
+            <div class="result-cell" id="rekg_qtc_z">—</div>
+          </div>
+          <!-- Oś QRS -->
+          <div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0.3rem;align-items:center;padding:0.25rem 0;border-bottom:1px solid #fff5f5;">
+            <div class="var-name" style="font-size:0.82rem;">Oś QRS (°)</div>
+            <div class="input-wrap"><input type="number" id="rekg_axis" step="1" min="-180" max="270" placeholder="—" oninput="recalcREKG()" style="width:80px;"/></div>
+            <div class="result-cell" id="rekg_axis_z">—</div>
+          </div>
+          <!-- PR -->
+          <div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0.3rem;align-items:center;padding:0.25rem 0;border-bottom:1px solid #fff5f5;">
+            <div class="var-name" style="font-size:0.82rem;">Odstęp PR (ms)</div>
+            <div class="input-wrap"><input type="number" id="rekg_pr" step="1" min="40" max="400" placeholder="—" oninput="recalcREKG()" style="width:80px;"/></div>
+            <div class="result-cell" id="rekg_pr_z">—</div>
+          </div>
+          <!-- R V6 -->
+          <div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0.3rem;align-items:center;padding:0.25rem 0;border-bottom:1px solid #fff5f5;">
+            <div class="var-name" style="font-size:0.82rem;">Załamek R V6 (mV)</div>
+            <div class="input-wrap"><input type="number" id="rekg_rv6" step="0.01" min="0" max="6" placeholder="—" oninput="recalcREKG()" style="width:80px;"/></div>
+            <div class="result-cell" id="rekg_rv6_z">—</div>
+          </div>
+          <!-- QRS duration -->
+          <div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0.3rem;align-items:center;padding:0.25rem 0;">
+            <div class="var-name" style="font-size:0.82rem;">Czas QRS (ms)</div>
+            <div class="input-wrap"><input type="number" id="rekg_qrs" step="1" min="20" max="200" placeholder="—" oninput="recalcREKG()" style="width:80px;"/></div>
+            <div class="result-cell" id="rekg_qrs_z">—</div>
           </div>
         </div>
 
@@ -958,6 +1036,15 @@
           J Am Soc Echocardiogr. 2008;21(2):93–98.<br/>
           <a href="https://doi.org/10.1016/j.echo.2007.06.010" target="_blank" rel="noopener noreferrer">
             https://doi.org/10.1016/j.echo.2007.06.010
+          </a>
+        </p>
+
+        <p>
+          Bratincskák A, Kimata C, Limm-Chan BN, Vincent KP, Williams MR, Perry JC.
+          Electrocardiogram Standards for Children and Young Adults Using Z-Scores.
+          Circ Arrhythm Electrophysiol. 2020;13(8):e008253.<br/>
+          <a href="https://doi.org/10.1161/CIRCEP.119.008253" target="_blank" rel="noopener noreferrer">
+            https://doi.org/10.1161/CIRCEP.119.008253
           </a>
         </p>
 
@@ -1104,7 +1191,7 @@
 
   // ── Szablon opisu Echo ──────────────────────────────────────────────
   // warianty modyfikujące linie szablonu
-  const VARIANTS = { tvi: false, pfo: false, mvi: false, coro: false, ivc: false, struna: false };
+  const VARIANTS = { tvi: false, pfo: false, mvi: false, coro: false, ivc: false, struna: false, niepokoj: false, kolana: false };
 
   function toggleVariant(name) {
     VARIANTS[name] = !VARIANTS[name];
@@ -1118,6 +1205,14 @@
   }
 
   const ECHO_TEMPLATE_LINES = [
+    { type: 'text_variant', key: 'niepokoj',
+      text_default: '',
+      text_niepokoj: 'Badanie na kolanach u matki w niepokoju.'
+    },
+    { type: 'text_variant', key: 'kolana',
+      text_default: '',
+      text_kolana: 'Badanie na kolanach u matki.'
+    },
     { type: 'text',    text: 'Płyn w worku osierdziowym w ilości fizjologicznej.' },
     { type: 'text_variant', key: 'ivc',
       text_default: 'Situs solitus. Spływ żył systemowych do RA, spływ żył płucnych do LA. Zgodne połączenia przedsionkowo-komorowe, komorowo-tętnicze.',
@@ -1173,7 +1268,7 @@
         htmlLines.push(item.text);
       } else if (item.type === 'text_variant') {
         const txt = VARIANTS[item.key] ? item['text_' + item.key] : item.text_default;
-        htmlLines.push(txt);
+        if (txt !== '') htmlLines.push(txt);
       } else if (item.type === 'aorta_line') {
         // AV, SoV, STJ, AoAsc (Gautier ³) + TArch, Isthm (Pettersen ⁴) — tylko jeśli wpisane
         const gautierAortaIds = [
@@ -2336,6 +2431,162 @@
       panel.classList.toggle('active-tab', panel.id === 'tab-' + name);
     });
   }
+  // ── Spoczynkowe EKG (Bratincskák 2020) ─────────────────────────────
+  // Dane: [wiekMin, wiekMax, sex, [HR_z-2.5,z0,z+2.5], [QTc], [PR], [QRS], [RV6_z-2.5,z0,z+2.5], [AXIS_z-2.5,z0,z+2.5]]
+  // wiek w latach (0 = noworodek), sex: 'M'/'F'
+  // Dla osi QRS brak tabel w artykule — używamy klasycznych norm pediatrycznych
+  const REKG_DATA = {
+    // format: sex -> [[wMin,wMax, hr_m25,hr_0,hr_p25, qtc_m25,qtc_0,qtc_p25, pr_m25,pr_0,pr_p25, qrs_m25,qrs_0,qrs_p25, rv6_m25,rv6_0,rv6_p25, ax_m25,ax_0,ax_p25]]
+    F: [
+      // [wMin,wMax,  HR_-2.5, HR_0, HR_+2.5,  QTc_-2.5,QTc_0,QTc_+2.5,  PR_-2.5,PR_0,PR_+2.5,  QRS_-2.5,QRS_0,QRS_+2.5,  RV6_-2.5,RV6_0,RV6_+2.5]
+      [0,    0.019,  63,  128, 193,   341, 437, 520,   58, 108, 158,   35, 56, 81,   0.00, 0.82, 2.12],  // 1-6d
+      [0.019,0.096,  94,  154, 215,   347, 423, 498,   61, 104, 150,   32, 60, 94,   0.00, 0.99, 2.59],  // 1-4wk
+      [0.096,0.25,   92,  150, 208,   366, 431, 496,   60, 103, 149,   29, 62, 95,   0.00, 1.27, 3.13],  // 5-12wk
+      [0.25, 0.5,    77,  139, 202,   363, 428, 493,   61, 108, 156,   34, 64, 97,   0.00, 1.56, 3.55],  // 3-5mo
+      [0.5,  1.0,    65,  126, 187,   360, 429, 499,   68, 112, 157,   36, 68, 107,  0.00, 1.55, 3.30],  // 6-11mo
+      [1.0,  2.0,    61,  121, 181,   359, 424, 489,   70, 114, 159,   36, 68, 101,  0.00, 1.60, 3.24],  // 12-23mo
+      [2.0,  4.0,    50,  110, 169,   362, 425, 487,   74, 119, 164,   42, 72, 103,  0.00, 1.49, 3.10],  // 2-3y
+      [4.0,  6.0,    44,   96, 148,   365, 424, 484,   77, 123, 169,   40, 77, 114,  0.00, 1.60, 3.26],  // 4-5y
+      [6.0,  8.0,    36,   87, 138,   363, 423, 484,   80, 124, 169,   45, 80, 115,  0.00, 1.65, 3.33],  // 6-7y
+      [8.0,  10.0,   31,   84, 136,   366, 424, 483,   85, 128, 171,   51, 83, 115,  0.00, 1.64, 3.38],  // 8-9y
+      [10.0, 12.0,   34,   82, 130,   367, 430, 492,   84, 133, 182,   52, 84, 116,  0.00, 1.50, 3.03],  // 10-11y
+      [12.0, 14.0,   27,   76, 126,   367, 427, 488,   91, 136, 182,   60, 85, 110,  0.09, 1.41, 2.74],  // 12-13y
+      [14.0, 16.0,   28,   74, 120,   365, 426, 487,   92, 138, 184,   60, 86, 112,  0.16, 1.32, 2.48],  // 14-15y
+      [16.0, 18.0,   25,   74, 122,   361, 425, 490,   93, 141, 189,   58, 86, 114,  0.13, 1.23, 2.34],  // 16-17y
+      [18.0, 22.0,   26,   79, 131,   366, 431, 496,   94, 143, 191,   59, 84, 110,  0.21, 1.20, 2.19],  // 18-21y
+      [22.0, 99,     29,   79, 131,   369, 440, 510,  100, 147, 193,   54, 88, 122,  0.00, 1.10, 2.21],  // 22-39y
+    ],
+    M: [
+      [0,    0.019,  59,  129, 199,   340, 434, 520,   60, 110, 159,   38, 59, 83,   0.00, 0.67, 1.67],
+      [0.019,0.096,  97,  152, 207,   353, 425, 496,   68, 104, 141,   32, 60, 87,   0.00, 0.89, 2.27],
+      [0.096,0.25,   99,  150, 201,   365, 430, 496,   67, 102, 138,   34, 64, 93,   0.00, 1.31, 3.01],
+      [0.25, 0.5,    78,  136, 194,   359, 430, 500,   60, 107, 154,   37, 69, 105,  0.00, 1.53, 3.41],
+      [0.5,  1.0,    65,  126, 188,   359, 429, 499,   70, 115, 159,   40, 70, 101,  0.00, 1.64, 3.52],
+      [1.0,  2.0,    56,  120, 184,   358, 425, 491,   71, 116, 160,   39, 71, 105,  0.00, 1.46, 3.19],
+      [2.0,  4.0,    46,  107, 168,   360, 426, 492,   75, 120, 165,   40, 78, 115,  0.00, 1.48, 3.13],
+      [4.0,  6.0,    38,   92, 146,   356, 425, 494,   80, 123, 166,   41, 83, 125,  0.00, 1.57, 3.27],
+      [6.0,  8.0,    40,   84, 128,   360, 423, 487,   83, 127, 170,   52, 85, 118,  0.00, 1.74, 3.55],
+      [8.0,  10.0,   32,   79, 127,   357, 423, 488,   81, 131, 180,   52, 87, 122,  0.00, 1.74, 3.48],
+      [10.0, 12.0,   29,   76, 122,   363, 424, 485,   85, 133, 181,   59, 89, 119,  0.14, 1.79, 3.43],
+      [12.0, 14.0,   26,   74, 123,   354, 420, 486,   87, 136, 184,   61, 92, 123,  0.04, 1.81, 3.58],
+      [14.0, 16.0,   24,   69, 115,   342, 411, 481,   90, 138, 186,   65, 95, 124,  0.05, 1.75, 3.45],
+      [16.0, 18.0,   26,   69, 113,   338, 409, 480,   91, 142, 194,   68, 96, 124,  0.07, 1.70, 3.33],
+      [18.0, 22.0,   15,   78, 136,   347, 421, 496,   97, 147, 196,   65, 97, 130,  0.00, 1.52, 3.08],
+      [22.0, 99,     22,   75, 126,   341, 430, 519,   97, 150, 200,   60, 101,142,  0.00, 1.28, 3.00],
+    ]
+  };
+
+  // Normy osi QRS (stopnie) wg wieku — klasyczne pediatryczne (zbliżone do Bratincskák)
+  // format: [wMin, wMax, ax_low, ax_median, ax_high]
+  const AXIS_NORMS = [
+    [0,    0.25,   60,  135, 195],  // noworodek
+    [0.25, 1.0,    30,   90, 175],  // 3-12mc
+    [1.0,  4.0,    10,   80, 155],  // 1-3r
+    [4.0,  8.0,    20,   65, 140],  // 4-7r
+    [8.0,  12.0,   20,   60, 110],  // 8-11r
+    [12.0, 99,    -10,   60, 100],  // ≥12r
+  ];
+
+  function rekgAgeGroup(ageLat) {
+    const labels = [
+      '1–6 dni','1–4 tyg.','5–12 tyg.','3–5 mies.','6–11 mies.',
+      '12–23 mies.','2–3 lata','4–5 lat','6–7 lat','8–9 lat',
+      '10–11 lat','12–13 lat','14–15 lat','16–17 lat','18–21 lat','≥22 lata'
+    ];
+    const d = REKG_DATA['M'];
+    for (let i = 0; i < d.length; i++) {
+      if (ageLat >= d[i][0] && ageLat < d[i][1]) return labels[i];
+    }
+    return '—';
+  }
+
+  function rekgZscore(val, m25, med, p25) {
+    // liniowa interpolacja w przedziale z-score [-2.5, 0, +2.5]
+    if (isNaN(val)) return NaN;
+    if (val <= med) {
+      if (m25 === med) return 0;
+      return ((val - med) / (med - m25)) * 2.5;
+    } else {
+      if (p25 === med) return 0;
+      return ((val - med) / (p25 - med)) * 2.5;
+    }
+  }
+
+  function rekgCell(id, z, low, med, high, unit) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (isNaN(z)) { el.textContent = '—'; el.className = 'result-cell'; return; }
+    const zFmt = (z >= 0 ? '+' : '') + z.toFixed(2) + 'z';
+    const normFmt = low + (unit === 'mV' ? '' : '') + '–' + high + (unit ? ' ' + unit : '');
+    el.innerHTML = '<span style="font-weight:700">' + zFmt + '</span><span style="font-size:0.72rem;color:#718096;margin-left:0.4rem;">[' + low + '–' + high + (unit ? ' ' + unit : '') + ']</span>';
+    if (z < -2.5 || z > 2.5)      { el.style.color = '#c53030'; el.style.fontWeight = '700'; }
+    else if (Math.abs(z) >= 2.0)  { el.style.color = '#d69e2e'; el.style.fontWeight = '700'; }
+    else                           { el.style.color = '#276749'; el.style.fontWeight = '700'; }
+  }
+
+  function recalcREKG() {
+    const sex = document.getElementById('rekg_sex').value;
+    const age = parseAgeToYears(document.getElementById('rekg_age').value);
+    const lbl = document.getElementById('rekg_group_label');
+
+    const params = [
+      {id:'rekg_hr',  key:'hr'},
+      {id:'rekg_qtc', key:'qtc'},
+      {id:'rekg_pr',  key:'pr'},
+      {id:'rekg_qrs', key:'qrs'},
+      {id:'rekg_rv6', key:'rv6'},
+    ];
+
+    if (isNaN(age)) {
+      lbl.textContent = '—';
+      ['rekg_hr_z','rekg_qtc_z','rekg_axis_z','rekg_pr_z','rekg_rv6_z','rekg_qrs_z'].forEach(id => {
+        const el = document.getElementById(id); if(el){el.textContent='—';el.className='result-cell';el.style.color='';}
+      });
+      return;
+    }
+
+    const table = REKG_DATA[sex];
+    let row = null;
+    for (let i = 0; i < table.length; i++) {
+      if (age >= table[i][0] && age < table[i][1]) { row = table[i]; break; }
+    }
+    if (!row) row = table[table.length - 1];
+
+    const [wMin,wMax, hr_l,hr_m,hr_h, qtc_l,qtc_m,qtc_h, pr_l,pr_m,pr_h, qrs_l,qrs_m,qrs_h, rv6_l,rv6_m,rv6_h] = row;
+
+    // label grupy wiekowej
+    lbl.textContent = 'Grupa: ' + rekgAgeGroup(age) + (sex==='M'?' — Chłopiec':' — Dziewczynka');
+
+    // oblicz z-score dla każdego parametru
+    const hrVal  = parseFloat(document.getElementById('rekg_hr').value);
+    const qtcVal = parseFloat(document.getElementById('rekg_qtc').value);
+    const prVal  = parseFloat(document.getElementById('rekg_pr').value);
+    const qrsVal = parseFloat(document.getElementById('rekg_qrs').value);
+    const rv6Val = parseFloat(document.getElementById('rekg_rv6').value);
+    const axVal  = parseFloat(document.getElementById('rekg_axis').value);
+
+    rekgCell('rekg_hr_z',  rekgZscore(hrVal,  hr_l,  hr_m,  hr_h),  hr_l,  hr_m,  hr_h,  '1/min');
+    rekgCell('rekg_qtc_z', rekgZscore(qtcVal, qtc_l, qtc_m, qtc_h), qtc_l, qtc_m, qtc_h, 'ms');
+    rekgCell('rekg_pr_z',  rekgZscore(prVal,  pr_l,  pr_m,  pr_h),  pr_l,  pr_m,  pr_h,  'ms');
+    rekgCell('rekg_qrs_z', rekgZscore(qrsVal, qrs_l, qrs_m, qrs_h), qrs_l, qrs_m, qrs_h, 'ms');
+    rekgCell('rekg_rv6_z', rekgZscore(rv6Val, rv6_l, rv6_m, rv6_h), rv6_l, rv6_m, rv6_h, 'mV');
+
+    // Oś QRS — normy klasyczne (niezależne od płci)
+    let axRow = AXIS_NORMS[AXIS_NORMS.length-1];
+    for (const r of AXIS_NORMS) { if (age >= r[0] && age < r[1]) { axRow = r; break; } }
+    const [, , ax_l, ax_m, ax_h] = axRow;
+    const elAx = document.getElementById('rekg_axis_z');
+    if (!isNaN(axVal)) {
+      const inRange = axVal >= ax_l && axVal <= ax_h;
+      elAx.innerHTML = (inRange
+        ? '<span style="color:#276749;font-weight:700;">prawidłowa</span>'
+        : '<span style="color:#c53030;font-weight:700;">poza normą</span>')
+        + '<span style="font-size:0.72rem;color:#718096;margin-left:0.4rem;">[' + ax_l + '–' + ax_h + ' °]</span>';
+    } else {
+      elAx.textContent = '—'; elAx.className = 'result-cell'; elAx.style.color='';
+    }
+  }
+
   // Rejestracja Service Worker (PWA)
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
@@ -2343,5 +2594,66 @@
     });
   }
 </script>
-</body>
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
 </html>
