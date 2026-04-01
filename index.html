@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>PedCard Imperial v7.5</title>
+  <title>PedCard Imperial v7.6</title>
   <link rel="manifest" href="manifest.json">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -185,9 +185,6 @@
     .result-cell.warning{color:#b7791f;}
     .result-cell.error{color:#c53030;}
 
-    footer{text-align:center;color:#742a2a;font-size:0.65rem;padding:1.2rem 0;opacity:0.6;}
-
-    /* pasek z-score */
     .zbar-wrap{display:none;padding:0.1rem 0.2rem 0.3rem 0;}
     .zbar-wrap.visible{display:block;}
     .zbar-track{
@@ -343,7 +340,7 @@
     <div class="patient-card">
       <div class="field">
         <label>Płeć</label>
-        <select id="sex" onchange="recalcAll()">
+        <select id="sex" onchange="recalcAll()" style="width:110px;">
           <option value="girl">Dziewczynka</option>
           <option value="boy">Chłopiec</option>
         </select>
@@ -351,16 +348,20 @@
       <div class="field">
         <label>Wzrost (cm)</label>
         <input type="number" id="height" step="0.1" min="30" max="250"
-               placeholder="np. 120" oninput="recalcAll()" />
+               placeholder="120" oninput="recalcAll()" style="width:90px;"/>
       </div>
       <div class="field">
         <label>Masa ciała (kg)</label>
         <input type="number" id="weight" step="0.1" min="0.5" max="200"
-               placeholder="np. 22" oninput="recalcAll()" />
+               placeholder="22" oninput="recalcAll()" style="width:90px;"/>
       </div>
       <div class="field">
         <label>Wiek (lata)</label>
-        <input type="text" id="pt_age" placeholder="np. 8 lub 7/12" oninput="recalcAll()" style="width:110px;"/>
+        <input type="text" id="pt_age" placeholder="8 lub 7/12" oninput="recalcAll()" style="width:90px;"/>
+      </div>
+      <div class="field">
+        <label>Data urodzenia</label>
+        <input type="text" id="pt_dob" placeholder="dd.mm.rrrr" oninput="recalcAll()" style="width:105px;" maxlength="10"/>
       </div>
       <div class="bsa-result" id="bsa_display">BSA: — m²</div>
       <div class="bsa-result" id="bmi_display">BMI: — kg/m²</div>
@@ -371,284 +372,193 @@
 
     <div class="boxes-row">
 
-      <!-- BOX 1: M-mode -->
-      <div class="calc-card">
-        <h2>Wymiary M-mode</h2>
-        <div class="reference">Kampmann et al. 2000</div>
+      <!-- KOL 1: M-mode (góra) + Pierścienie zastawek (dół) -->
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
 
-        <div class="tbl-header mm-cols">
-          <span>Symbol</span><span>Pomiar</span><span>Z-score</span>
-        </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">RVDD</div>
-          <div class="input-wrap"><input type="number" id="RVDD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="RVDD_z">—</div>
-            <div class="zbar-wrap" id="RVDD_bar" style="padding:0;">
-              <div style="position:relative;padding-top:18px;">
-                <div class="zbar-track">
-                  <div class="zbar-fill" id="RVDD_bar_fill"></div>
-                  <div class="zbar-dot" id="RVDD_bar_dot"></div>
-                  <div class="zbar-val" id="RVDD_bar_val"></div>
-                </div>
-                <div class="zbar-labels"><span id="RVDD_bar_m2">—</span><span id="RVDD_bar_0">—</span><span id="RVDD_bar_p2">—</span></div>
-              </div>
+        <div class="calc-card">
+          <h2>Wymiary M-mode</h2>
+          <div class="reference">Kampmann et al. 2000</div>
+          <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">RVDD</div>
+            <div class="input-wrap"><input type="number" id="RVDD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+              <div class="result-cell" id="RVDD_z">—</div>
+              <div class="zbar-wrap" id="RVDD_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="RVDD_bar_fill"></div><div class="zbar-dot" id="RVDD_bar_dot"></div><div class="zbar-val" id="RVDD_bar_val"></div></div><div class="zbar-labels"><span id="RVDD_bar_m2">—</span><span id="RVDD_bar_0">—</span><span id="RVDD_bar_p2">—</span></div></div></div>
             </div>
           </div>
-        </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">IVSd</div>
-          <div class="input-wrap"><input type="number" id="IVSd" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="IVSd_z">—</div>
-            <div class="zbar-wrap" id="IVSd_bar" style="padding:0;">
-              <div style="position:relative;padding-top:18px;">
-                <div class="zbar-track">
-                  <div class="zbar-fill" id="IVSd_bar_fill"></div>
-                  <div class="zbar-dot" id="IVSd_bar_dot"></div>
-                  <div class="zbar-val" id="IVSd_bar_val"></div>
-                </div>
-                <div class="zbar-labels"><span id="IVSd_bar_m2">—</span><span id="IVSd_bar_0">—</span><span id="IVSd_bar_p2">—</span></div>
-              </div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">IVSd</div>
+            <div class="input-wrap"><input type="number" id="IVSd" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+              <div class="result-cell" id="IVSd_z">—</div>
+              <div class="zbar-wrap" id="IVSd_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="IVSd_bar_fill"></div><div class="zbar-dot" id="IVSd_bar_dot"></div><div class="zbar-val" id="IVSd_bar_val"></div></div><div class="zbar-labels"><span id="IVSd_bar_m2">—</span><span id="IVSd_bar_0">—</span><span id="IVSd_bar_p2">—</span></div></div></div>
             </div>
           </div>
-        </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">LVEDD</div>
-          <div class="input-wrap"><input type="number" id="LVEDD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="LVEDD_z">—</div>
-            <div class="zbar-wrap" id="LVEDD_bar" style="padding:0;">
-              <div style="position:relative;padding-top:18px;">
-                <div class="zbar-track">
-                  <div class="zbar-fill" id="LVEDD_bar_fill"></div>
-                  <div class="zbar-dot" id="LVEDD_bar_dot"></div>
-                  <div class="zbar-val" id="LVEDD_bar_val"></div>
-                </div>
-                <div class="zbar-labels"><span id="LVEDD_bar_m2">—</span><span id="LVEDD_bar_0">—</span><span id="LVEDD_bar_p2">—</span></div>
-              </div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">LVEDD</div>
+            <div class="input-wrap"><input type="number" id="LVEDD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+              <div class="result-cell" id="LVEDD_z">—</div>
+              <div class="zbar-wrap" id="LVEDD_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="LVEDD_bar_fill"></div><div class="zbar-dot" id="LVEDD_bar_dot"></div><div class="zbar-val" id="LVEDD_bar_val"></div></div><div class="zbar-labels"><span id="LVEDD_bar_m2">—</span><span id="LVEDD_bar_0">—</span><span id="LVEDD_bar_p2">—</span></div></div></div>
             </div>
           </div>
-        </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">LVESD</div>
-          <div class="input-wrap"><input type="number" id="LVESD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="LVESD_z">—</div>
-            <div class="zbar-wrap" id="LVESD_bar" style="padding:0;">
-              <div style="position:relative;padding-top:18px;">
-                <div class="zbar-track">
-                  <div class="zbar-fill" id="LVESD_bar_fill"></div>
-                  <div class="zbar-dot" id="LVESD_bar_dot"></div>
-                  <div class="zbar-val" id="LVESD_bar_val"></div>
-                </div>
-                <div class="zbar-labels"><span id="LVESD_bar_m2">—</span><span id="LVESD_bar_0">—</span><span id="LVESD_bar_p2">—</span></div>
-              </div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">LVESD</div>
+            <div class="input-wrap"><input type="number" id="LVESD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+              <div class="result-cell" id="LVESD_z">—</div>
+              <div class="zbar-wrap" id="LVESD_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="LVESD_bar_fill"></div><div class="zbar-dot" id="LVESD_bar_dot"></div><div class="zbar-val" id="LVESD_bar_val"></div></div><div class="zbar-labels"><span id="LVESD_bar_m2">—</span><span id="LVESD_bar_0">—</span><span id="LVESD_bar_p2">—</span></div></div></div>
             </div>
           </div>
-        </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">LVPWd</div>
-          <div class="input-wrap"><input type="number" id="LVPWd" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="LVPWd_z">—</div>
-            <div class="zbar-wrap" id="LVPWd_bar" style="padding:0;">
-              <div style="position:relative;padding-top:18px;">
-                <div class="zbar-track">
-                  <div class="zbar-fill" id="LVPWd_bar_fill"></div>
-                  <div class="zbar-dot" id="LVPWd_bar_dot"></div>
-                  <div class="zbar-val" id="LVPWd_bar_val"></div>
-                </div>
-                <div class="zbar-labels"><span id="LVPWd_bar_m2">—</span><span id="LVPWd_bar_0">—</span><span id="LVPWd_bar_p2">—</span></div>
-              </div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">LVPWd</div>
+            <div class="input-wrap"><input type="number" id="LVPWd" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+              <div class="result-cell" id="LVPWd_z">—</div>
+              <div class="zbar-wrap" id="LVPWd_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="LVPWd_bar_fill"></div><div class="zbar-dot" id="LVPWd_bar_dot"></div><div class="zbar-val" id="LVPWd_bar_val"></div></div><div class="zbar-labels"><span id="LVPWd_bar_m2">—</span><span id="LVPWd_bar_0">—</span><span id="LVPWd_bar_p2">—</span></div></div></div>
             </div>
           </div>
         </div>
 
-        <!-- EF i FS -->
-        <div style="border-top:1px solid #fed7d7;margin-top:0.4rem;padding-top:0.3rem;display:flex;gap:1.5rem;flex-wrap:wrap;">
-          <div style="display:flex;align-items:center;gap:0.4rem;">
-            <span class="var-name">FS</span>
-            <span class="result-cell" id="fs_result">—</span>
+        <div class="calc-card">
+          <h2>Pierścienie zastawek</h2>
+          <div class="reference">Cantinotti et al. 2014</div>
+          <div class="tbl-header vv-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
+          <div class="tbl-row vv-cols">
+            <div class="var-name">MV</div>
+            <div class="input-wrap"><input type="number" id="mv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+              <div class="result-cell" id="mv_z">—</div>
+              <div class="zbar-wrap" id="mv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="mv_bar_fill"></div><div class="zbar-dot" id="mv_bar_dot"></div><div class="zbar-val" id="mv_bar_val"></div></div><div class="zbar-labels"><span id="mv_bar_m2">—</span><span id="mv_bar_0">—</span><span id="mv_bar_p2">—</span></div></div></div>
+            </div>
           </div>
-          <div style="display:flex;align-items:center;gap:0.4rem;">
-            <span class="var-name">EF <span style="font-size:0.6rem;font-weight:400;">(Teich.)</span></span>
-            <span class="result-cell" id="ef_result">—</span>
+          <div class="tbl-row vv-cols">
+            <div class="var-name">TV</div>
+            <div class="input-wrap"><input type="number" id="tv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+              <div class="result-cell" id="tv_z">—</div>
+              <div class="zbar-wrap" id="tv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="tv_bar_fill"></div><div class="zbar-dot" id="tv_bar_dot"></div><div class="zbar-val" id="tv_bar_val"></div></div><div class="zbar-labels"><span id="tv_bar_m2">—</span><span id="tv_bar_0">—</span><span id="tv_bar_p2">—</span></div></div></div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      <!-- BOX 2: Valve annuli -->
-      <div class="calc-card">
-        <h2>Pierścienie zastawek</h2>
-        <div class="reference">Cantinotti et al. 2014</div>
-
-        <div class="tbl-header vv-cols">
-          <span>Symbol</span><span>Pomiar</span><span>Z-score</span>
-        </div>
-        <div class="tbl-row vv-cols">
-          <div class="var-name">MV</div>
-          <div class="input-wrap"><input type="number" id="mv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="mv_z">—</div>
-            <div class="zbar-wrap" id="mv_bar" style="padding:0;">
-              <div style="position:relative;padding-top:18px;">
-                <div class="zbar-track">
-                  <div class="zbar-fill" id="mv_bar_fill"></div>
-                  <div class="zbar-dot" id="mv_bar_dot"></div>
-                  <div class="zbar-val" id="mv_bar_val"></div>
-                </div>
-                <div class="zbar-labels"><span id="mv_bar_m2">—</span><span id="mv_bar_0">—</span><span id="mv_bar_p2">—</span></div>
-              </div>
+          <div class="tbl-row vv-cols">
+            <div class="var-name">AV</div>
+            <div class="input-wrap"><input type="number" id="av_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+              <div class="result-cell" id="av_z">—</div>
+              <div class="zbar-wrap" id="av_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="av_bar_fill"></div><div class="zbar-dot" id="av_bar_dot"></div><div class="zbar-val" id="av_bar_val"></div></div><div class="zbar-labels"><span id="av_bar_m2">—</span><span id="av_bar_0">—</span><span id="av_bar_p2">—</span></div></div></div>
+            </div>
+          </div>
+          <div class="tbl-row vv-cols">
+            <div class="var-name">PV</div>
+            <div class="input-wrap"><input type="number" id="pv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
+              <div class="result-cell" id="pv_z">—</div>
+              <div class="zbar-wrap" id="pv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="pv_bar_fill"></div><div class="zbar-dot" id="pv_bar_dot"></div><div class="zbar-val" id="pv_bar_val"></div></div><div class="zbar-labels"><span id="pv_bar_m2">—</span><span id="pv_bar_0">—</span><span id="pv_bar_p2">—</span></div></div></div>
             </div>
           </div>
         </div>
-        <div class="tbl-row vv-cols">
-          <div class="var-name">TV</div>
-          <div class="input-wrap"><input type="number" id="tv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="tv_z">—</div>
-            <div class="zbar-wrap" id="tv_bar" style="padding:0;">
-              <div style="position:relative;padding-top:18px;">
-                <div class="zbar-track">
-                  <div class="zbar-fill" id="tv_bar_fill"></div>
-                  <div class="zbar-dot" id="tv_bar_dot"></div>
-                  <div class="zbar-val" id="tv_bar_val"></div>
-                </div>
-                <div class="zbar-labels"><span id="tv_bar_m2">—</span><span id="tv_bar_0">—</span><span id="tv_bar_p2">—</span></div>
-              </div>
+
+      </div><!-- /kol 1 -->
+
+      <!-- KOL 2: Funkcja komór (góra) + Aorta (dół) -->
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
+
+        <div class="calc-card">
+          <h2>Funkcja komór</h2>
+          <div class="reference">Koestenberger et al. JASE 2009</div>
+          <div class="tbl-header vv-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score [±2SD]</span></div>
+          <div class="tbl-row vv-cols">
+            <div class="var-name">TAPSE</div>
+            <div class="input-wrap">
+              <input type="number" id="tapse_val" step="0.01" min="0" max="5" placeholder="—" oninput="recalcTAPSE()" style="width:56px;"/>
+              <span class="unit">cm</span>
+            </div>
+            <div class="result-cell" id="tapse_z">—</div>
+          </div>
+          <div id="tapse_group_info" style="font-size:0.68rem;color:#718096;margin:0.2rem 0 0.6rem;font-style:italic;line-height:1.4;">— wpisz wiek lub datę urodzenia</div>
+          <div style="border-top:1px solid #fed7d7;margin-top:0.2rem;padding-top:0.5rem;">
+            <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;">Funkcja skurczowa LV</div>
+            <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.25rem;">
+              <span class="var-name" style="min-width:36px;">FS</span>
+              <span class="result-cell" id="fk_fs_result">—</span>
+              <span style="font-size:0.65rem;color:#a0aec0;">norma 28–44%</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.4rem;">
+              <span class="var-name" style="min-width:36px;">EF</span>
+              <span class="result-cell" id="fk_ef_result">—</span>
+              <span style="font-size:0.65rem;color:#a0aec0;">norma ≥55%</span>
             </div>
           </div>
         </div>
-        <div class="tbl-row vv-cols">
-          <div class="var-name">AV</div>
-          <div class="input-wrap"><input type="number" id="av_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="av_z">—</div>
-            <div class="zbar-wrap" id="av_bar" style="padding:0;">
-              <div style="position:relative;padding-top:18px;">
-                <div class="zbar-track">
-                  <div class="zbar-fill" id="av_bar_fill"></div>
-                  <div class="zbar-dot" id="av_bar_dot"></div>
-                  <div class="zbar-val" id="av_bar_val"></div>
-                </div>
-                <div class="zbar-labels"><span id="av_bar_m2">—</span><span id="av_bar_0">—</span><span id="av_bar_p2">—</span></div>
-              </div>
-            </div>
+
+        <div class="calc-card">
+          <h2>Aorta</h2>
+          <div class="reference">Gautier et al. 2010; Pettersen et al. 2008</div>
+          <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
+          <div class="tbl-row mm-cols"><div class="var-name">AV</div><div class="input-wrap"><input type="number" id="AoAnn" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="AoAnn_z">—</div></div>
+          <div class="tbl-row mm-cols"><div class="var-name">SoV</div><div class="input-wrap"><input type="number" id="Sinus" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Sinus_z">—</div></div>
+          <div class="tbl-row mm-cols"><div class="var-name">STJ</div><div class="input-wrap"><input type="number" id="STJ" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="STJ_z">—</div></div>
+          <div class="tbl-row mm-cols"><div class="var-name">AoAsc</div><div class="input-wrap"><input type="number" id="AoAsc" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="AoAsc_z">—</div></div>
+          <div style="border-top:1px solid #fed7d7;margin-top:0.4rem;padding-top:0.3rem;">
+            <div class="tbl-row mm-cols"><div class="var-name">TArch</div><div class="input-wrap"><input type="number" id="TArch" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="TArch_z">—</div></div>
+            <div class="tbl-row mm-cols"><div class="var-name">Isthm</div><div class="input-wrap"><input type="number" id="Isthm" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Isthm_z">—</div></div>
+            <div class="tbl-row mm-cols"><div class="var-name">DistAo</div><div class="input-wrap"><input type="number" id="DistAo" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="DistAo_z">—</div></div>
           </div>
         </div>
-        <div class="tbl-row vv-cols">
-          <div class="var-name">PV</div>
-          <div class="input-wrap"><input type="number" id="pv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="pv_z">—</div>
-            <div class="zbar-wrap" id="pv_bar" style="padding:0;">
-              <div style="position:relative;padding-top:18px;">
-                <div class="zbar-track">
-                  <div class="zbar-fill" id="pv_bar_fill"></div>
-                  <div class="zbar-dot" id="pv_bar_dot"></div>
-                  <div class="zbar-val" id="pv_bar_val"></div>
-                </div>
-                <div class="zbar-labels"><span id="pv_bar_m2">—</span><span id="pv_bar_0">—</span><span id="pv_bar_p2">—</span></div>
-              </div>
-            </div>
+
+      </div><!-- /kol 2 -->
+
+      <!-- KOL 3: Tętnice wieńcowe (góra) + Tętnica płucna (dół) -->
+      <div style="display:flex;flex-direction:column;gap:1.2rem;">
+
+        <div class="calc-card">
+          <h2>Tętnice wieńcowe</h2>
+          <div class="reference">Dallaire &amp; Dahdah 2011</div>
+          <div class="tbl-header mm-cols"><span>Segment</span><span>Pomiar</span><span>Z-score</span></div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">LMCA</div>
+            <div class="input-wrap"><input type="number" id="CA_LMCA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div class="result-cell" id="CA_LMCA_z">—</div>
+          </div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">LAD prox</div>
+            <div class="input-wrap"><input type="number" id="CA_LAD" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div class="result-cell" id="CA_LAD_z">—</div>
+          </div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">Cx prox</div>
+            <div class="input-wrap"><input type="number" id="CA_Cx" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div class="result-cell" id="CA_Cx_z">—</div>
+          </div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">RCA prox</div>
+            <div class="input-wrap"><input type="number" id="CA_RCAprox" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div class="result-cell" id="CA_RCAprox_z">—</div>
+          </div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">RCA med</div>
+            <div class="input-wrap"><input type="number" id="CA_RCAmed" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div class="result-cell" id="CA_RCAmed_z">—</div>
+          </div>
+          <div class="tbl-row mm-cols">
+            <div class="var-name">RCA dist</div>
+            <div class="input-wrap"><input type="number" id="CA_RCAdist" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div>
+            <div class="result-cell" id="CA_RCAdist_z">—</div>
           </div>
         </div>
-      </div>
 
-      <!-- BOX 3: Aorta (Gautier + Pettersen) -->
-      <div class="calc-card">
-        <h2>Aorta</h2>
-        <div class="reference">Gautier et al. 2010; Pettersen et al. 2008</div>
-        <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
-        <div class="tbl-row mm-cols"><div class="var-name">AV</div><div class="input-wrap"><input type="number" id="AoAnn" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="AoAnn_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">SoV</div><div class="input-wrap"><input type="number" id="Sinus" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Sinus_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">STJ</div><div class="input-wrap"><input type="number" id="STJ" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="STJ_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">AoAsc</div><div class="input-wrap"><input type="number" id="AoAsc" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="AoAsc_z">—</div></div>
-        <!-- separator -->
-        <div style="border-top:1px solid #fed7d7;margin-top:0.4rem;padding-top:0.3rem;">
-          <div class="tbl-row mm-cols"><div class="var-name">TArch</div><div class="input-wrap"><input type="number" id="TArch" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="TArch_z">—</div></div>
-          <div class="tbl-row mm-cols"><div class="var-name">Isthm</div><div class="input-wrap"><input type="number" id="Isthm" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="Isthm_z">—</div></div>
-          <div class="tbl-row mm-cols"><div class="var-name">DistAo</div><div class="input-wrap"><input type="number" id="DistAo" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="DistAo_z">—</div></div>
-        </div>
-      </div>
-
-      <!-- BOX 4: Pulmonary (Pettersen) -->
-      <div class="calc-card">
-        <h2>Tętnica płucna</h2>
-        <div class="reference">Pettersen et al. 2008</div>
-        <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
-        <div class="tbl-row mm-cols"><div class="var-name">PVAnn</div><div class="input-wrap"><input type="number" id="PVAnn" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="PVAnn_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">MPA</div><div class="input-wrap"><input type="number" id="MPA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="MPA_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">RPA</div><div class="input-wrap"><input type="number" id="RPA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="RPA_z">—</div></div>
-        <div class="tbl-row mm-cols"><div class="var-name">LPA</div><div class="input-wrap"><input type="number" id="LPA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="LPA_z">—</div></div>
-      </div>
-
-      <!-- BOX 5: Coronary arteries (Dallaire) -->
-      <div class="calc-card">
-        <h2>Tętnice wieńcowe</h2>
-        <div class="reference">
-          Dallaire &amp; Dahdah 2011
+        <div class="calc-card">
+          <h2>Tętnica płucna</h2>
+          <div class="reference">Pettersen et al. 2008</div>
+          <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
+          <div class="tbl-row mm-cols"><div class="var-name">PVAnn</div><div class="input-wrap"><input type="number" id="PVAnn" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="PVAnn_z">—</div></div>
+          <div class="tbl-row mm-cols"><div class="var-name">MPA</div><div class="input-wrap"><input type="number" id="MPA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="MPA_z">—</div></div>
+          <div class="tbl-row mm-cols"><div class="var-name">RPA</div><div class="input-wrap"><input type="number" id="RPA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="RPA_z">—</div></div>
+          <div class="tbl-row mm-cols"><div class="var-name">LPA</div><div class="input-wrap"><input type="number" id="LPA" step="0.1" min="0" placeholder="—" oninput="recalcAll()"/><span class="unit">mm</span></div><div class="result-cell" id="LPA_z">—</div></div>
         </div>
 
-        <div class="tbl-header mm-cols">
-          <span>Segment</span><span>Pomiar</span><span>Z-score</span>
-        </div>
-
-        <div class="tbl-row mm-cols">
-          <div class="var-name">LMCA</div>
-          <div class="input-wrap">
-            <input type="number" id="CA_LMCA" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
-            <span class="unit">mm</span>
-          </div>
-          <div class="result-cell" id="CA_LMCA_z">—</div>
-        </div>
-
-        <div class="tbl-row mm-cols">
-          <div class="var-name">LAD prox</div>
-          <div class="input-wrap">
-            <input type="number" id="CA_LAD" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
-            <span class="unit">mm</span>
-          </div>
-          <div class="result-cell" id="CA_LAD_z">—</div>
-        </div>
-
-        <div class="tbl-row mm-cols">
-          <div class="var-name">Cx prox</div>
-          <div class="input-wrap">
-            <input type="number" id="CA_Cx" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
-            <span class="unit">mm</span>
-          </div>
-          <div class="result-cell" id="CA_Cx_z">—</div>
-        </div>
-
-        <div class="tbl-row mm-cols">
-          <div class="var-name">RCA prox</div>
-          <div class="input-wrap">
-            <input type="number" id="CA_RCAprox" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
-            <span class="unit">mm</span>
-          </div>
-          <div class="result-cell" id="CA_RCAprox_z">—</div>
-        </div>
-
-        <div class="tbl-row mm-cols">
-          <div class="var-name">RCA med</div>
-          <div class="input-wrap">
-            <input type="number" id="CA_RCAmed" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
-            <span class="unit">mm</span>
-          </div>
-          <div class="result-cell" id="CA_RCAmed_z">—</div>
-        </div>
-
-        <div class="tbl-row mm-cols">
-          <div class="var-name">RCA dist</div>
-          <div class="input-wrap">
-            <input type="number" id="CA_RCAdist" step="0.1" min="0" placeholder="—" oninput="recalcAll()" />
-            <span class="unit">mm</span>
-          </div>
-          <div class="result-cell" id="CA_RCAdist_z">—</div>
-        </div>
-      </div>
+      </div><!-- /kol 3 -->
 
     </div><!-- /boxes-row -->
 
@@ -1049,6 +959,15 @@
         </p>
 
         <p>
+          Koestenberger M, Ravekes W, Everett AD, et al.
+          Right Ventricular Function in Infants, Children and Adolescents: Reference Values of the Tricuspid Annular Plane Systolic Excursion (TAPSE) in 640 Healthy Patients and Calculation of z Score Values.
+          J Am Soc Echocardiogr. 2009;22(6):715–719.<br/>
+          <a href="https://doi.org/10.1016/j.echo.2009.03.026" target="_blank" rel="noopener noreferrer">
+            https://doi.org/10.1016/j.echo.2009.03.026
+          </a>
+        </p>
+
+        <p>
           Schwartz PJ, Crotti L.
           QTc behavior during exercise and genetic testing for the long-QT syndrome.
           Circulation. 2011;124(20):2181–2184.<br/>
@@ -1090,7 +1009,19 @@
 
 </div><!-- /container -->
 
-<footer>Wyniki mają charakter pomocniczy — decyzje kliniczne należą wyłącznie do lekarza. | PedCard Imperial v7.5 | Powered by SBJP</footer>
+<footer style="
+  background:linear-gradient(135deg,#742a2a 0%,#9b2c2c 50%,#742a2a 100%);
+  color:#fca5a5;
+  font-size:0.72rem;
+  padding:1rem 2rem;
+  text-align:center;
+  letter-spacing:0.04em;
+  border-top:3px solid #c53030;
+  margin-top:1.5rem;
+">
+  <div style="font-weight:700;color:#fff;font-size:0.8rem;margin-bottom:0.25rem;">PedCard Imperial v7.6 &mdash; Powered by SBJP</div>
+  <div style="opacity:0.85;">Wyniki mają charakter pomocniczy &mdash; decyzje kliniczne należą wyłącznie do lekarza.</div>
+</footer>
 
 <script>
   function normalCDF(z){
@@ -1351,9 +1282,31 @@
         if (!isNaN(mm) && !isNaN(z)) {
           const boldBefore = item.before.replace(abbr, '<b>' + abbr + '</b>');
           const measure = '<i>' + mm.toFixed(1) + ' mm (' + z.toFixed(2) + 'z)' + item.ref + '</i>';
-          htmlLines.push(boldBefore + measure + after);
+          let line = boldBefore + measure + after;
+          // Dopisz TAPSE za linią TV jeśli jest wynik
+          if (item.valveId === 'tv') {
+            const tapseVal = parseFloat(document.getElementById('tapse_val').value);
+            const tapseZEl = document.getElementById('tapse_z');
+            const tapseZTxt = tapseZEl ? tapseZEl.textContent.replace(',','.') : '';
+            const tapseZ = parseFloat(tapseZTxt);
+            if (!isNaN(tapseVal) && !isNaN(tapseZ)) {
+              line += '; <b>TAPSE</b> <i>' + tapseVal.toFixed(2) + ' cm (' + (tapseZ >= 0 ? '+' : '') + tapseZ.toFixed(2) + 'z)⁶</i>';
+            }
+          }
+          htmlLines.push(line);
         } else {
-          htmlLines.push(item.before.trimEnd() + after);
+          let line = item.before.trimEnd() + after;
+          // Dopisz TAPSE nawet gdy brak pomiaru TV, jeśli jest wynik TAPSE
+          if (item.valveId === 'tv') {
+            const tapseVal = parseFloat(document.getElementById('tapse_val').value);
+            const tapseZEl = document.getElementById('tapse_z');
+            const tapseZTxt = tapseZEl ? tapseZEl.textContent.replace(',','.') : '';
+            const tapseZ = parseFloat(tapseZTxt);
+            if (!isNaN(tapseVal) && !isNaN(tapseZ)) {
+              line += '; <b>TAPSE</b> <i>' + tapseVal.toFixed(2) + ' cm (' + (tapseZ >= 0 ? '+' : '') + tapseZ.toFixed(2) + 'z)⁶</i>';
+            }
+          }
+          htmlLines.push(line);
         }
       }
     });
@@ -1371,17 +1324,6 @@
     });
 
     if (mmParts.length) {
-      // EF i FS
-      const _lvedd = parseFloat(document.getElementById('LVEDD').value);
-      const _lvesd = parseFloat(document.getElementById('LVESD').value);
-      if (!isNaN(_lvedd) && !isNaN(_lvesd) && _lvedd > 0 && _lvesd > 0 && _lvesd < _lvedd) {
-        const _fs = ((_lvedd - _lvesd) / _lvedd * 100).toFixed(1);
-        const _edv = (7 * Math.pow(_lvedd/10, 3)) / (2.4 + _lvedd/10);
-        const _esv = (7 * Math.pow(_lvesd/10, 3)) / (2.4 + _lvesd/10);
-        const _ef = ((_edv - _esv) / _edv * 100).toFixed(1);
-        mmParts.push('<b>FS</b> <i>' + _fs + '%</i>');
-        mmParts.push('<b>EF (Teich.)</b> <i>' + _ef + '%</i>');
-      }
       htmlLines.push('');
       htmlLines.push('M-Mode: ' + mmParts.join('; ') + ';');
     }
@@ -1410,6 +1352,8 @@
     if (hasGautier)   usedRefs.push('3) Gautier et al. 2010');
     if (hasPettersen) usedRefs.push('4) Pettersen et al. 2008');
     if (hasDallaire)  usedRefs.push('5) Dallaire & Dahdah 2011');
+    const hasTAPSE = !isNaN(parseFloat(document.getElementById('tapse_val').value));
+    if (hasTAPSE)     usedRefs.push('6) Koestenberger et al. 2009');
     if (usedRefs.length) {
       htmlLines.push('');
       htmlLines.push(usedRefs.join('; ') + ';');
@@ -1613,7 +1557,7 @@
     }
 
     // Percentyle OLA/OLAF
-    const age = parseAgeToYears(document.getElementById('pt_age').value);
+    const age = getEffectiveAge();
     const sexKey = sex === 'girl' ? 'girl' : 'boy';
     function showPct(val, table, elId, label) {
       const el = document.getElementById(elId);
@@ -1784,25 +1728,21 @@
     notesBox.innerHTML = buildEchoDescription(bsa, sex);
     syncFromEcho();
 
-    // FS i EF Teichholtz
+    // FS i EF Teichholtz — tylko w boxie Funkcja komór
     const lvedd = parseFloat(document.getElementById('LVEDD').value);
     const lvesd = parseFloat(document.getElementById('LVESD').value);
-    const fsEl = document.getElementById('fs_result');
-    const efEl = document.getElementById('ef_result');
+    const fkFs = document.getElementById('fk_fs_result');
+    const fkEf = document.getElementById('fk_ef_result');
     if (!isNaN(lvedd) && !isNaN(lvesd) && lvedd > 0 && lvesd > 0 && lvesd < lvedd) {
       const fs = (lvedd - lvesd) / lvedd * 100;
       const edv = (7 * Math.pow(lvedd/10, 3)) / (2.4 + lvedd/10);
       const esv = (7 * Math.pow(lvesd/10, 3)) / (2.4 + lvesd/10);
       const ef  = (edv - esv) / edv * 100;
-      // FS
-      fsEl.textContent = fs.toFixed(1) + ' %';
-      fsEl.className = 'result-cell ' + (fs < 28 ? 'error' : fs > 44 ? 'warning' : 'normal');
-      // EF
-      efEl.textContent = ef.toFixed(1) + ' %';
-      efEl.className = 'result-cell ' + (ef < 55 ? 'error' : 'normal');
+      if (fkFs) { fkFs.textContent = fs.toFixed(1) + ' %'; fkFs.className = 'result-cell ' + (fs < 28 ? 'error' : fs > 44 ? 'warning' : 'normal'); }
+      if (fkEf) { fkEf.textContent = ef.toFixed(1) + ' %'; fkEf.className = 'result-cell ' + (ef < 55 ? 'error' : 'normal'); }
     } else {
-      fsEl.textContent = '—'; fsEl.className = 'result-cell';
-      efEl.textContent = '—'; efEl.className = 'result-cell';
+      if (fkFs) { fkFs.textContent = '—'; fkFs.className = 'result-cell'; }
+      if (fkEf) { fkEf.textContent = '—'; fkEf.className = 'result-cell'; }
     }
 
     // ─ paski z-score M-mode ─
@@ -1828,9 +1768,107 @@
       mmVars.forEach(id => updateZbar(id, null, ()=>null));
       ['mv','tv','av','pv'].forEach(id => updateZbar(id, null, ()=>null));
     }
+
+    // TAPSE — przelicz razem z resztą
+    recalcTAPSE();
   }
 
-  // Synchronizacja pól wzrost/masa między Echo i PHN
+  // ── TAPSE — Koestenberger et al. 2009 ────────────────────────────────
+  // Tabela: [wiekMin_lat, wiekMax_lat, mean_cm, minus2SD_cm, plus2SD_cm, minus3SD_cm, plus3SD_cm]
+  // Grupy wiekowe wg artykułu (Tabela 1)
+  const TAPSE_TABLE = [
+    // [ageMin, ageMax,  mean,  -2SD,  +2SD,  -3SD,  +3SD]
+    [0,      30/365,  0.91,  0.68,  1.15,  0.56,  1.26],  // 0–30 dni
+    [30/365, 3/12,    1.14,  0.85,  1.42,  0.71,  1.56],  // 1–3 mies.
+    [3/12,   6/12,    1.31,  1.01,  1.65,  0.86,  1.77],  // 4–6 mies.
+    [6/12,   1.0,     1.44,  1.13,  1.77,  0.97,  1.91],  // 7–12 mies.
+    [1.0,    2.0,     1.55,  1.25,  1.88,  1.10,  2.00],  // 1 rok
+    [2.0,    3.0,     1.65,  1.36,  1.94,  1.22,  2.09],  // 2 lata
+    [3.0,    4.0,     1.74,  1.48,  2.02,  1.35,  2.14],  // 3 lata
+    [4.0,    5.0,     1.82,  1.56,  2.07,  1.43,  2.20],  // 4 lata
+    [5.0,    6.0,     1.87,  1.60,  2.13,  1.47,  2.26],  // 5 lat
+    [6.0,    7.0,     1.90,  1.62,  2.18,  1.48,  2.33],  // 6 lat
+    [7.0,    8.0,     1.94,  1.64,  2.25,  1.49,  2.39],  // 7 lat
+    [8.0,    9.0,     1.97,  1.67,  2.28,  1.52,  2.43],  // 8 lat
+    [9.0,   10.0,     2.01,  1.73,  2.30,  1.58,  2.44],  // 9 lat
+    [10.0,  11.0,     2.05,  1.79,  2.31,  1.65,  2.46],  // 10 lat
+    [11.0,  12.0,     2.10,  1.83,  2.36,  1.69,  2.50],  // 11 lat
+    [12.0,  13.0,     2.14,  1.84,  2.43,  1.68,  2.60],  // 12 lat
+    [13.0,  14.0,     2.20,  1.85,  2.54,  1.68,  2.71],  // 13 lat
+    [14.0,  15.0,     2.26,  1.87,  2.65,  1.68,  2.84],  // 14 lat
+    [15.0,  16.0,     2.33,  1.93,  2.75,  1.74,  2.92],  // 15 lat
+    [16.0,  17.0,     2.39,  1.98,  2.78,  1.78,  3.01],  // 16 lat
+    [17.0,  18.0,     2.45,  2.04,  2.88,  1.83,  3.06],  // 17 lat
+    [18.0,  99,       2.47,  2.05,  2.91,  1.84,  3.10],  // 18 lat
+  ];
+
+  function tapseAgeLabel(ageYears) {
+    if (ageYears < 30/365)  return '0–30 dni';
+    if (ageYears < 3/12)    return '1–3 mies.';
+    if (ageYears < 6/12)    return '4–6 mies.';
+    if (ageYears < 1.0)     return '7–12 mies.';
+    if (ageYears < 2.0)     return '1 rok';
+    const y = Math.floor(ageYears);
+    if (y <= 18) return y + ' lat' + (y === 1 ? 'o' : y < 5 ? 'a' : '');
+    return '≥18 lat';
+  }
+
+  function tapseZscore(val, mean, sd_low, sd_high) {
+    // Interpolacja liniowa: SD nie jest symetryczne — używamy osobno dolnego i górnego
+    // sd_low = (mean - (-2SD)) / 2;  sd_high = (+2SD - mean) / 2
+    if (isNaN(val)) return NaN;
+    if (val <= mean) {
+      const sd = (mean - sd_low) / 2;
+      if (sd <= 0) return 0;
+      return (val - mean) / sd;
+    } else {
+      const sd = (sd_high - mean) / 2;
+      if (sd <= 0) return 0;
+      return (val - mean) / sd;
+    }
+  }
+
+  function recalcTAPSE() {
+    const tVal = parseFloat(document.getElementById('tapse_val').value);
+    const age  = getEffectiveAge();
+    const infoEl = document.getElementById('tapse_group_info');
+    const zEl    = document.getElementById('tapse_z');
+
+    if (isNaN(age) || age < 0) {
+      infoEl.textContent = '— wpisz wiek lub datę urodzenia pacjenta';      zEl.textContent = '—'; zEl.className = 'result-cell'; zEl.style.color = '';
+      return;
+    }
+
+    // Znajdź wiersz tabeli
+    let row = TAPSE_TABLE[TAPSE_TABLE.length - 1];
+    for (const r of TAPSE_TABLE) {
+      if (age >= r[0] && age < r[1]) { row = r; break; }
+    }
+    const [, , mean, m2sd, p2sd, m3sd, p3sd] = row;
+
+    // Zaktualizuj info
+    infoEl.textContent = 'Grupa: ' + tapseAgeLabel(age)
+      + '  |  Norma (±2SD): ' + m2sd.toFixed(2) + '–' + p2sd.toFixed(2) + ' cm'
+      + '  |  Norma (±3SD): ' + m3sd.toFixed(2) + '–' + p3sd.toFixed(2) + ' cm'
+      + '  |  Średnia: ' + mean.toFixed(2) + ' cm';
+
+    if (isNaN(tVal)) {
+      zEl.textContent = '—'; zEl.className = 'result-cell'; zEl.style.color = '';
+      return;
+    }
+
+    const z = tapseZscore(tVal, mean, m2sd, p2sd);
+    const zFmt = (z >= 0 ? '+' : '') + z.toFixed(2) + 'z';
+    const normFmt = m2sd.toFixed(2) + '–' + p2sd.toFixed(2) + ' cm';
+
+    zEl.innerHTML = '<span style="font-weight:700">' + zFmt + '</span>'
+      + '<span style="font-size:0.72rem;color:#718096;margin-left:0.4rem;">[' + normFmt + ']</span>';
+
+    if (z < -3 || z > 3)          { zEl.style.color = '#c53030'; zEl.style.fontWeight = '700'; }
+    else if (Math.abs(z) >= 2.0)  { zEl.style.color = '#d69e2e'; zEl.style.fontWeight = '700'; }
+    else                           { zEl.style.color = '#276749'; zEl.style.fontWeight = '700'; }
+  }
+  // ──────────────────────────────────────────────────────────────────────
   function syncFromEcho() {
     const h = document.getElementById('height').value;
     const w = document.getElementById('weight').value;
@@ -2184,6 +2222,33 @@
     }
     const age = parseFloat(str);
     return isNaN(age) ? NaN : age;
+  }
+
+  function parseDobToYears(str){
+    if(!str) return NaN;
+    str = String(str).trim();
+    const m = str.match(/^(\d{1,2})[.\-](\d{1,2})[.\-](\d{4})$/);
+    if(!m) return NaN;
+    const d = parseInt(m[1],10);
+    const mo = parseInt(m[2],10)-1;
+    const y  = parseInt(m[3],10);
+    const dob = new Date(y, mo, d);
+    if(isNaN(dob.getTime())) return NaN;
+    const now = new Date();
+    const diff = now - dob;
+    if(diff < 0) return NaN;
+    return diff / (365.25 * 24 * 3600 * 1000);
+  }
+
+  // Zwraca wiek w latach: priorytet data urodzenia, fallback pole wiek
+  function getEffectiveAge(){
+    const dob = parseDobToYears(document.getElementById('pt_dob').value);
+    if(!isNaN(dob)) return dob;
+    return parseAgeToYears(document.getElementById('pt_age').value);
+  }
+
+  function onDobInput(){
+    recalcAll();
   }
 
   function flemingMean(age, sex){
