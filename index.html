@@ -905,9 +905,27 @@
   <!-- KARTA KONSULTACJA -->
 <div id="tab-konsultacja" class="tab-panel">
 
-    <div class="boxes-row" style="grid-template-columns:repeat(4,1fr);">
+    <div class="boxes-row" style="grid-template-columns:repeat(5,1fr);">
 
-      <!-- KOL 0: Badanie fizykalne -->
+      <!-- KOL 0: Wywiad -->
+      <div class="calc-card">
+        <h2>Wywiad</h2>
+        <div style="font-size:0.68rem;color:#718096;margin-bottom:0.5rem;font-style:italic;" id="k_wywiad_group">— wpisz wiek pacjenta</div>
+
+        <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem;">Masa urodzeniowa (g)</div>
+        <div class="input-wrap" style="margin-bottom:0.6rem;">
+          <input type="number" id="k_birth_weight" step="1" min="400" max="6000" placeholder="—"
+                 oninput="recalcKons()" style="width:80px;"/>
+          <span class="unit">g</span>
+        </div>
+
+        <div style="border-top:1px solid #fed7d7;margin-top:0.2rem;padding-top:0.5rem;">
+          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;">Podgląd szablonu</div>
+          <div id="k_wywiad_preview" style="font-size:0.72rem;color:#4a5568;line-height:1.6;font-style:italic;"></div>
+        </div>
+      </div>
+
+      <!-- KOL 1: Badanie fizykalne -->
       <div class="calc-card">
         <h2>Badanie fizykalne</h2>
 
@@ -1906,7 +1924,7 @@
      'k_AoAnn','k_Sinus','k_STJ','k_AoAsc','k_TArch','k_Isthm','k_DistAo',
      'k_PVAnn','k_MPA','k_RPA','k_LPA',
      'k_CA_LMCA','k_CA_LAD','k_CA_Cx','k_CA_RCAprox','k_CA_RCAmed','k_CA_RCAdist',
-     'k_hr','k_pq','k_qrs','k_rr','k_qt','k_phys_hr'
+     'k_hr','k_pq','k_qrs','k_rr','k_qt','k_phys_hr','k_birth_weight'
     ].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     Object.keys(KONS_VARIANTS).forEach(k => { KONS_VARIANTS[k] = false; });
     ['tvi','pfo','mvi','coro','ivc','struna','niepokoj','kolana'].forEach(k => {
@@ -3429,6 +3447,13 @@
     const physPreview = document.getElementById('k_phys_preview');
     if(physPreview) physPreview.textContent = buildKonsPhysLine();
 
+    // Podgląd szablonu wywiadu
+    const wywiadPreview = document.getElementById('k_wywiad_preview');
+    const wywiadGroup   = document.getElementById('k_wywiad_group');
+    const wywiadLine = buildKonsWywiadLine();
+    if(wywiadPreview) wywiadPreview.textContent = wywiadLine.text || '— wpisz wiek';
+    if(wywiadGroup)   wywiadGroup.textContent   = wywiadLine.group || '— wpisz wiek pacjenta';
+
     recalcKonsEKG2();
   }
 
@@ -3549,6 +3574,95 @@
   }
 
   // Buduje opis dla Konsultacji — podmienia getElementById na k_ prefix
+  function buildKonsWywiadLine(){
+    const age    = getKonsAge2();
+    const sex    = (document.getElementById('sex')||{}).value || 'girl';
+    const weight = parseFloat((document.getElementById('weight')||{}).value);
+    const bw     = parseFloat((document.getElementById('k_birth_weight')||{}).value);
+
+    if(isNaN(age) || age < 0) return {group:'', text:''};
+
+    const diffDays = Math.round(age * 365.25);
+
+    // ── Pomocnicze ────────────────────────────────────────────────────
+    function ageLabel(){
+      // do 28 dni — noworodek
+      if(diffDays <= 28){
+        return diffDays + '-dniowy noworodek';
+      }
+      // 29 dni – 11 mies. — niemowlę
+      if(age < 1.0){
+        const weeks = Math.floor(diffDays / 7);
+        const months = Math.floor(age * 12);
+        const remWeeks = Math.floor((diffDays - months * 30.44) / 7);
+        if(diffDays < 84){ // < 12 tygodni
+          return weeks + '-tygodniowe niemowlę';
+        }
+        // >= 3 miesięcy
+        if(remWeeks > 0){
+          return months + '-miesięczne' + (remWeeks > 0 ? ' i ' + remWeeks + '-tygodniowe' : '') + ' niemowlę';
+        }
+        return months + '-miesięczne niemowlę';
+      }
+      // od 1 roku
+      const years  = Math.floor(age);
+      const months = Math.floor((age - years) * 12);
+      const femSuffix = sex === 'girl';
+
+      if(age >= 5){
+        // 5+ lat — chłopiec/dziewczynka
+        const half = (months >= 4 && months <= 8);
+        const nearNext = months >= 9;
+        let yrStr;
+        if(nearNext){
+          yrStr = 'niespełna ' + (years+1) + '-letni' + (femSuffix ? 'a' : '');
+        } else if(half){
+          yrStr = years + ',5-letni' + (femSuffix ? 'a' : '');
+        } else {
+          yrStr = years + '-letni' + (femSuffix ? 'a' : '');
+        }
+        return yrStr + ' ' + (femSuffix ? 'dziewczynka' : 'chłopiec');
+      }
+
+      // 1–4 lata — dziecko
+      if(months >= 9){
+        return 'niespełna ' + (years+1) + '-letnie dziecko';
+      }
+      // np. 1 rok 6 miesięcy → 1,5-roczne dziecko
+      if(months >= 4 && months <= 8){
+        return years + ',5-roczne dziecko';
+      }
+      return years + '-letnie dziecko';
+    }
+
+    const lbl = ageLabel();
+    const weightStr = !isNaN(weight) ? weight + ' kg' : '— kg';
+    const bwStr     = !isNaN(bw) ? bw + ' g' : '— g';
+
+    let text, group;
+
+    if(age < 1.0){
+      group = 'Szablon: do roku';
+      text  = lbl + '. Masa urodzeniowa ' + bwStr + ', masa obecna ' + weightStr
+            + '. Nie męczy się w trakcie karmienia, matka niepokojących objawów nie zgłasza.'
+            + ' Wywiad rodzinny nieobciążony kardiologicznie.';
+    } else if(age < 5.0){
+      group = 'Szablon: 1–5 lat';
+      text  = lbl.charAt(0).toUpperCase() + lbl.slice(1)
+            + '. Dziecko przybiera na masie, rozwija się prawidłowo, żywotne,'
+            + ' bez omdleń czy innych zaburzeń świadomości, matka niepokojących objawów nie zgłasza.'
+            + ' Wywiad rodzinny nieobciążony kardiologicznie.';
+    } else {
+      group = 'Szablon: 5+ lat';
+      const subj = lbl.charAt(0).toUpperCase() + lbl.slice(1);
+      text  = subj
+            + '. Bez omdleń i zasłabnięć, tolerancja wysiłku prawidłowa, kołataniom zaprzecza.'
+            + ' Wywiad rodzinny kardiologicznie nieobciążony.';
+    }
+
+    return {group, text};
+  }
+
   function buildKonsPhysLine(){
     // HR: priorytet k_phys_hr, fallback k_hr (EKG)
     const physHr = parseFloat((document.getElementById('k_phys_hr')||{}).value);
@@ -3570,18 +3684,29 @@
     const savedVariants = {};
     Object.keys(VARIANTS).forEach(k => { savedVariants[k] = VARIANTS[k]; VARIANTS[k] = KONS_VARIANTS[k] !== undefined ? KONS_VARIANTS[k] : VARIANTS[k]; });
     let html = buildEchoDescription(bsa, sex);
-    // Przywróć getElementById PRZED budowaniem linii EKG i fizycznej
     Object.keys(savedVariants).forEach(k => VARIANTS[k] = savedVariants[k]);
     document.getElementById = _orig;
 
-    // Wstaw szablon badania fizykalnego po nagłówku (masa/wzrost), przed EKG
-    const physLine = buildKonsPhysLine();
+    // html zaczyna się od "<b>Masa: … BSA: …</b><br>"
+    // Wyciągnij nagłówek (do pierwszego <br>) i resztę osobno
     const firstBr = html.indexOf('<br>');
+    let header = '';
+    let rest   = html;
     if(firstBr !== -1){
-      html = html.slice(0, firstBr + 4) + '<br>' + physLine + '<br><br>' + html.slice(firstBr + 4);
-    } else {
-      html = '<br>' + physLine + '<br><br>' + html;
+      header = html.slice(0, firstBr + 4); // "<b>…</b><br>"
+      rest   = html.slice(firstBr + 4);    // reszta opisu
     }
+
+    // Wywiad — zaraz po nagłówku
+    const wywiadLine = buildKonsWywiadLine();
+    const wywiadStr  = wywiadLine.text ? '<br>' + wywiadLine.text + '<br>' : '';
+
+    // Badanie fizykalne — po wywiadzie, przed resztą
+    const physLine = buildKonsPhysLine();
+    const physStr  = '<br>' + physLine + '<br>';
+
+    // Złóż w kolejności: nagłówek → wywiad → badanie fiz → reszta
+    html = header + wywiadStr + physStr + '<br>' + rest;
 
     // Wstaw szablon EKG przed linię "Płyn w worku osierdziowym"
     const ekgLine = buildKonsEKGLine();
@@ -3754,7 +3879,7 @@
      'k_AoAnn','k_Sinus','k_STJ','k_AoAsc','k_TArch','k_Isthm','k_DistAo',
      'k_PVAnn','k_MPA','k_RPA','k_LPA',
      'k_CA_LMCA','k_CA_LAD','k_CA_Cx','k_CA_RCAprox','k_CA_RCAmed','k_CA_RCAdist',
-     'k_hr','k_pq','k_qrs','k_rr','k_qt','k_phys_hr'
+     'k_hr','k_pq','k_qrs','k_rr','k_qt','k_phys_hr','k_birth_weight'
     ].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
     // Reset wariantów opisu Konsultacji
     Object.keys(KONS_VARIANTS).forEach(k => { KONS_VARIANTS[k] = false; });
