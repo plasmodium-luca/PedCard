@@ -950,7 +950,11 @@
         <div class="tbl-row mm-cols">
           <div class="var-name">QRS</div>
           <div class="input-wrap"><input type="number" id="k_qrs" step="1" min="20" max="200" placeholder="—" oninput="recalcKonsEKG2()"/><span class="unit">ms</span></div>
-          <div class="result-cell" id="k_qrs_z">—</div>
+          <div style="display:flex;align-items:center;gap:0.4rem;flex-wrap:wrap;">
+            <div class="result-cell" id="k_qrs_z">—</div>
+            <button id="k_btn_rr_prim" onclick="toggleKonsEKGBtn('rr_prim')"
+              style="padding:0.18rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;white-space:nowrap;">Rr'</button>
+          </div>
         </div>
         <div class="tbl-row mm-cols">
           <div class="var-name">RR</div>
@@ -1002,6 +1006,25 @@
               style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">węzłowy</button>
             <button id="k_rhythm_komorowy"            onclick="setKonsRhythm('komorowy')"
               style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">komorowy</button>
+          </div>
+        </div>
+
+        <!-- Przewodzenie -->
+        <div style="border-top:1px solid #fed7d7;margin-top:0.5rem;padding-top:0.5rem;">
+          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;">Przewodzenie</div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.3rem;">
+            <button id="k_btn_irbbb"        onclick="toggleKonsEKGBtn('irbbb')"
+              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">iRBBB</button>
+            <button id="k_btn_rbbb"         onclick="toggleKonsEKGBtn('rbbb')"
+              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">RBBB</button>
+            <button id="k_btn_lbbb"         onclick="toggleKonsEKGBtn('lbbb')"
+              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">LBBB</button>
+            <button id="k_btn_lpfb"         onclick="toggleKonsEKGBtn('lpfb')"
+              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">LPFB</button>
+            <button id="k_btn_lafb"         onclick="toggleKonsEKGBtn('lafb')"
+              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">LAFB</button>
+            <button id="k_btn_srodkomorowe" onclick="toggleKonsEKGBtn('srodkomorowe')"
+              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">śródkomorowe</button>
           </div>
         </div>
       </div>
@@ -1894,6 +1917,12 @@
     });
     setKonsAxis('posrednia');
     setKonsRhythm('zatokowy');
+    // Reset boksików przewodzenia i Rr'
+    Object.keys(KONS_EKG_BTNS).forEach(k => { KONS_EKG_BTNS[k] = false; });
+    Object.keys(KONS_EKG_BTNS).forEach(k => {
+      const btn = document.getElementById('k_btn_' + k);
+      if(btn){ btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
+    });
 
     // EKG — Holter i Spoczynkowe
     document.querySelectorAll('.schwartz-cb').forEach(cb => cb.checked = false);
@@ -3583,8 +3612,38 @@
     return html;
   }
 
-  let KONS_AXIS = 'pośrednia';
+  let KONS_AXIS   = 'pośrednia';
   let KONS_RHYTHM = 'zatokowy';
+
+  // Boksiki EKG — zaburzenia przewodzenia i Rr'
+  const KONS_EKG_BTNS = {
+    irbbb: false, rbbb: false, lbbb: false,
+    lpfb: false, lafb: false, srodkomorowe: false, rr_prim: false
+  };
+
+  // Mapowanie klucz → tekst w QRS i w podsumowaniu
+  const EKG_BTN_QRS = {
+    rr_prim: "Rr' w V1"
+  };
+  const EKG_BTN_SUMMARY = {
+    irbbb:        'iRBBB',
+    rbbb:         'RBBB',
+    lbbb:         'LBBB',
+    lpfb:         'LPFB',
+    lafb:         'LAFB',
+    srodkomorowe: 'Niespecyficzne zaburzenia przewodnictwa śródkomorowego zapis w granicach normy',
+    rr_prim:      'zapis w granicach normy'
+  };
+
+  function toggleKonsEKGBtn(key){
+    KONS_EKG_BTNS[key] = !KONS_EKG_BTNS[key];
+    const btn = document.getElementById('k_btn_' + key);
+    if(btn){
+      if(KONS_EKG_BTNS[key]){ btn.style.background='#c53030'; btn.style.color='#fff'; btn.style.borderColor='#c53030'; }
+      else { btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
+    }
+    recalcKons();
+  }
 
   function setKonsAxis(val){
     const labels = {posrednia:'pośrednia', prawogram:'prawogram', lewogram:'lewogram', nieokreslona:'nieokreślona'};
@@ -3652,7 +3711,7 @@
       pqStr += 'ms';
     }
 
-    // QRS
+    // QRS + opcjonalnie Rr'
     let qrsStr = 'QRS ';
     if(!isNaN(qrsVal)){
       qrsStr += '<b>' + qrsVal + '</b> ms';
@@ -3660,6 +3719,7 @@
     } else {
       qrsStr += 'ms';
     }
+    if(KONS_EKG_BTNS.rr_prim) qrsStr += ", Rr' w V1";
 
     // QT/QTc
     let qtStr = 'QT ';
@@ -3673,7 +3733,21 @@
       qtStr += 'ms';
     }
 
-    return hrStr + ', ' + axisStr + ', ' + pqStr + ', ' + qrsStr + ', ' + qtStr + '. Zapis prawidłowy.<br>';
+    // Podsumowanie — zaburzenia przewodzenia lub "Zapis prawidłowy"
+    const conductionKeys = ['irbbb','rbbb','lbbb','lpfb','lafb','srodkomorowe'];
+    const activeConduction = conductionKeys.filter(k => KONS_EKG_BTNS[k]);
+    let summary;
+    if(activeConduction.length > 0){
+      summary = activeConduction.map(k => EKG_BTN_SUMMARY[k]).join(', ');
+    } else {
+      summary = 'Zapis prawidłowy';
+    }
+    // Jeśli Rr' aktywne ale bez innych zaburzeń, dodaj "zapis w granicach normy"
+    if(KONS_EKG_BTNS.rr_prim && activeConduction.length === 0){
+      summary = EKG_BTN_SUMMARY.rr_prim;
+    }
+
+    return hrStr + ', ' + axisStr + ', ' + pqStr + ', ' + qrsStr + ', ' + qtStr + '. ' + summary + '.<br>';
   }
 
   function resetKons(){
