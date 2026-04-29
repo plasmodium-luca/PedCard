@@ -358,7 +358,7 @@
   </svg>
   <div style="display:flex;flex-direction:column;justify-content:center;">
     <div class="header-desc">Imperium Serca &mdash; Klinika Kardiologii Dziecięcej</div>
-    <div style="font-size:0.72rem;opacity:0.75;letter-spacing:0.1em;text-transform:uppercase;color:#fff;margin-top:0.2rem;">Imperialne narzędzie do kontrolowania wymiarów</div>
+    <div style="font-size:0.72rem;opacity:0.75;letter-spacing:0.1em;text-transform:uppercase;color:#fff;margin-top:0.2rem;">Imperialne narzędzie kontrolowania wymiarów</div>
   </div>
 </header>
 
@@ -623,13 +623,13 @@
   </div><!-- /tab-echo -->
 
   <!-- Przycisk Resetuj — prawy dolny róg, widoczny tylko w zakładce Echo -->
-  <button id="btn_reset_echo" onclick="resetEcho()" title="Resetuj wszystkie pola w karcie Echo"
+  <button id="btn_reset_echo" onclick="resetEcho()" title="Resetuj wszystkie karty"
     style="position:fixed;bottom:1.2rem;right:1.2rem;z-index:999;
            padding:0.5rem 1.1rem;background:#1a0000;color:#fca5a5;
            border:2px solid #c53030;border-radius:8px;font-size:0.78rem;
            font-weight:700;cursor:pointer;letter-spacing:0.05em;
            box-shadow:0 2px 10px rgba(197,48,48,0.35);
-           display:block;">🗑 Resetuj</button>
+           display:block;">🗑 Resetuj wszystko</button>
 
 
 
@@ -1849,31 +1849,66 @@
   }
 
   function resetEcho() {
-    if(!confirm('Wyzerować wszystkie pola w karcie Echo?')) return;
-    const ids = [
-      'height','weight','pt_age','pt_dob',
-      'RVDD','IVSd','LVEDD','LVESD','LVPWd',
-      'mv_val','tv_val','av_val','pv_val',
-      'tapse_val',
-      'AoAnn','Sinus','STJ','AoAsc','TArch','Isthm','DistAo',
-      'PVAnn','MPA','RPA','LPA',
-      'CA_LMCA','CA_LAD','CA_Cx','CA_RCAprox','CA_RCAmed','CA_RCAdist'
-    ];
-    ids.forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
-    // Reset toggle płeć → dziewczynka
+    if(!confirm('Wyzerować wszystkie pola we wszystkich kartach?')) return;
+
+    // Globalna karta pacjenta
+    ['height','weight','pt_age','pt_dob'].forEach(id => {
+      const el = document.getElementById(id); if(el) el.value = '';
+    });
     const toggle = document.getElementById('sex_toggle');
     const sexHidden = document.getElementById('sex');
     if(toggle){ toggle.classList.remove('boy'); sexHidden.value = 'girl'; }
-    // Reset wariantów opisu
+    const ageDisp = document.getElementById('age_display');
+    if(ageDisp){ ageDisp.textContent = ''; ageDisp.style.display = 'none'; }
+    // Sync k_sex
+    const kSex = document.getElementById('k_sex');
+    const kToggle = document.getElementById('k_sex_toggle');
+    if(kSex) kSex.value = 'girl';
+    if(kToggle) kToggle.classList.remove('boy');
+
+    // Echo
+    ['RVDD','IVSd','LVEDD','LVESD','LVPWd',
+     'mv_val','tv_val','av_val','pv_val','tapse_val',
+     'AoAnn','Sinus','STJ','AoAsc','TArch','Isthm','DistAo',
+     'PVAnn','MPA','RPA','LPA',
+     'CA_LMCA','CA_LAD','CA_Cx','CA_RCAprox','CA_RCAmed','CA_RCAdist'
+    ].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
     Object.keys(VARIANTS).forEach(k => { VARIANTS[k] = false; });
     ['tvi','pfo','mvi','coro','ivc','struna','niepokoj','kolana'].forEach(k => {
       const btn = document.getElementById('btn_' + k);
       if(btn){ btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
     });
-    // Reset opisu Echo
+
+    // Konsultacja
+    ['k_RVDD','k_IVSd','k_LVEDD','k_LVESD','k_LVPWd',
+     'k_mv_val','k_tv_val','k_av_val','k_pv_val','k_tapse_val',
+     'k_AoAnn','k_Sinus','k_STJ','k_AoAsc','k_TArch','k_Isthm','k_DistAo',
+     'k_PVAnn','k_MPA','k_RPA','k_LPA',
+     'k_CA_LMCA','k_CA_LAD','k_CA_Cx','k_CA_RCAprox','k_CA_RCAmed','k_CA_RCAdist',
+     'k_hr','k_pq','k_qrs','k_rr','k_qt','k_phys_hr'
+    ].forEach(id => { const el = document.getElementById(id); if(el) el.value = ''; });
+    Object.keys(KONS_VARIANTS).forEach(k => { KONS_VARIANTS[k] = false; });
+    ['tvi','pfo','mvi','coro','ivc','struna','niepokoj','kolana'].forEach(k => {
+      const btn = document.getElementById('k_btn_' + k);
+      if(btn){ btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
+    });
+    setKonsAxis('posrednia');
+    setKonsRhythm('zatokowy');
+
+    // EKG — Holter i Spoczynkowe
+    document.querySelectorAll('.schwartz-cb').forEach(cb => cb.checked = false);
+    if(typeof recalcSchwartz === 'function') recalcSchwartz();
+
+    // Przelicz wszystko
+    recalcAll();
+    recalcPHN();
+    recalcKons();
+
+    // Reset opisów
     const notesBox = document.getElementById('echo_notes_box');
     if(notesBox) notesBox.innerHTML = buildEchoDescription(null, 'girl');
-    recalcAll();
+    const kNotesBox = document.getElementById('k_echo_notes_box');
+    if(kNotesBox) kNotesBox.innerHTML = buildKonsDescription(null, 'girl');
   }
 
   // ────────────────────────────────────────────────────────────────────
@@ -3118,7 +3153,7 @@
       panel.classList.toggle('active-tab', panel.id === 'tab-' + name);
     });
     const resetBtn = document.getElementById('btn_reset_echo');
-    if(resetBtn) resetBtn.style.display = (name === 'echo' || name === 'konsultacja') ? 'block' : 'none';
+    if(resetBtn) resetBtn.style.display = 'block';
     // Synchronizuj dane przy zmianie zakładki
     syncGlobalToAll();
     if(name==='echophn') recalcPHN();
