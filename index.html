@@ -98,6 +98,9 @@
       text-transform:uppercase;
       letter-spacing:0.05em;
     }
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0;}
+    input[type=number]{-moz-appearance:textfield;appearance:textfield;}
     .field input,.field select{
       padding:0.45rem 0.7rem;
       border:1.5px solid #feb2b2;
@@ -373,11 +376,13 @@
 <!-- Wspólna karta pacjenta — widoczna we wszystkich zakładkach -->
 <div class="patient-card" id="global-patient-card" style="margin-bottom:0;">
   <div class="field">
-    <label>Płeć</label>
-    <div class="sex-toggle" id="sex_toggle" onclick="toggleSex()">
-      <div class="sex-knob" id="sex_knob"></div>
-      <span class="sex-label-left">Dziewczynka</span>
-      <span class="sex-label-right">Chłopiec</span>
+    <div style="display:flex;flex-direction:column;gap:0.2rem;">
+      <span id="toggle_age_display" style="font-size:0.7rem;font-weight:700;color:#c53030;text-align:center;min-height:1rem;white-space:nowrap;"></span>
+      <div class="sex-toggle" id="sex_toggle" onclick="toggleSex()">
+        <div class="sex-knob" id="sex_knob"></div>
+        <span class="sex-label-left">Dziewczynka</span>
+        <span class="sex-label-right">Chłopiec</span>
+      </div>
     </div>
     <input type="hidden" id="sex" value="girl"/>
   </div>
@@ -905,268 +910,164 @@
   <!-- KARTA KONSULTACJA -->
 <div id="tab-konsultacja" class="tab-panel">
 
-    <div class="boxes-row" style="grid-template-columns:repeat(5,1fr);">
+    <!-- ── RZĄD 1: 3 kafle ── -->
+    <div class="boxes-row" style="grid-template-columns:1fr 1fr 1fr;margin-top:0;">
 
-      <!-- KOL 0: Wywiad -->
-      <div class="calc-card">
+      <!-- KOL 1: Wywiad + Badanie + EKG poziomo -->
+      <div class="calc-card" style="display:flex;flex-direction:column;gap:0.5rem;">
+
         <h2>Wywiad</h2>
-        <div style="font-size:0.68rem;color:#718096;margin-bottom:0.5rem;font-style:italic;" id="k_wywiad_group">— wpisz wiek pacjenta</div>
-
-        <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem;">Masa urodzeniowa (g)</div>
-        <div class="input-wrap" style="margin-bottom:0.6rem;">
-          <input type="number" id="k_birth_weight" step="1" min="400" max="6000" placeholder="—"
-                 oninput="recalcKons()" style="width:80px;"/>
-          <span class="unit">g</span>
+        <div style="font-size:0.65rem;color:#718096;font-style:italic;" id="k_wywiad_sect_group"></div>
+        <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">
+          <button id="k_wywiad_btn_auto"    onclick="setKonsWywiadTemplate('auto')"    style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#c53030;color:#fff;font-size:0.68rem;font-weight:700;cursor:pointer;">auto</button>
+          <button id="k_wywiad_btn_niemowl" onclick="setKonsWywiadTemplate('niemowl')" style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">niemowlę</button>
+          <button id="k_wywiad_btn_sredni"  onclick="setKonsWywiadTemplate('sredni')"  style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">średni</button>
+          <button id="k_wywiad_btn_duzy"    onclick="setKonsWywiadTemplate('duzy')"    style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">duży</button>
         </div>
-
-        <div style="border-top:1px solid #fed7d7;margin-top:0.2rem;padding-top:0.5rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;">Podgląd szablonu</div>
-          <div id="k_wywiad_preview" style="font-size:0.72rem;color:#4a5568;line-height:1.6;font-style:italic;"></div>
+        <div id="k_birth_weight_row" style="display:none;align-items:center;gap:0.5rem;flex-wrap:wrap;">
+          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;">Masa urodzeniowa</div>
+          <div class="input-wrap"><input type="number" id="k_birth_weight" step="1" min="400" max="6000" placeholder="—" oninput="recalcKons()" style="width:75px;"/><span class="unit">g</span></div>
         </div>
-      </div>
+        <textarea id="k_sect_wywiad" rows="5" oninput="onKonsSectEdit('wywiad')" style="width:100%;border:1.5px solid #feb2b2;border-radius:7px;padding:0.5rem;font-size:0.8rem;font-family:'Segoe UI',sans-serif;line-height:1.6;resize:vertical;outline:none;background:#fff;"></textarea>
 
-      <!-- KOL 1: Badanie fizykalne -->
-      <div class="calc-card">
+        <div style="border-top:3px solid #fed7d7;margin:0.2rem 0;"></div>
         <h2>Badanie fizykalne</h2>
-
-        <div class="tbl-header mm-cols" style="margin-bottom:0.5rem;"><span>Parametr</span><span>Wartość</span><span></span></div>
-
-        <div class="tbl-row mm-cols">
-          <div class="var-name">HR</div>
-          <div class="input-wrap">
-            <input type="number" id="k_phys_hr" step="1" min="20" max="300" placeholder="—"
-                   oninput="recalcKons()" style="width:64px;"/>
-            <span class="unit">/min</span>
-          </div>
-          <div style="font-size:0.68rem;color:#a0aec0;align-self:center;">jeśli puste — z EKG</div>
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;">HR</div>
+          <div class="input-wrap"><input type="number" id="k_phys_hr" step="1" min="20" max="300" placeholder="— lub z EKG" oninput="recalcKons()" style="width:90px;"/><span class="unit">/min</span></div>
         </div>
+        <textarea id="k_sect_phys" rows="5" oninput="onKonsSectEdit('phys')" style="width:100%;border:1.5px solid #feb2b2;border-radius:7px;padding:0.5rem;font-size:0.8rem;font-family:'Segoe UI',sans-serif;line-height:1.6;resize:vertical;outline:none;background:#fff;"></textarea>
 
-        <div style="border-top:1px solid #fed7d7;margin-top:0.6rem;padding-top:0.5rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;">Podgląd szablonu</div>
-          <div id="k_phys_preview" style="font-size:0.72rem;color:#4a5568;line-height:1.6;font-style:italic;"></div>
-        </div>
-      </div>
-
-      <!-- KOL 1: EKG -->
-      <div class="calc-card">
+        <div style="border-top:3px solid #fed7d7;margin:0.2rem 0;"></div>
         <h2>EKG</h2>
         <div class="reference">Bratincsák A, et al. 2020</div>
-        <div id="k_ekg_group" style="font-size:0.68rem;color:#718096;margin:0.1rem 0 0.6rem;font-style:italic;">— wpisz wiek pacjenta</div>
-
-        <div class="tbl-header mm-cols"><span>Parametr</span><span>Wartość</span><span>Z-score [norma]</span></div>
-
-        <div class="tbl-row mm-cols">
-          <div class="var-name">HR</div>
-          <div class="input-wrap"><input type="number" id="k_hr" step="1" min="20" max="300" placeholder="—" oninput="recalcKonsEKG2()"/><span class="unit">/min</span></div>
-          <div class="result-cell" id="k_hr_z">—</div>
+        <div id="k_ekg_group" style="font-size:0.68rem;color:#718096;font-style:italic;">— wpisz wiek pacjenta</div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.2rem;text-align:center;">
+          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">HR</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">PQ</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">QRS</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">RR</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">QT</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">QTc</div>
         </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">PQ</div>
-          <div class="input-wrap"><input type="number" id="k_pq" step="1" min="50" max="400" placeholder="—" oninput="recalcKonsEKG2()"/><span class="unit">ms</span></div>
-          <div class="result-cell" id="k_pq_z">—</div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.2rem;">
+          <input type="number" id="k_hr"  step="1" min="20"  max="300"  placeholder="—" oninput="recalcKons()" style="width:100%;text-align:center;border:1.5px solid #feb2b2;border-radius:5px;padding:0.25rem 0.1rem;font-size:0.8rem;"/>
+          <input type="number" id="k_pq"  step="1" min="50"  max="400"  placeholder="—" oninput="recalcKons()" style="width:100%;text-align:center;border:1.5px solid #feb2b2;border-radius:5px;padding:0.25rem 0.1rem;font-size:0.8rem;"/>
+          <input type="number" id="k_qrs" step="1" min="20"  max="200"  placeholder="—" oninput="recalcKons()" style="width:100%;text-align:center;border:1.5px solid #feb2b2;border-radius:5px;padding:0.25rem 0.1rem;font-size:0.8rem;"/>
+          <input type="number" id="k_rr"  step="1" min="200" max="2000" placeholder="—" oninput="recalcKons()" style="width:100%;text-align:center;border:1.5px solid #feb2b2;border-radius:5px;padding:0.25rem 0.1rem;font-size:0.8rem;"/>
+          <input type="number" id="k_qt"  step="1" min="100" max="800"  placeholder="—" oninput="recalcKons()" style="width:100%;text-align:center;border:1.5px solid #feb2b2;border-radius:5px;padding:0.25rem 0.1rem;font-size:0.8rem;"/>
+          <span id="k_qtc_val" style="font-size:0.82rem;font-weight:700;color:#4a5568;display:flex;align-items:center;justify-content:center;">—</span>
         </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">QRS</div>
-          <div class="input-wrap"><input type="number" id="k_qrs" step="1" min="20" max="200" placeholder="—" oninput="recalcKonsEKG2()"/><span class="unit">ms</span></div>
-          <div class="result-cell" id="k_qrs_z">—</div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.2rem;text-align:center;">
+          <div style="font-size:0.58rem;color:#a0aec0;">/min</div>
+          <div style="font-size:0.58rem;color:#a0aec0;">ms</div>
+          <div style="font-size:0.58rem;color:#a0aec0;">ms</div>
+          <div style="font-size:0.58rem;color:#a0aec0;">ms</div>
+          <div style="font-size:0.58rem;color:#a0aec0;">ms</div>
+          <div style="font-size:0.58rem;color:#a0aec0;">ms</div>
         </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">RR</div>
-          <div class="input-wrap"><input type="number" id="k_rr" step="1" min="200" max="2000" placeholder="—" oninput="recalcKonsEKG2()"/><span class="unit">ms</span></div>
-          <div class="result-cell" id="k_rr_info" style="font-size:0.75rem;color:#a0aec0;">→ QTc po wpisaniu QT</div>
+        <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.2rem;text-align:center;">
+          <div class="result-cell" id="k_hr_z"  style="font-size:0.68rem;">—</div>
+          <div class="result-cell" id="k_pq_z"  style="font-size:0.68rem;">—</div>
+          <div class="result-cell" id="k_qrs_z" style="font-size:0.68rem;">—</div>
+          <div id="k_rr_info"  style="font-size:0.68rem;color:#a0aec0;">—</div>
+          <div id="k_qt_info"  style="font-size:0.68rem;color:#a0aec0;">—</div>
+          <div class="result-cell" id="k_qtc_z" style="font-size:0.68rem;">—</div>
         </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">QT</div>
-          <div class="input-wrap"><input type="number" id="k_qt" step="1" min="100" max="800" placeholder="—" oninput="recalcKonsEKG2()"/><span class="unit">ms</span></div>
-          <div class="result-cell" id="k_qt_info" style="font-size:0.75rem;color:#a0aec0;">—</div>
-        </div>
-
-        <div style="border-top:1px solid #fed7d7;margin-top:0.5rem;padding-top:0.45rem;">
-          <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-            <span class="var-name" style="min-width:48px;">QTc</span>
-            <span class="result-cell" id="k_qtc_val" style="min-width:60px;">—</span>
-            <span style="font-size:0.68rem;color:#a0aec0;">ms (Bazett)</span>
-            <span class="result-cell" id="k_qtc_z" style="min-width:80px;">—</span>
-          </div>
-          <div style="font-size:0.62rem;color:#a0aec0;margin-top:0.25rem;font-style:italic;">QTc = QT / √(RR[s])</div>
-        </div>
-
-        <!-- Oś QRS -->
-        <div style="border-top:1px solid #fed7d7;margin-top:0.6rem;padding-top:0.5rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;">Oś QRS</div>
-          <div style="display:flex;flex-wrap:wrap;gap:0.3rem;">
-            <button id="k_axis_posrednia" onclick="setKonsAxis('posrednia')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#c53030;color:#fff;font-size:0.72rem;font-weight:700;cursor:pointer;">pośrednia</button>
-            <button id="k_axis_prawogram" onclick="setKonsAxis('prawogram')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">prawogram</button>
-            <button id="k_axis_lewogram" onclick="setKonsAxis('lewogram')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">lewogram</button>
-            <button id="k_axis_nieokreslona" onclick="setKonsAxis('nieokreslona')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">nieokreślona</button>
-          </div>
-        </div>
-
-        <!-- Rytm -->
-        <div style="border-top:1px solid #fed7d7;margin-top:0.5rem;padding-top:0.5rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;">Rytm</div>
-          <div style="display:flex;flex-wrap:wrap;gap:0.3rem;">
-            <button id="k_rhythm_zatokowy"            onclick="setKonsRhythm('zatokowy')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#c53030;color:#fff;font-size:0.72rem;font-weight:700;cursor:pointer;">zatokowy</button>
-            <button id="k_rhythm_pozazatokowy"        onclick="setKonsRhythm('pozazatokowy')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">pozazatokowy</button>
-            <button id="k_rhythm_dolnoprzedsionkowy"  onclick="setKonsRhythm('dolnoprzedsionkowy')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">dolnoprzedsionkowy</button>
-            <button id="k_rhythm_wezlowy"             onclick="setKonsRhythm('wezlowy')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">węzłowy</button>
-            <button id="k_rhythm_komorowy"            onclick="setKonsRhythm('komorowy')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">komorowy</button>
-          </div>
-        </div>
-
-        <!-- Przewodzenie -->
-        <div style="border-top:1px solid #fed7d7;margin-top:0.5rem;padding-top:0.5rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.4rem;">Przewodzenie</div>
-          <div style="display:flex;flex-wrap:wrap;gap:0.3rem;">
-            <button id="k_btn_irbbb"        onclick="toggleKonsEKGBtn('irbbb')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">iRBBB</button>
-            <button id="k_btn_rbbb"         onclick="toggleKonsEKGBtn('rbbb')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">RBBB</button>
-            <button id="k_btn_lbbb"         onclick="toggleKonsEKGBtn('lbbb')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">LBBB</button>
-            <button id="k_btn_lpfb"         onclick="toggleKonsEKGBtn('lpfb')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">LPFB</button>
-            <button id="k_btn_lafb"         onclick="toggleKonsEKGBtn('lafb')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">LAFB</button>
-            <button id="k_btn_srodkomorowe" onclick="toggleKonsEKGBtn('srodkomorowe')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">śródkomorowe</button>
-            <button id="k_btn_rr_prim" onclick="toggleKonsEKGBtn('rr_prim')"
-              style="padding:0.25rem 0.55rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.72rem;font-weight:700;cursor:pointer;">Rr'</button>
-          </div>
-        </div>
-      </div>
-
-
-      <!-- KOL 1: M-mode + Zastawki -->
-      <div class="calc-card">
-
-        <h2>Wymiary M-mode</h2>
-        <div class="reference">Kampmann et al. 2000</div>
-        <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">RVDD</div>
-          <div class="input-wrap"><input type="number" id="k_RVDD" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="k_RVDD_z">—</div>
-            <div class="zbar-wrap" id="k_RVDD_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_RVDD_bar_fill"></div><div class="zbar-dot" id="k_RVDD_bar_dot"></div><div class="zbar-val" id="k_RVDD_bar_val"></div></div><div class="zbar-labels"><span id="k_RVDD_bar_m2">—</span><span id="k_RVDD_bar_0">—</span><span id="k_RVDD_bar_p2">—</span></div></div></div>
-          </div>
-        </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">IVSd</div>
-          <div class="input-wrap"><input type="number" id="k_IVSd" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="k_IVSd_z">—</div>
-            <div class="zbar-wrap" id="k_IVSd_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_IVSd_bar_fill"></div><div class="zbar-dot" id="k_IVSd_bar_dot"></div><div class="zbar-val" id="k_IVSd_bar_val"></div></div><div class="zbar-labels"><span id="k_IVSd_bar_m2">—</span><span id="k_IVSd_bar_0">—</span><span id="k_IVSd_bar_p2">—</span></div></div></div>
-          </div>
-        </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">LVEDD</div>
-          <div class="input-wrap"><input type="number" id="k_LVEDD" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="k_LVEDD_z">—</div>
-            <div class="zbar-wrap" id="k_LVEDD_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_LVEDD_bar_fill"></div><div class="zbar-dot" id="k_LVEDD_bar_dot"></div><div class="zbar-val" id="k_LVEDD_bar_val"></div></div><div class="zbar-labels"><span id="k_LVEDD_bar_m2">—</span><span id="k_LVEDD_bar_0">—</span><span id="k_LVEDD_bar_p2">—</span></div></div></div>
-          </div>
-        </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">LVESD</div>
-          <div class="input-wrap"><input type="number" id="k_LVESD" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="k_LVESD_z">—</div>
-            <div class="zbar-wrap" id="k_LVESD_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_LVESD_bar_fill"></div><div class="zbar-dot" id="k_LVESD_bar_dot"></div><div class="zbar-val" id="k_LVESD_bar_val"></div></div><div class="zbar-labels"><span id="k_LVESD_bar_m2">—</span><span id="k_LVESD_bar_0">—</span><span id="k_LVESD_bar_p2">—</span></div></div></div>
-          </div>
-        </div>
-        <div class="tbl-row mm-cols">
-          <div class="var-name">LVPWd</div>
-          <div class="input-wrap"><input type="number" id="k_LVPWd" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="k_LVPWd_z">—</div>
-            <div class="zbar-wrap" id="k_LVPWd_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_LVPWd_bar_fill"></div><div class="zbar-dot" id="k_LVPWd_bar_dot"></div><div class="zbar-val" id="k_LVPWd_bar_val"></div></div><div class="zbar-labels"><span id="k_LVPWd_bar_m2">—</span><span id="k_LVPWd_bar_0">—</span><span id="k_LVPWd_bar_p2">—</span></div></div></div>
-          </div>
-        </div>
-
-        <!-- separator -->
-        <div style="border-top:3px solid #fed7d7;margin:0.8rem 0 0.6rem;"></div>
-
-        <h2>Pierścienie zastawek</h2>
-        <div class="reference">Cantinotti et al. 2014</div>
-        <div class="tbl-header vv-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
-        <div class="tbl-row vv-cols">
-          <div class="var-name">MV</div>
-          <div class="input-wrap"><input type="number" id="k_mv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="k_mv_z">—</div>
-            <div class="zbar-wrap" id="k_mv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_mv_bar_fill"></div><div class="zbar-dot" id="k_mv_bar_dot"></div><div class="zbar-val" id="k_mv_bar_val"></div></div><div class="zbar-labels"><span id="k_mv_bar_m2">—</span><span id="k_mv_bar_0">—</span><span id="k_mv_bar_p2">—</span></div></div></div>
-          </div>
-        </div>
-        <div class="tbl-row vv-cols">
-          <div class="var-name">TV</div>
-          <div class="input-wrap"><input type="number" id="k_tv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="k_tv_z">—</div>
-            <div class="zbar-wrap" id="k_tv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_tv_bar_fill"></div><div class="zbar-dot" id="k_tv_bar_dot"></div><div class="zbar-val" id="k_tv_bar_val"></div></div><div class="zbar-labels"><span id="k_tv_bar_m2">—</span><span id="k_tv_bar_0">—</span><span id="k_tv_bar_p2">—</span></div></div></div>
-          </div>
-        </div>
-        <div class="tbl-row vv-cols">
-          <div class="var-name">AV</div>
-          <div class="input-wrap"><input type="number" id="k_av_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="k_av_z">—</div>
-            <div class="zbar-wrap" id="k_av_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_av_bar_fill"></div><div class="zbar-dot" id="k_av_bar_dot"></div><div class="zbar-val" id="k_av_bar_val"></div></div><div class="zbar-labels"><span id="k_av_bar_m2">—</span><span id="k_av_bar_0">—</span><span id="k_av_bar_p2">—</span></div></div></div>
-          </div>
-        </div>
-        <div class="tbl-row vv-cols">
-          <div class="var-name">PV</div>
-          <div class="input-wrap"><input type="number" id="k_pv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div>
-          <div style="display:flex;flex-direction:column;justify-content:center;min-width:0;">
-            <div class="result-cell" id="k_pv_z">—</div>
-            <div class="zbar-wrap" id="k_pv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_pv_bar_fill"></div><div class="zbar-dot" id="k_pv_bar_dot"></div><div class="zbar-val" id="k_pv_bar_val"></div></div><div class="zbar-labels"><span id="k_pv_bar_m2">—</span><span id="k_pv_bar_0">—</span><span id="k_pv_bar_p2">—</span></div></div></div>
-          </div>
-        </div>
+        <div style="font-size:0.58rem;color:#a0aec0;font-style:italic;">QTc = QT / √(RR[s]) &nbsp; (Bazett)</div>
 
       </div><!-- /kol 1 -->
 
-      <!-- KOL 2: Funkcja komór + Aorta -->
+      <!-- KOL 2: Oś + Rytm + Przewodzenie + textarea EKG, separator, M-mode -->
+      <div class="calc-card" style="display:flex;flex-direction:column;gap:0.4rem;">
+
+        <div>
+          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Oś QRS</div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
+            <button id="k_axis_posrednia"    onclick="setKonsAxis('posrednia')"    style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#c53030;color:#fff;font-size:0.68rem;font-weight:700;cursor:pointer;">pośrednia</button>
+            <button id="k_axis_prawogram"    onclick="setKonsAxis('prawogram')"    style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">prawogram</button>
+            <button id="k_axis_lewogram"     onclick="setKonsAxis('lewogram')"     style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">lewogram</button>
+            <button id="k_axis_nieokreslona" onclick="setKonsAxis('nieokreslona')" style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">nieokreślona</button>
+          </div>
+        </div>
+        <div style="border-top:1px solid #fed7d7;padding-top:0.4rem;">
+          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Rytm</div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
+            <button id="k_rhythm_zatokowy"           onclick="setKonsRhythm('zatokowy')"           style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#c53030;color:#fff;font-size:0.68rem;font-weight:700;cursor:pointer;">zatokowy</button>
+            <button id="k_rhythm_pozazatokowy"       onclick="setKonsRhythm('pozazatokowy')"       style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">pozazatokowy</button>
+            <button id="k_rhythm_dolnoprzedsionkowy" onclick="setKonsRhythm('dolnoprzedsionkowy')" style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">dolnoprzedsionkowy</button>
+            <button id="k_rhythm_wezlowy"            onclick="setKonsRhythm('wezlowy')"            style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">węzłowy</button>
+            <button id="k_rhythm_komorowy"           onclick="setKonsRhythm('komorowy')"           style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">komorowy</button>
+          </div>
+        </div>
+        <div style="border-top:1px solid #fed7d7;padding-top:0.4rem;">
+          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Przewodzenie</div>
+          <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
+            <button id="k_btn_irbbb"        onclick="toggleKonsEKGBtn('irbbb')"        style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">iRBBB</button>
+            <button id="k_btn_rbbb"         onclick="toggleKonsEKGBtn('rbbb')"         style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">RBBB</button>
+            <button id="k_btn_lbbb"         onclick="toggleKonsEKGBtn('lbbb')"         style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">LBBB</button>
+            <button id="k_btn_lpfb"         onclick="toggleKonsEKGBtn('lpfb')"         style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">LPFB</button>
+            <button id="k_btn_lafb"         onclick="toggleKonsEKGBtn('lafb')"         style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">LAFB</button>
+            <button id="k_btn_srodkomorowe" onclick="toggleKonsEKGBtn('srodkomorowe')" style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">śródkomorowe</button>
+            <button id="k_btn_rr_prim"      onclick="toggleKonsEKGBtn('rr_prim')"      style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">Rr'</button>
+            <button id="k_btn_avb1"         onclick="toggleKonsEKGBtn('avb1')"         style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">AVBI</button>
+            <button id="k_btn_avb2"         onclick="toggleKonsEKGBtn('avb2')"         style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">AVBII</button>
+            <button id="k_btn_avb3"         onclick="toggleKonsEKGBtn('avb3')"         style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">AVBIII</button>
+          </div>
+        </div>
+        <textarea id="k_sect_ekg" rows="4" oninput="onKonsSectEdit('ekg')" style="width:100%;border:1.5px solid #feb2b2;border-radius:7px;padding:0.5rem;font-size:0.8rem;font-family:'Segoe UI',sans-serif;line-height:1.6;resize:vertical;outline:none;background:#fff;"></textarea>
+
+        <div style="border-top:3px solid #fed7d7;margin:0.3rem 0 0.5rem;"></div>
+        <h2>Wymiary M-mode</h2>
+        <div class="reference">Kampmann et al. 2000</div>
+        <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
+        <div class="tbl-row mm-cols"><div class="var-name">RVDD</div><div class="input-wrap"><input type="number" id="k_RVDD" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_RVDD_z">—</div><div class="zbar-wrap" id="k_RVDD_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_RVDD_bar_fill"></div><div class="zbar-dot" id="k_RVDD_bar_dot"></div><div class="zbar-val" id="k_RVDD_bar_val"></div></div><div class="zbar-labels"><span id="k_RVDD_bar_m2">—</span><span id="k_RVDD_bar_0">—</span><span id="k_RVDD_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">IVSd</div><div class="input-wrap"><input type="number" id="k_IVSd" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_IVSd_z">—</div><div class="zbar-wrap" id="k_IVSd_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_IVSd_bar_fill"></div><div class="zbar-dot" id="k_IVSd_bar_dot"></div><div class="zbar-val" id="k_IVSd_bar_val"></div></div><div class="zbar-labels"><span id="k_IVSd_bar_m2">—</span><span id="k_IVSd_bar_0">—</span><span id="k_IVSd_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">LVEDD</div><div class="input-wrap"><input type="number" id="k_LVEDD" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_LVEDD_z">—</div><div class="zbar-wrap" id="k_LVEDD_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_LVEDD_bar_fill"></div><div class="zbar-dot" id="k_LVEDD_bar_dot"></div><div class="zbar-val" id="k_LVEDD_bar_val"></div></div><div class="zbar-labels"><span id="k_LVEDD_bar_m2">—</span><span id="k_LVEDD_bar_0">—</span><span id="k_LVEDD_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">LVESD</div><div class="input-wrap"><input type="number" id="k_LVESD" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_LVESD_z">—</div><div class="zbar-wrap" id="k_LVESD_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_LVESD_bar_fill"></div><div class="zbar-dot" id="k_LVESD_bar_dot"></div><div class="zbar-val" id="k_LVESD_bar_val"></div></div><div class="zbar-labels"><span id="k_LVESD_bar_m2">—</span><span id="k_LVESD_bar_0">—</span><span id="k_LVESD_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row mm-cols"><div class="var-name">LVPWd</div><div class="input-wrap"><input type="number" id="k_LVPWd" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_LVPWd_z">—</div><div class="zbar-wrap" id="k_LVPWd_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_LVPWd_bar_fill"></div><div class="zbar-dot" id="k_LVPWd_bar_dot"></div><div class="zbar-val" id="k_LVPWd_bar_val"></div></div><div class="zbar-labels"><span id="k_LVPWd_bar_m2">—</span><span id="k_LVPWd_bar_0">—</span><span id="k_LVPWd_bar_p2">—</span></div></div></div></div></div>
+
+      </div><!-- /kol 2 -->
+
+      <!-- KOL 3: Funkcja komór + Zastawki -->
       <div class="calc-card">
 
         <h2>Funkcja komór</h2>
         <div class="reference">Koestenberger et al. JASE 2009</div>
         <div class="tbl-header vv-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score [±2SD]</span></div>
-        <div class="tbl-row vv-cols">
-          <div class="var-name">TAPSE</div>
-          <div class="input-wrap">
-            <input type="number" id="k_tapse_val" step="0.1" min="0" max="50" placeholder="—" oninput="recalcKonsTAPSE()" style="width:56px;"/>
-            <span class="unit">mm</span>
-          </div>
-          <div class="result-cell" id="k_k_tapse_z">—</div>
-        </div>
+        <div class="tbl-row vv-cols"><div class="var-name">TAPSE</div><div class="input-wrap"><input type="number" id="k_tapse_val" step="0.1" min="0" max="50" placeholder="—" oninput="recalcKonsTAPSE()" style="width:56px;"/><span class="unit">mm</span></div><div class="result-cell" id="k_tapse_z">—</div></div>
         <div id="k_tapse_group_info" style="font-size:0.68rem;color:#718096;margin:0.2rem 0 0.5rem;font-style:italic;line-height:1.4;">— wpisz wiek lub datę urodzenia</div>
         <div style="border-top:1px solid #fed7d7;padding-top:0.4rem;margin-bottom:0.3rem;">
           <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem;">Funkcja skurczowa LV</div>
-          <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.25rem;">
-            <span class="var-name" style="min-width:36px;">FS</span>
-            <span class="result-cell" id="k_fk_fs_result">—</span>
-            <span style="font-size:0.65rem;color:#a0aec0;">norma 28–44%</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:0.4rem;">
-            <span class="var-name" style="min-width:36px;">EF</span>
-            <span class="result-cell" id="k_fk_ef_result">—</span>
-            <span style="font-size:0.65rem;color:#a0aec0;">norma ≥55%</span>
-          </div>
+          <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.25rem;"><span class="var-name" style="min-width:36px;">FS</span><span class="result-cell" id="k_fk_fs_result">—</span><span style="font-size:0.65rem;color:#a0aec0;">norma 28–44%</span></div>
+          <div style="display:flex;align-items:center;gap:0.4rem;"><span class="var-name" style="min-width:36px;">EF</span><span class="result-cell" id="k_fk_ef_result">—</span><span style="font-size:0.65rem;color:#a0aec0;">norma ≥55%</span></div>
           <div style="font-size:0.62rem;color:#a0aec0;margin-top:0.3rem;font-style:italic;">Teichholtz z LVEDD/LVESD</div>
         </div>
 
-        <!-- separator -->
         <div style="border-top:3px solid #fed7d7;margin:0.8rem 0 0.6rem;"></div>
+        <h2>Pierścienie zastawek</h2>
+        <div class="reference">Cantinotti et al. 2014</div>
+        <div class="tbl-header vv-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
+        <div class="tbl-row vv-cols"><div class="var-name">MV</div><div class="input-wrap"><input type="number" id="k_mv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_mv_z">—</div><div class="zbar-wrap" id="k_mv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_mv_bar_fill"></div><div class="zbar-dot" id="k_mv_bar_dot"></div><div class="zbar-val" id="k_mv_bar_val"></div></div><div class="zbar-labels"><span id="k_mv_bar_m2">—</span><span id="k_mv_bar_0">—</span><span id="k_mv_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row vv-cols"><div class="var-name">TV</div><div class="input-wrap"><input type="number" id="k_tv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_tv_z">—</div><div class="zbar-wrap" id="k_tv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_tv_bar_fill"></div><div class="zbar-dot" id="k_tv_bar_dot"></div><div class="zbar-val" id="k_tv_bar_val"></div></div><div class="zbar-labels"><span id="k_tv_bar_m2">—</span><span id="k_tv_bar_0">—</span><span id="k_tv_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row vv-cols"><div class="var-name">AV</div><div class="input-wrap"><input type="number" id="k_av_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_av_z">—</div><div class="zbar-wrap" id="k_av_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_av_bar_fill"></div><div class="zbar-dot" id="k_av_bar_dot"></div><div class="zbar-val" id="k_av_bar_val"></div></div><div class="zbar-labels"><span id="k_av_bar_m2">—</span><span id="k_av_bar_0">—</span><span id="k_av_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row vv-cols"><div class="var-name">PV</div><div class="input-wrap"><input type="number" id="k_pv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_pv_z">—</div><div class="zbar-wrap" id="k_pv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_pv_bar_fill"></div><div class="zbar-dot" id="k_pv_bar_dot"></div><div class="zbar-val" id="k_pv_bar_val"></div></div><div class="zbar-labels"><span id="k_pv_bar_m2">—</span><span id="k_pv_bar_0">—</span><span id="k_pv_bar_p2">—</span></div></div></div></div></div>
 
+      </div><!-- /kol 3 -->
+
+    </div><!-- /rząd 1 -->
+
+    <!-- ── RZĄD 2: Aorta / Wieńcowe+Płucna (zwijany) ── -->
+    <div class="calc-card" style="margin-top:1.2rem;padding:0.6rem 1rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleKonsRow2()">
+        <h2 style="margin:0;">Aorta · Wieńcowe · Płucna</h2>
+        <span id="k_row2_icon" style="font-size:1.1rem;color:#c53030;user-select:none;">▶</span>
+      </div>
+      <div id="k_row2_content" style="display:none;margin-top:0.8rem;">
+    <div class="boxes-row" style="grid-template-columns:1fr 1fr;margin-top:0;">
+
+      <!-- KOL A: Aorta -->
+      <div class="calc-card">
         <h2>Aorta</h2>
         <div class="reference">Gautier et al. 2010; Pettersen et al. 2008</div>
         <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
@@ -1179,12 +1080,10 @@
           <div class="tbl-row mm-cols"><div class="var-name">Isthm</div><div class="input-wrap"><input type="number" id="k_Isthm" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_Isthm_z">—</div></div>
           <div class="tbl-row mm-cols"><div class="var-name">DistAo</div><div class="input-wrap"><input type="number" id="k_DistAo" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_DistAo_z">—</div></div>
         </div>
+      </div>
 
-      </div><!-- /kol 2 -->
-
-      <!-- KOL 3: Wieńcowe + T. płucna -->
+      <!-- KOL B: Więńcowe + Płucna -->
       <div class="calc-card">
-
         <h2>Tętnice wieńcowe</h2>
         <div class="reference">Dallaire &amp; Dahdah 2011</div>
         <div class="tbl-header mm-cols"><span>Segment</span><span>Pomiar</span><span>Z-score</span></div>
@@ -1194,10 +1093,7 @@
         <div class="tbl-row mm-cols"><div class="var-name">RCA prox</div><div class="input-wrap"><input type="number" id="k_CA_RCAprox" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_CA_RCAprox_z">—</div></div>
         <div class="tbl-row mm-cols"><div class="var-name">RCA med</div><div class="input-wrap"><input type="number" id="k_CA_RCAmed" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_CA_RCAmed_z">—</div></div>
         <div class="tbl-row mm-cols"><div class="var-name">RCA dist</div><div class="input-wrap"><input type="number" id="k_CA_RCAdist" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_CA_RCAdist_z">—</div></div>
-
-        <!-- separator -->
         <div style="border-top:3px solid #fed7d7;margin:0.8rem 0 0.6rem;"></div>
-
         <h2>Tętnica płucna</h2>
         <div class="reference">Pettersen et al. 2008</div>
         <div class="tbl-header mm-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
@@ -1205,43 +1101,105 @@
         <div class="tbl-row mm-cols"><div class="var-name">MPA</div><div class="input-wrap"><input type="number" id="k_MPA" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_MPA_z">—</div></div>
         <div class="tbl-row mm-cols"><div class="var-name">RPA</div><div class="input-wrap"><input type="number" id="k_RPA" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_RPA_z">—</div></div>
         <div class="tbl-row mm-cols"><div class="var-name">LPA</div><div class="input-wrap"><input type="number" id="k_LPA" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_LPA_z">—</div></div>
-
-      </div><!-- /kol 3 -->
-
-    </div><!-- /boxes-row -->
-
-    <!-- Opis Echo -->
-    <div class="calc-card" style="margin-top:1rem;">
-      <h2>Opis Echo</h2>
-      <div class="reference" style="margin-bottom:0.5rem;">Szablon opisu — wartości i z-score wpisują się automatycznie po wprowadzeniu pomiarów.</div>
-
-      <!-- Modyfikatory szablonu -->
-      <div style="display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.7rem;">
-        <button id="k_btn_tvi"      onclick="toggleKonsVariant('tvi')"      style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">TVI</button>
-        <button id="k_btn_pfo"      onclick="toggleKonsVariant('pfo')"      style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">PFO</button>
-        <button id="k_btn_mvi"      onclick="toggleKonsVariant('mvi')"      style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">MVI</button>
-        <button id="k_btn_coro"     onclick="toggleKonsVariant('coro')"     style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">coro</button>
-        <button id="k_btn_ivc"      onclick="toggleKonsVariant('ivc')"      style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">IVC</button>
-        <button id="k_btn_struna"   onclick="toggleKonsVariant('struna')"   style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">struna</button>
-        <button id="k_btn_niepokoj" onclick="toggleKonsVariant('niepokoj')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">niepokój</button>
-        <button id="k_btn_kolana"   onclick="toggleKonsVariant('kolana')"   style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;">kolana</button>
       </div>
-      <div id="k_echo_notes_box" contenteditable="true"
-        style="width:100%;border:1.5px solid #feb2b2;border-radius:8px;
-               padding:0.7rem;font-size:0.85rem;font-family:'Segoe UI',sans-serif;
-               line-height:1.8;min-height:14rem;background:#fff;
-               outline:none;white-space:pre-wrap;"></div>
-      <div style="display:flex;gap:0.6rem;margin-top:0.5rem;align-items:center;flex-wrap:wrap;">
-        <button onclick="copyKonsNotes()" style="padding:0.4rem 1.1rem;
-          background:#c53030;color:#fff;border:none;border-radius:7px;font-size:0.82rem;
-          font-weight:700;cursor:pointer;letter-spacing:0.05em;">📋 Kopiuj do schowka</button>
-        <button onclick="copyKonsZscores()" style="padding:0.4rem 1.1rem;
-          background:#742a2a;color:#fff;border:none;border-radius:7px;font-size:0.82rem;
-          font-weight:700;cursor:pointer;letter-spacing:0.05em;">📊 Kopiuj z-score</button>
+
+    </div><!-- /rząd 2 -->
+      </div><!-- /k_row2_content -->
+    </div><!-- /rząd 2 wrapper -->
+
+
+    <!-- ── WIERSZ 3: Opis Echo | Wnioski + Zalecenia ── -->
+    <div class="calc-card" style="margin-top:1.2rem;display:grid;grid-template-columns:2fr 1fr;gap:1.5rem;align-items:start;">
+
+      <!-- Lewa: Opis Echo -->
+      <div style="display:flex;flex-direction:column;gap:0.4rem;">
+        <h2>Opis Echo</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:0.35rem;margin-bottom:0.3rem;">
+          <button id="k_btn_tvi"      onclick="toggleKonsVariant('tvi')"      style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">TVI</button>
+          <button id="k_btn_pfo"      onclick="toggleKonsVariant('pfo')"      style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">PFO</button>
+          <button id="k_btn_mvi"      onclick="toggleKonsVariant('mvi')"      style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">MVI</button>
+          <button id="k_btn_coro"     onclick="toggleKonsVariant('coro')"     style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">coro</button>
+          <button id="k_btn_ivc"      onclick="toggleKonsVariant('ivc')"      style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">IVC</button>
+          <button id="k_btn_struna"   onclick="toggleKonsVariant('struna')"   style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">struna</button>
+          <button id="k_btn_niepokoj" onclick="toggleKonsVariant('niepokoj')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">niepokój</button>
+          <button id="k_btn_kolana"   onclick="toggleKonsVariant('kolana')"   style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">kolana</button>
+        </div>
+        <textarea id="k_sect_echo" rows="12"
+          oninput="onKonsSectEdit('echo');autoResize(this)"
+          style="width:100%;border:1.5px solid #feb2b2;border-radius:7px;padding:0.5rem;
+                 font-size:0.85rem;font-family:'Segoe UI',sans-serif;line-height:1.8;
+                 resize:none;outline:none;background:#fff;overflow:hidden;"></textarea>
+      </div>
+
+
+      <!-- Prawa: Wnioski + Zalecenia + przyciski -->
+      <div style="display:flex;flex-direction:column;gap:0.8rem;">
+
+        <div style="display:flex;flex-direction:column;gap:0.4rem;">
+          <h2>Wnioski</h2>
+          <textarea id="k_sect_wnioski" rows="4"
+            oninput="onKonsSectEdit('wnioski')"
+            style="width:100%;border:1.5px solid #feb2b2;border-radius:7px;padding:0.5rem;
+                   font-size:0.85rem;font-family:'Segoe UI',sans-serif;line-height:1.8;
+                   resize:vertical;outline:none;background:#fff;"></textarea>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:0.4rem;">
+          <h2>Zalecenia</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:0.3rem;margin-bottom:0.2rem;">
+            <button id="k_zal_btn_zdrowy"       onclick="addZalecenie('zdrowy')"       style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">Zdrowy</button>
+            <button id="k_zal_btn_lqts"         onclick="addZalecenie('lqts')"         style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">LQTS</button>
+            <button id="k_zal_btn_rehabilitacja" onclick="addZalecenie('rehabilitacja')" style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">rehabilitacja</button>
+            <button id="k_zal_btn_metylofenidat" onclick="addZalecenie('metylofenidat')" style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">metylofenidat</button>
+            <button id="k_zal_btn_znieczulenie" onclick="addZalecenie('znieczulenie')" style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">znieczulenie</button>
+            <button id="k_zal_btn_kolatania"    onclick="addZalecenie('kolatania')"    style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">Kołatania</button>
+            <button id="k_zal_btn_pfo"          onclick="addZalecenie('pfo')"          style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">PFO</button>
+            <button id="k_zal_btn_nadcisnienie" onclick="addZalecenie('nadcisnienie')" style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">nadciśnienie</button>
+            <button id="k_zal_btn_izw"          onclick="addZalecenie('izw')"          style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">IZW</button>
+            <button id="k_zal_btn_wysilek"      onclick="addZalecenie('wysilek')"      style="padding:0.22rem 0.55rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.7rem;font-weight:700;cursor:pointer;">wysiłek</button>
+          </div>
+          <textarea id="k_sect_zalecenia" rows="8"
+            oninput="onKonsSectEdit('zalecenia')"
+            style="width:100%;border:1.5px solid #feb2b2;border-radius:7px;padding:0.5rem;
+                   font-size:0.85rem;font-family:'Segoe UI',sans-serif;line-height:1.8;
+                   resize:vertical;outline:none;background:#fff;"></textarea>
+        </div>
+
+        <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
+          <button onclick="copyKonsNotes()"   style="padding:0.4rem 0.9rem;background:#c53030;color:#fff;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;">📋 Kopiuj opis</button>
+          <button onclick="copyKonsZscores()" style="padding:0.4rem 0.9rem;background:#742a2a;color:#fff;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;">📊 Kopiuj z-score</button>
+        </div>
+
+      </div>
+
+    </div>
+      </div>
+
+    </div>
+
+
+    <div class="calc-card" style="margin-top:1.2rem;">
+      <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;"
+           onclick="toggleKonsFullDesc()">
+        <h2 style="margin:0;">Opis zbiorczy</h2>
+        <span id="k_desc_toggle_icon" style="font-size:1.1rem;color:#c53030;user-select:none;">▼</span>
+      </div>
+      <div id="k_desc_collapsed" style="display:none;margin-top:0.8rem;">
+        <div id="k_echo_notes_box" contenteditable="true"
+          style="width:100%;border:1.5px solid #feb2b2;border-radius:8px;
+                 padding:0.7rem;font-size:0.85rem;font-family:'Segoe UI',sans-serif;
+                 line-height:1.8;min-height:14rem;background:#fff;
+                 outline:none;white-space:pre-wrap;"></div>
+        <div style="display:flex;gap:0.6rem;margin-top:0.5rem;flex-wrap:wrap;align-items:center;">
+          <button onclick="applyKonsBold()"
+            style="padding:0.4rem 0.8rem;background:#fff;color:#742a2a;border:1.5px solid #feb2b2;border-radius:7px;font-size:0.9rem;font-weight:900;cursor:pointer;" title="Pogrub zaznaczony tekst (Ctrl+B)"><b>B</b></button>
+          <button onclick="copyKonsNotes()" style="padding:0.4rem 1.1rem;background:#c53030;color:#fff;border:none;border-radius:7px;font-size:0.82rem;font-weight:700;cursor:pointer;">📋 Kopiuj do schowka</button>
+          <button onclick="copyKonsZscores()" style="padding:0.4rem 1.1rem;background:#742a2a;color:#fff;border:none;border-radius:7px;font-size:0.82rem;font-weight:700;cursor:pointer;">📊 Kopiuj z-score</button>
+        </div>
       </div>
     </div>
 
-  </div><!-- /tab-echo -->
+  </div><!-- /tab-konsultacja -->
 
     <!-- KARTA ŹRÓDŁA -->
   <div id="tab-refs" class="tab-panel">
@@ -1933,12 +1891,14 @@
     });
     setKonsAxis('posrednia');
     setKonsRhythm('zatokowy');
+    setKonsWywiadTemplate('auto');
     // Reset boksików przewodzenia i Rr'
     Object.keys(KONS_EKG_BTNS).forEach(k => { KONS_EKG_BTNS[k] = false; });
     Object.keys(KONS_EKG_BTNS).forEach(k => {
       const btn = document.getElementById('k_btn_' + k);
       if(btn){ btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
     });
+    resetKonsSections();
 
     // EKG — Holter i Spoczynkowe
     document.querySelectorAll('.schwartz-cb').forEach(cb => cb.checked = false);
@@ -2943,12 +2903,16 @@
     if(raw.length > 4)      fmt = raw.slice(0,2) + '.' + raw.slice(2,4) + '.' + raw.slice(4);
     else if(raw.length > 2) fmt = raw.slice(0,2) + '.' + raw.slice(2);
     el.value = fmt;
-    // Pokaż sformatowany wiek
+    const label = formatAgeFromDob(fmt);
+    // Pokaż sformatowany wiek nad togglem
     const ageDisp = document.getElementById('age_display');
-    if(ageDisp){
-      const label = formatAgeFromDob(fmt);
-      if(label){ ageDisp.textContent = label; ageDisp.style.display = ''; }
-      else      { ageDisp.textContent = ''; ageDisp.style.display = 'none'; }
+    const toggleAge = document.getElementById('toggle_age_display');
+    if(label){ 
+      if(ageDisp){ ageDisp.textContent = label; ageDisp.style.display = ''; }
+      if(toggleAge) toggleAge.textContent = label;
+    } else {
+      if(ageDisp){ ageDisp.textContent = ''; ageDisp.style.display = 'none'; }
+      if(toggleAge) toggleAge.textContent = '';
     }
     recalcActive();
   }
@@ -3292,7 +3256,7 @@
     if (isNaN(z)) { el.textContent = '—'; el.className = 'result-cell'; return; }
     const zFmt = (z >= 0 ? '+' : '') + z.toFixed(2) + 'z';
     const normFmt = low + (unit === 'mV' ? '' : '') + '–' + high + (unit ? ' ' + unit : '');
-    el.innerHTML = '<span style="font-weight:700">' + zFmt + '</span><span style="font-size:0.72rem;color:#718096;margin-left:0.4rem;">[' + low + '–' + high + (unit ? ' ' + unit : '') + ']</span>';
+    el.innerHTML = '<span style="font-weight:700">' + zFmt + '</span><br><span style="font-size:0.68rem;color:#718096;">[' + low + '–' + high + (unit ? ' ' + unit : '') + ']</span>';
     if (z < -2.5 || z > 2.5)      { el.style.color = '#c53030'; el.style.fontWeight = '700'; }
     else if (Math.abs(z) >= 2.0)  { el.style.color = '#d69e2e'; el.style.fontWeight = '700'; }
     else                           { el.style.color = '#276749'; el.style.fontWeight = '700'; }
@@ -3361,7 +3325,161 @@
     }
   }
 
-  // ── Karta Konsultacja — wszystkie funkcje ────────────────────────────
+  // ── Zbiorczy opis konsultacji ────────────────────────────────────────
+  // Flagi czy sekcja była ręcznie edytowana
+  const KONS_SECT_MANUAL = {wywiad: false, phys: false, ekg: false, echo: false, wnioski: false, zalecenia: false};
+
+  // 'auto' = wybór wg wieku, 'niemowl'/'sredni'/'duzy' = wymuszony
+  let KONS_WYWIAD_TEMPLATE = 'auto';
+
+  function setKonsWywiadTemplate(val){
+    KONS_WYWIAD_TEMPLATE = val;
+    ['auto','niemowl','sredni','duzy'].forEach(k => {
+      const btn = document.getElementById('k_wywiad_btn_' + k);
+      if(!btn) return;
+      if(k === val){ btn.style.background='#c53030'; btn.style.color='#fff'; btn.style.borderColor='#c53030'; }
+      else { btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
+    });
+    // Pokaż masę urodzeniową tylko dla niemowlęcia
+    const bwRow = document.getElementById('k_birth_weight_row');
+    if(bwRow){
+      const show = (val === 'niemowl') || (val === 'auto' && !isNaN(getKonsAge2()) && getKonsAge2() < 1.0);
+      bwRow.style.display = show ? 'flex' : 'none';
+    }
+    KONS_SECT_MANUAL.wywiad = false;
+    recalcKons();
+  }
+
+  function toggleKonsRow2(){
+    const content = document.getElementById('k_row2_content');
+    const icon    = document.getElementById('k_row2_icon');
+    if(!content) return;
+    const hidden = content.style.display === 'none';
+    content.style.display = hidden ? 'block' : 'none';
+    if(icon) icon.textContent = hidden ? '▼' : '▶';
+  }
+
+  function toggleKonsFullDesc(){
+    const el = document.getElementById('k_desc_collapsed');
+    const icon = document.getElementById('k_desc_toggle_icon');
+    if(!el) return;
+    const hidden = el.style.display === 'none';
+    el.style.display = hidden ? 'block' : 'none';
+    if(icon) icon.textContent = hidden ? '▲' : '▼';
+  }
+
+  function onKonsSectEdit(sect){
+    // Oznacz sekcję jako ręcznie edytowaną
+    KONS_SECT_MANUAL[sect] = true;
+    rebuildKonsFullDesc();
+  }
+
+  // Pobiera tekst sekcji (z textarea lub z automatycznego szablonu)
+  function getKonsSectText(sect){
+    const el = document.getElementById('k_sect_' + sect);
+    return el ? el.value : '';
+  }
+
+  // Aktualizuje textarea sekcji jeśli nie była ręcznie edytowana
+  function autoResize(el){
+    el.style.height = 'auto';
+    el.style.height = el.scrollHeight + 'px';
+  }
+
+  function setKonsSectText(sect, text){
+    if(KONS_SECT_MANUAL[sect]) return;
+    const el = document.getElementById('k_sect_' + sect);
+    if(el && el.value !== text){
+      el.value = text;
+      if(sect === 'echo') autoResize(el);
+    }
+  }
+
+  // Składa zbiorczy opis z sekcji
+  function rebuildKonsFullDesc(){
+    const notesBox = document.getElementById('k_echo_notes_box');
+    if(!notesBox) return;
+
+    const h = parseFloat((document.getElementById('height')||{}).value);
+    const w = parseFloat((document.getElementById('weight')||{}).value);
+    const bsa = (!isNaN(h)&&!isNaN(w)&&h>0&&w>0) ? Math.sqrt((h*w)/3600) : null;
+
+    function extractPctPlain(elId){
+      const el = document.getElementById(elId);
+      if(!el || el.style.display==='none' || !el.textContent) return '';
+      return ' ' + el.textContent.trim();
+    }
+    const wPct = extractPctPlain('weight_pct_display');
+    const hPct = extractPctPlain('height_pct_display');
+    const headerParts = [];
+    if(!isNaN(w)&&w>0) headerParts.push('Masa: '+w+' kg'+wPct);
+    if(!isNaN(h)&&h>0) headerParts.push('Wzrost: '+h+' cm'+hPct);
+    if(bsa!==null)      headerParts.push('BSA: '+bsa.toFixed(3)+' m²');
+    const header = headerParts.length ? '<b>' + headerParts.join('  ') + '</b>' : '';
+
+    const BR = '<br>';
+    const GAP = '<br><br>';
+    const parts = [];
+
+    // 1. Wywiad
+    const wywiad = getKonsSectText('wywiad').trim();
+    if(wywiad) parts.push(wywiad.replace(/\n/g, BR));
+
+    // 2. Masa/Wzrost/BSA
+    if(header) parts.push(header);
+
+    // 3. Badanie fizykalne
+    const phys = getKonsSectText('phys').trim();
+    if(phys) parts.push(phys.replace(/\n/g, BR));
+
+    // 4. EKG
+    const ekg = getKonsSectText('ekg').trim();
+    if(ekg) parts.push(ekg.replace(/\n/g, BR));
+
+    // 5. Echo (HTML z bold)
+    if(!KONS_SECT_MANUAL.echo){
+      const bsaV = bsa;
+      const sexV = (document.getElementById('sex')||{}).value || 'girl';
+      let echoHtmlV = buildKonsEchoOnlyDesc(isNaN(bsaV)?null:bsaV, sexV);
+      const hasEKG = !isNaN(parseFloat((document.getElementById('k_hr')||{}).value))
+                  || !isNaN(parseFloat((document.getElementById('k_pq')||{}).value))
+                  || !isNaN(parseFloat((document.getElementById('k_qrs')||{}).value));
+      if(hasEKG){
+        const ref7 = ' 7) Bratincsák A, et al. 2020;';
+        if(echoHtmlV.includes('1) Kampmann')) echoHtmlV = echoHtmlV.replace(/(\d\).*?;)(<br>|$)/, '$1' + ref7 + '$2');
+        else echoHtmlV += '<br>' + ref7.trim();
+      }
+      if(echoHtmlV.trim()) parts.push(echoHtmlV.trim());
+    } else {
+      const t = getKonsSectText('echo').trim().replace(/\n/g, BR);
+      if(t) parts.push(t);
+    }
+
+    // 6. Wnioski
+    const wnioski = getKonsSectText('wnioski').trim();
+    if(wnioski) parts.push('<b>Wn.:</b> ' + wnioski.replace(/\n/g, BR));
+
+    // 7. Zalecenia
+    const zalecenia = getKonsSectText('zalecenia').trim();
+    if(zalecenia) parts.push('<b>Zalecenia:</b>' + BR + zalecenia.replace(/\n/g, BR));
+
+    notesBox.innerHTML = parts.filter(Boolean).join(GAP);
+  }
+
+  function resetKonsSections(){
+    Object.keys(KONS_SECT_MANUAL).forEach(k => KONS_SECT_MANUAL[k] = false);
+    // Reset boksików zaleceń
+    Object.keys(ZALECENIA_ACTIVE).forEach(k => { ZALECENIA_ACTIVE[k] = false; });
+    ['zdrowy','lqts','rehabilitacja','metylofenidat','znieczulenie','kolatania','pfo','nadcisnienie','izw','wysilek'].forEach(k => {
+      const btn = document.getElementById('k_zal_btn_' + k);
+      if(btn){ btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
+    });
+    ['wywiad','phys','ekg','echo','wnioski','zalecenia'].forEach(s => {
+      const el = document.getElementById('k_sect_' + s);
+      if(el) el.value = '';
+    });
+  }
+  // ─────────────────────────────────────────────────────────────────────
 
   function toggleKonsSex2(){
     const toggle = document.getElementById('k_sex_toggle');
@@ -3428,50 +3546,127 @@
         const z=isNaN(m)?NaN:(m-mmPred(id,bsa))/(mmPred(id,bsa)*mmSD[id]);
         updateZbarK(id,isNaN(z)?null:z,zv=>mmPred(id,bsa)*(1+zv*mmSD[id]));
       });
+      // Zastawki Cantinotti
       ['mv','tv','av','pv'].forEach(id=>{
         const m=parseFloat((document.getElementById('k_'+id+'_val')||{}).value);
         const [a,b,sd]=vf[id][sex==='girl'?'girl':'boy'];
         const z=(!isNaN(m)&&m>0)?(Math.log(m/10)-(a+b*Math.log(bsa)))/sd:NaN;
         updateZbarK(id,isNaN(z)?null:z,zv=>10*Math.exp(a+b*Math.log(bsa)+zv*sd));
       });
+      // Aorta — Gautier (klucze identyczne jak w gautierCoeff)
+      ['AoAnn','Sinus','STJ','AoAsc'].forEach(id=>{
+        const m=parseFloat((document.getElementById('k_'+id)||{}).value);
+        const z=gautierZ(id,m,bsa,sex);
+        const el=document.getElementById('k_'+id+'_z');
+        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#c53030':'#d69e2e'):'#276749'; }
+      });
+      // Aorta — Pettersen
+      ['TArch','Isthm','DistAo'].forEach(id=>{
+        const m=parseFloat((document.getElementById('k_'+id)||{}).value);
+        const z=pettersenZ(id,m,bsa);
+        const el=document.getElementById('k_'+id+'_z');
+        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#c53030':'#d69e2e'):'#276749'; }
+      });
+      // T. płucna — Pettersen
+      ['PVAnn','MPA','RPA','LPA'].forEach(id=>{
+        const m=parseFloat((document.getElementById('k_'+id)||{}).value);
+        const z=pettersenZ(id,m,bsa);
+        const el=document.getElementById('k_'+id+'_z');
+        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#c53030':'#d69e2e'):'#276749'; }
+      });
+      // Wieńcowe — Dallaire (klucze: LMCA, LAD, Cx, RCAprox, RCAmed, RCAdist)
+      const caMap={CA_LMCA:'LMCA',CA_LAD:'LAD',CA_Cx:'Cx',CA_RCAprox:'RCAprox',CA_RCAmed:'RCAmed',CA_RCAdist:'RCAdist'};
+      Object.entries(caMap).forEach(([id,seg])=>{
+        const m=parseFloat((document.getElementById('k_'+id)||{}).value);
+        const z=dallaireZ(seg,m,bsa);
+        const el=document.getElementById('k_'+id+'_z');
+        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#c53030':'#d69e2e'):'#276749'; }
+      });
     } else {
       mmVarsList.forEach(id=>updateZbarK(id,null,()=>null));
       ['mv','tv','av','pv'].forEach(id=>updateZbarK(id,null,()=>null));
+      [...Object.keys({AoAnn:1,Sinus:1,STJ:1,AoAsc:1,TArch:1,Isthm:1,DistAo:1,
+                       PVAnn:1,MPA:1,RPA:1,LPA:1,
+                       CA_LMCA:1,CA_LAD:1,CA_Cx:1,CA_RCAprox:1,CA_RCAmed:1,CA_RCAdist:1})
+      ].forEach(id=>{ const el=document.getElementById('k_'+id+'_z'); if(el){el.textContent='—';el.style.color='';} });
     }
 
-    // Opis Echo — używa buildKonsDescription (podmienia getElementById na k_)
-    const notesBox = document.getElementById('k_echo_notes_box');
-    if(notesBox) notesBox.innerHTML = buildKonsDescription(isNaN(bsa)?null:bsa, sex);
-
-    // Podgląd szablonu badania fizykalnego
-    const physPreview = document.getElementById('k_phys_preview');
-    if(physPreview) physPreview.textContent = buildKonsPhysLine();
-
-    // Podgląd szablonu wywiadu
-    const wywiadPreview = document.getElementById('k_wywiad_preview');
-    const wywiadGroup   = document.getElementById('k_wywiad_group');
+    // Wywiad — podgląd + sekcja
     const wywiadLine = buildKonsWywiadLine();
-    if(wywiadPreview) wywiadPreview.textContent = wywiadLine.text || '— wpisz wiek';
-    if(wywiadGroup)   wywiadGroup.textContent   = wywiadLine.group || '— wpisz wiek pacjenta';
+    const wywiadGroup = document.getElementById('k_wywiad_sect_group');
+    if(wywiadGroup) wywiadGroup.textContent = wywiadLine.group || '';
+    setKonsSectText('wywiad', wywiadLine.text || '');
+    // Widoczność masy urodzeniowej
+    const bwRow = document.getElementById('k_birth_weight_row');
+    if(bwRow){
+      const show = (KONS_WYWIAD_TEMPLATE === 'niemowl') ||
+                   (KONS_WYWIAD_TEMPLATE === 'auto' && !isNaN(age) && age < 1.0);
+      bwRow.style.display = show ? 'flex' : 'none';
+    }
 
+    // Badanie fizykalne — sekcja
+    setKonsSectText('phys', buildKonsPhysLine());
+
+    // EKG — najpierw oblicz z-score (aktualizuje k_hr_z, k_pq_z itp.)
     recalcKonsEKG2();
+
+    // EKG — sekcja tekstowa (teraz k_hr_z ma świeże wartości)
+    const ekgHtml = buildKonsEKGLine();
+    const ekgPlain = ekgHtml
+      .replace(/<b>(.*?)<\/b>/gi, '$1')
+      .replace(/<i>(.*?)<\/i>/gi, '$1')
+      .replace(/<br\s*\/?>/gi, '')
+      .replace(/<[^>]+>/g, '')
+      .trim();
+    setKonsSectText('ekg', ekgPlain);
+
+    // Echo — sekcja (plain text do textarea, HTML do zbiorczego)
+    const echoHtml = buildKonsEchoOnlyDesc(isNaN(bsa)?null:bsa, sex);
+    const echoPlainForTextarea = echoHtml
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .trim();
+    const hasEKGData = !isNaN(parseFloat((document.getElementById('k_hr')||{}).value))
+                    || !isNaN(parseFloat((document.getElementById('k_pq')||{}).value))
+                    || !isNaN(parseFloat((document.getElementById('k_qrs')||{}).value));
+    let echoPlain = echoPlainForTextarea;
+    let echoHtmlFull = echoHtml;
+    if(hasEKGData){
+      const ref7 = ' 7) Bratincsák A, et al. 2020;';
+      if(echoPlain.includes('1) Kampmann')){
+        echoPlain    = echoPlain.replace(/(\d\).*?;)\s*$/, '$1' + ref7);
+        echoHtmlFull = echoHtmlFull.replace(/(\d\).*?;)(<br>|$)/, '$1' + ref7 + '$2');
+      } else {
+        echoPlain    += '\n' + ref7.trim();
+        echoHtmlFull += '<br>' + ref7.trim();
+      }
+    }
+    setKonsSectText('echo', echoPlain);
+    window._konsEchoHtml = echoHtmlFull;
+
+    // Zbiorczy opis
+    rebuildKonsFullDesc();
   }
 
-  function updateZbarK(id,z,predFn){
-    const zEl=document.getElementById('k_'+id+'_z');
-    const barWrap=document.getElementById('k_'+id+'_bar');
-    if(!zEl) return;
-    if(z===null||isNaN(z)){
-      zEl.textContent='—';zEl.className='result-cell';zEl.style.color='';zEl.style.fontWeight='';
-      if(barWrap) barWrap.classList.remove('visible'); return;
+  function updateZbarK(id, z, predFn){
+    // Używa tej samej logiki co updateZbar ale dla k_ prefix
+    updateZbar('k_' + id, z, predFn);
+    // updateZbar chowa zEl i pokazuje pasek — w konsultacji chcemy pokazywać oba
+    const zEl = document.getElementById('k_' + id + '_z');
+    if(zEl) {
+      zEl.style.display = '';
+      if(z === null || isNaN(z)){
+        zEl.textContent = '—'; zEl.className = 'result-cell'; zEl.style.color = ''; zEl.style.fontWeight = '';
+      } else {
+        const zFmt = (z>=0?'+':'') + z.toFixed(2) + 'z';
+        const p2 = predFn(2), m2 = predFn(-2);
+        zEl.innerHTML = '<span style="font-weight:700">' + zFmt + '</span>'
+          + '<span style="font-size:0.72rem;color:#718096;margin-left:0.3rem;">[' + m2.toFixed(1) + '–' + p2.toFixed(1) + ']</span>';
+        if(Math.abs(z) > 3)       { zEl.style.color = '#c53030'; zEl.style.fontWeight = '700'; }
+        else if(Math.abs(z) >= 2) { zEl.style.color = '#d69e2e'; zEl.style.fontWeight = '700'; }
+        else                      { zEl.style.color = '#276749'; zEl.style.fontWeight = '700'; }
+      }
     }
-    const zFmt=(z>=0?'+':'')+z.toFixed(2)+'z';
-    const p2=predFn(2),m2=predFn(-2);
-    zEl.innerHTML='<span style="font-weight:700">'+zFmt+'</span><span style="font-size:0.72rem;color:#718096;margin-left:0.3rem;">['+m2.toFixed(1)+'\u2013'+p2.toFixed(1)+']</span>';
-    if(Math.abs(z)>3)        {zEl.style.color='#c53030';zEl.style.fontWeight='700';}
-    else if(Math.abs(z)>=2.0){zEl.style.color='#d69e2e';zEl.style.fontWeight='700';}
-    else                     {zEl.style.color='#276749';zEl.style.fontWeight='700';}
-    if(barWrap) barWrap.classList.add('visible');
   }
 
   function recalcKonsTAPSE(){
@@ -3550,6 +3745,52 @@
     }
   }
 
+  const ZALECENIA_TEMPLATES = {
+    zdrowy:       'Planowej kontroli kardiologicznej nie wymaga.',
+    lqts:         '* kontrola w Poradni Kardiologii Dziecięcej za 12 miesięcy (Holter-ekg 12-odprowadzeniowy)\n* Proszę podawać w leczeniu Propranolol 3x mg\n* zwolnienie z zajęć wychowania fizycznego, w tym zwłaszcza pływania, unikanie nadmiernych emocji, zakazane uprawianie wyczynowych sportów, konieczne utrzymywanie prawidłowego poziomu elektrolitów, np podczas choroby, biegunki\n* w przypadku wystąpienia niepokojących objawów tj kołatania serca, zasłabnięcie, omdlenie - natychmiastowy kontakt z najbliższą placówką zdrowia i Oddziałem Kardiologii Dziecięcej\n* unikanie leków wydłużających odstęp QTc - w tym niektórych antybiotyków (np. makrolidów), leków przeciwgrzybiczych, antyhistaminowych (dokładna lista leków dostępna na stronie internetowej www.qtdrugs.org)\n* przeszkolenie najbliższych członków Rodziny z podstawowych zasad resuscytacji\n* stałej opieki pediatrycznej w rejonie',
+    rehabilitacja:'Brak przeciwwskazań do rehabilitacji dowolną metodą.',
+    metylofenidat:'Nie ma przeciwwskazań kardiologicznych do stosowania metylofenidatu.',
+    znieczulenie: 'W chwili obecnej nie ma przeciwwskazań kardiologicznych do znieczulenia ogólnego.',
+    kolatania:    'W przypadku kołatania proszę zmierzyć akcję serca (np. pulsoksymetr, ciśnieniomierz), wartości powyżej >170/min, czas trwania oraz akcję serca po kołataniu zapisać w zeszycie pomiarów. Ewentualnie wyposażyć się w "event recorder" EKG (np. Istel HR-2000, AliveCor, Lepu 24 EKG ER2-S) i nagrać EKG. W przypadku dłużej utrzymującego się EKG zgłosić się na SOR/izbę przyjęć/POZ celem wykonania spoczynkowego EKG.\nZ zeszytem pomiarów lub nagraniami EKG po wykonanym Holter EKG zgłosić się na kontrolę.',
+    pfo:          'Ewentualna kontrola po 4 r.ż.',
+    nadcisnienie: 'Proszę założyć zeszyt pomiarów ciśnienia: pomiaru dokonywać na ramieniu lewym, w pozycji siedzącej - spoczynek co najmniej 5 minut przed pomiarem (mankiet pediatryczny - 3/4 ramienia) wartość 95 percentyla dla wzrostu to / mm Hg.\nZ zeszytem pomiarów co najmniej po miesiącu zgłosić się do pediatry w przypadku pomiarów > 50% nieprawidłowych konsultacja nefrologiczna.',
+    izw:          'Profilaktyka infekcyjnego zapalenia wsierdzia (np. Amoksycylina 50 mg/kg doustnie 30-60 minut przed zabiegiem - pełny wykaz profilaktyki wg: "Wytyczne ESC 2023 dotyczące postępowania w zapaleniu wsierdzia")',
+    wysilek:      'W chwili obecnej nie ma przeciwwskazań kardiologicznych do rekreacyjnego wysiłku fizycznego.',
+  };
+
+  const ZALECENIA_ACTIVE = {};
+
+  function addZalecenie(key){
+    const el = document.getElementById('k_sect_zalecenia');
+    if(!el) return;
+    const tmpl = ZALECENIA_TEMPLATES[key] || '';
+    if(!tmpl) return;
+
+    ZALECENIA_ACTIVE[key] = !ZALECENIA_ACTIVE[key];
+    const btn = document.getElementById('k_zal_btn_' + key);
+    if(btn){
+      if(ZALECENIA_ACTIVE[key]){
+        btn.style.background='#c53030'; btn.style.color='#fff'; btn.style.borderColor='#c53030';
+        // Dodaj tekst
+        const cur = el.value.trim();
+        el.value = cur ? cur + '\n' + tmpl : tmpl;
+      } else {
+        btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2';
+        // Usuń tekst
+        el.value = el.value.replace('\n' + tmpl, '').replace(tmpl + '\n', '').replace(tmpl, '').trim();
+      }
+    }
+    KONS_SECT_MANUAL.zalecenia = true;
+    rebuildKonsFullDesc();
+  }
+
+  function applyKonsBold(){
+    const box = document.getElementById('k_echo_notes_box');
+    if(!box) return;
+    box.focus();
+    document.execCommand('bold');
+  }
+
   function copyKonsNotes(){
     const box=document.getElementById('k_echo_notes_box');if(!box)return;
     const plain=box.innerText;
@@ -3574,86 +3815,95 @@
   }
 
   // Buduje opis dla Konsultacji — podmienia getElementById na k_ prefix
+  // Tylko część echowa opisu (bez nagłówka, wywiadu, fizykalnego, EKG)
+  function buildKonsEchoOnlyDesc(bsa, sex){
+    const _orig = document.getElementById;
+    document.getElementById = function(id){
+      const kEl = _orig.call(document, 'k_' + id);
+      if(kEl) return kEl;
+      return _orig.call(document, id);
+    };
+    const savedVariants = {};
+    Object.keys(VARIANTS).forEach(k => { savedVariants[k] = VARIANTS[k]; VARIANTS[k] = KONS_VARIANTS[k] !== undefined ? KONS_VARIANTS[k] : VARIANTS[k]; });
+    let html = buildEchoDescription(bsa, sex);
+    Object.keys(savedVariants).forEach(k => VARIANTS[k] = savedVariants[k]);
+    document.getElementById = _orig;
+    // Usuń nagłówek (pierwsza linia z <b>)
+    const firstBr = html.indexOf('<br>');
+    if(firstBr !== -1) html = html.slice(firstBr + 4);
+    return html.trim();
+  }
+
   function buildKonsWywiadLine(){
     const age    = getKonsAge2();
     const sex    = (document.getElementById('sex')||{}).value || 'girl';
     const weight = parseFloat((document.getElementById('weight')||{}).value);
     const bw     = parseFloat((document.getElementById('k_birth_weight')||{}).value);
+    const diffDays = !isNaN(age) ? Math.round(age * 365.25) : -1;
 
-    if(isNaN(age) || age < 0) return {group:'', text:''};
+    const weightStr = !isNaN(weight) ? weight + ' kg' : '— kg';
+    const bwStr     = !isNaN(bw) ? bw + ' g' : '— g';
 
-    const diffDays = Math.round(age * 365.25);
+    // Wyznacz szablon
+    let tmpl = KONS_WYWIAD_TEMPLATE;
+    if(tmpl === 'auto'){
+      if(isNaN(age) || age < 0) return {group:'', text:''};
+      if(age < 1.0)      tmpl = 'niemowl';
+      else if(age < 5.0) tmpl = 'sredni';
+      else               tmpl = 'duzy';
+    }
 
-    // ── Pomocnicze ────────────────────────────────────────────────────
+    // ── ageLabel — używa age i diffDays, z fallbackiem gdy brak ──
     function ageLabel(){
-      // do 28 dni — noworodek
-      if(diffDays <= 28){
-        return diffDays + '-dniowy noworodek';
+      if(isNaN(age) || age < 0){
+        // Brak wieku — generyczny label wg szablonu
+        if(tmpl === 'niemowl') return 'niemowlę';
+        if(tmpl === 'sredni')  return 'dziecko';
+        const femSuffix = sex === 'girl';
+        return femSuffix ? 'dziewczynka' : 'chłopiec';
       }
-      // 29 dni – 11 mies. — niemowlę
+      if(diffDays <= 28) return diffDays + '-dniowy noworodek';
       if(age < 1.0){
         const weeks = Math.floor(diffDays / 7);
         const months = Math.floor(age * 12);
         const remWeeks = Math.floor((diffDays - months * 30.44) / 7);
-        if(diffDays < 84){ // < 12 tygodni
-          return weeks + '-tygodniowe niemowlę';
-        }
-        // >= 3 miesięcy
-        if(remWeeks > 0){
-          return months + '-miesięczne' + (remWeeks > 0 ? ' i ' + remWeeks + '-tygodniowe' : '') + ' niemowlę';
-        }
+        if(diffDays < 84) return weeks + '-tygodniowe niemowlę';
+        if(remWeeks > 0)  return months + '-miesięczne i ' + remWeeks + '-tygodniowe niemowlę';
         return months + '-miesięczne niemowlę';
       }
-      // od 1 roku
       const years  = Math.floor(age);
       const months = Math.floor((age - years) * 12);
       const femSuffix = sex === 'girl';
-
       if(age >= 5){
-        // 5+ lat — chłopiec/dziewczynka
-        const half = (months >= 4 && months <= 8);
+        const half     = (months >= 4 && months <= 8);
         const nearNext = months >= 9;
         let yrStr;
-        if(nearNext){
-          yrStr = 'niespełna ' + (years+1) + '-letni' + (femSuffix ? 'a' : '');
-        } else if(half){
-          yrStr = years + ',5-letni' + (femSuffix ? 'a' : '');
-        } else {
-          yrStr = years + '-letni' + (femSuffix ? 'a' : '');
-        }
+        if(nearNext)  yrStr = 'niespełna ' + (years+1) + '-letni' + (femSuffix ? 'a' : '');
+        else if(half) yrStr = years + ',5-letni' + (femSuffix ? 'a' : '');
+        else          yrStr = years + '-letni' + (femSuffix ? 'a' : '');
         return yrStr + ' ' + (femSuffix ? 'dziewczynka' : 'chłopiec');
       }
-
-      // 1–4 lata — dziecko
-      if(months >= 9){
-        return 'niespełna ' + (years+1) + '-letnie dziecko';
-      }
-      // np. 1 rok 6 miesięcy → 1,5-roczne dziecko
-      if(months >= 4 && months <= 8){
-        return years + ',5-roczne dziecko';
-      }
+      if(months >= 9)               return 'niespełna ' + (years+1) + '-letnie dziecko';
+      if(months >= 4 && months <= 8) return years + ',5-roczne dziecko';
       return years + '-letnie dziecko';
     }
 
     const lbl = ageLabel();
-    const weightStr = !isNaN(weight) ? weight + ' kg' : '— kg';
-    const bwStr     = !isNaN(bw) ? bw + ' g' : '— g';
-
     let text, group;
 
-    if(age < 1.0){
-      group = 'Szablon: do roku';
+    if(tmpl === 'niemowl'){
+      group = 'Szablon: niemowlę';
       text  = lbl + '. Masa urodzeniowa ' + bwStr + ', masa obecna ' + weightStr
             + '. Nie męczy się w trakcie karmienia, matka niepokojących objawów nie zgłasza.'
             + ' Wywiad rodzinny nieobciążony kardiologicznie.';
-    } else if(age < 5.0){
-      group = 'Szablon: 1–5 lat';
+    } else if(tmpl === 'sredni'){
+      group = 'Szablon: średni';
       text  = lbl.charAt(0).toUpperCase() + lbl.slice(1)
             + '. Dziecko przybiera na masie, rozwija się prawidłowo, żywotne,'
             + ' bez omdleń czy innych zaburzeń świadomości, matka niepokojących objawów nie zgłasza.'
             + ' Wywiad rodzinny nieobciążony kardiologicznie.';
     } else {
-      group = 'Szablon: 5+ lat';
+      group = 'Szablon: duży';
       const subj = lbl.charAt(0).toUpperCase() + lbl.slice(1);
       text  = subj
             + '. Bez omdleń i zasłabnięć, tolerancja wysiłku prawidłowa, kołataniom zaprzecza.'
@@ -3664,7 +3914,6 @@
   }
 
   function buildKonsPhysLine(){
-    // HR: priorytet k_phys_hr, fallback k_hr (EKG)
     const physHr = parseFloat((document.getElementById('k_phys_hr')||{}).value);
     const ekgHr  = parseFloat((document.getElementById('k_hr')||{}).value);
     const hr = !isNaN(physHr) ? physHr : (!isNaN(ekgHr) ? ekgHr : null);
@@ -3708,14 +3957,19 @@
     // Złóż w kolejności: nagłówek → wywiad → badanie fiz → reszta
     html = header + wywiadStr + physStr + rest;
 
-    // Wstaw szablon EKG przed linię "Płyn w worku osierdziowym"
+    // Wstaw szablon EKG przed linie niepokoj/kolana/Płyn w worku
     const ekgLine = buildKonsEKGLine();
     const hasEKG = !isNaN(parseFloat((document.getElementById('k_hr')||{}).value))
                 || !isNaN(parseFloat((document.getElementById('k_pq')||{}).value))
                 || !isNaN(parseFloat((document.getElementById('k_qrs')||{}).value));
     if(ekgLine){
-      const marker = 'Płyn w worku osierdziowym';
-      const idx = html.indexOf(marker);
+      // Szukaj pierwszego z markerów: niepokoj, kolana, Płyn w worku
+      const markers = ['Badanie na kolanach u matki w niepokoju.', 'Badanie na kolanach u matki.', 'Płyn w worku osierdziowym'];
+      let idx = -1;
+      for(const m of markers){
+        idx = html.indexOf(m);
+        if(idx !== -1) break;
+      }
       if(idx !== -1){
         html = html.slice(0, idx) + ekgLine + '<br>' + html.slice(idx);
       }
@@ -3740,10 +3994,10 @@
   // Boksiki EKG — zaburzenia przewodzenia i Rr'
   const KONS_EKG_BTNS = {
     irbbb: false, rbbb: false, lbbb: false,
-    lpfb: false, lafb: false, srodkomorowe: false, rr_prim: false
+    lpfb: false, lafb: false, srodkomorowe: false, rr_prim: false,
+    avb1: false, avb2: false, avb3: false
   };
 
-  // Mapowanie klucz → tekst w QRS i w podsumowaniu
   const EKG_BTN_QRS = {
     rr_prim: "Rr' w V1"
   };
@@ -3754,7 +4008,10 @@
     lpfb:         'LPFB',
     lafb:         'LAFB',
     srodkomorowe: 'Niespecyficzne zaburzenia przewodnictwa śródkomorowego zapis w granicach normy',
-    rr_prim:      'zapis w granicach normy'
+    rr_prim:      'zapis w granicach normy',
+    avb1:         'Blok przedsionkowo-komorowy I stopnia',
+    avb2:         'Blok przedsionkowo-komorowy II stopnia',
+    avb3:         'Blok przedsionkowo-komorowy III stopnia',
   };
 
   function toggleKonsEKGBtn(key){
@@ -3848,7 +4105,6 @@
     if(!isNaN(rrVal) && rrVal>0 && !isNaN(qtVal) && qtVal>0){
       const qtc = Math.round(qtVal / Math.sqrt(rrVal/1000));
       qtStr += '<b>' + qtVal + '</b> ms, QTc <b>' + qtc + '</b> ms';
-      if(qtcZ !== null) qtStr += ' <i>(' + (qtcZ>=0?'+':'') + qtcZ.toFixed(2) + 'z)' + ref + '</i>';
     } else if(!isNaN(qtVal) && qtVal>0){
       qtStr += '<b>' + qtVal + '</b> ms';
     } else {
@@ -3856,16 +4112,27 @@
     }
 
     // Podsumowanie — zaburzenia przewodzenia lub "Zapis prawidłowy"
-    const conductionKeys = ['irbbb','rbbb','lbbb','lpfb','lafb','srodkomorowe'];
+    const conductionKeys = ['irbbb','rbbb','lbbb','lpfb','lafb','srodkomorowe','avb1','avb2','avb3'];
     const activeConduction = conductionKeys.filter(k => KONS_EKG_BTNS[k]);
+
+    // Specjalny szablon dla AVBIII
+    if(KONS_EKG_BTNS.avb3){
+      const freq = !isNaN(hrVal) ? '<b>' + hrVal + '</b>/min' : '/min';
+      const qrsP = !isNaN(qrsVal) ? 'QRS <b>' + qrsVal + '</b> ms' : 'QRS ms';
+      const qtP  = !isNaN(rrVal)&&rrVal>0&&!isNaN(qtVal)&&qtVal>0
+                    ? 'QT <b>' + qtVal + '</b> ms, QTc <b>' + Math.round(qtVal/Math.sqrt(rrVal/1000)) + '</b> ms'
+                    : 'QT ms';
+      const axisStr2 = ['prawogram','lewogram'].includes(axis) ? axis : 'oś ' + axis;
+      return 'Blok całkowity o częstości komór ' + freq + ', ' + axisStr2 + ', ' + qrsP + ', ' + qtP + '. Blok przedsionkowo-komorowy III stopnia.<br>';
+    }
+
     let summary;
     if(activeConduction.length > 0){
       summary = activeConduction.map(k => EKG_BTN_SUMMARY[k]).join(', ');
     } else {
       summary = 'Zapis prawidłowy';
     }
-    // Jeśli Rr' aktywne ale bez innych zaburzeń, dodaj "zapis w granicach normy"
-    if(KONS_EKG_BTNS.rr_prim && activeConduction.length === 0){
+    if(KONS_EKG_BTNS.rr_prim && activeConduction.filter(k=>k!=='rr_prim').length === 0){
       summary = EKG_BTN_SUMMARY.rr_prim;
     }
 
