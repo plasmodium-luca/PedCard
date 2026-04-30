@@ -179,7 +179,7 @@
     .var-name{font-size:0.88rem;font-weight:800;color:#2d3748;letter-spacing:0.02em;}
     .input-wrap{display:flex;align-items:center;gap:0.3rem;}
     .input-wrap input{
-      width:68px;
+      width:52px;
       padding:0.3rem 0.45rem;
       border:1.5px solid #feb2b2;
       border-radius:6px;
@@ -364,6 +364,51 @@
     <div style="font-size:0.72rem;opacity:0.75;letter-spacing:0.1em;text-transform:uppercase;color:#fff;margin-top:0.2rem;">Imperialne narzędzie kontrolowania wymiarów</div>
   </div>
 </header>
+
+<!-- Easter egg banner dla IP z Kamieńskiego -->
+<div id="kamienski-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9999;
+  background:linear-gradient(135deg,#1a0000,#7b0000);
+  color:#fca5a5;font-family:'Segoe UI',sans-serif;
+  padding:0.8rem 1.5rem;
+  display:none;align-items:center;justify-content:space-between;gap:1rem;
+  border-top:3px solid #c53030;box-shadow:0 -4px 20px rgba(197,48,48,0.5);">
+  <div style="display:flex;align-items:center;gap:1rem;flex:1;">
+    <span style="font-size:2rem;animation:march 1s steps(1) infinite;">⚔️</span>
+    <div>
+      <div style="font-size:1rem;font-weight:800;color:#fff;letter-spacing:0.05em;">Imperium pozdrawia Kolegów z Kamieńskiego</div>
+      <div style="font-size:0.85rem;color:#fca5a5;font-style:italic;letter-spacing:0.1em;">Ave Caesar! 🦅</div>
+    </div>
+  </div>
+  <button onclick="document.getElementById('kamienski-banner').style.display='none'"
+    style="padding:0.4rem 1rem;background:transparent;border:1.5px solid #fca5a5;border-radius:6px;
+           color:#fca5a5;font-weight:700;cursor:pointer;font-size:0.8rem;flex-shrink:0;">✕ Dismiss</button>
+</div>
+<style>
+@keyframes march {
+  0%  { content:'⚔️'; transform:translateX(0); }
+  50% { transform:translateX(8px); }
+  100%{ transform:translateX(0); }
+}
+#kamienski-banner { animation: slideUp 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+@keyframes slideUp {
+  from { transform: translateY(100%); opacity:0; }
+  to   { transform: translateY(0);    opacity:1; }
+}
+</style>
+<script>
+(function(){
+  const TARGET_IP = '156.17.207.20';
+  fetch('https://api.ipify.org?format=json')
+    .then(r => r.json())
+    .then(data => {
+      if(data.ip === TARGET_IP){
+        const banner = document.getElementById('kamienski-banner');
+        banner.style.display = 'flex';
+      }
+    })
+    .catch(() => {}); // cicho ignoruj błędy sieci
+})();
+</script>
 
 <div class="tabs">
   <button class="tab-button active" onclick="switchTab('echo')">Echo</button>
@@ -1124,11 +1169,13 @@
           <button id="k_btn_niepokoj" onclick="toggleKonsVariant('niepokoj')" style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">niepokój</button>
           <button id="k_btn_kolana"   onclick="toggleKonsVariant('kolana')"   style="padding:0.25rem 0.7rem;border:1.5px solid #feb2b2;border-radius:6px;background:#fff;color:#742a2a;font-size:0.75rem;font-weight:700;cursor:pointer;">kolana</button>
         </div>
-        <textarea id="k_sect_echo" rows="12"
-          oninput="onKonsSectEdit('echo');autoResize(this)"
+        <div id="k_sect_echo"
+          contenteditable="true"
+          oninput="onKonsSectEdit('echo')"
           style="width:100%;border:1.5px solid #feb2b2;border-radius:7px;padding:0.5rem;
                  font-size:0.85rem;font-family:'Segoe UI',sans-serif;line-height:1.8;
-                 resize:none;outline:none;background:#fff;overflow:hidden;"></textarea>
+                 outline:none;background:#fff;min-height:12rem;white-space:pre-wrap;
+                 word-break:break-word;"></div>
       </div>
 
 
@@ -1632,6 +1679,8 @@
           htmlLines.push(line);
         } else {
           let line = item.before.trimEnd() + after;
+          // Zaznacz żółtym brakujące Vmax= gdy nie wpisano wartości
+          line = line.replace(/Vmax=[\s\u2002]*(m\/s)/g, 'Vmax= <mark style="background:#fef08a;padding:0 2px;border-radius:2px;">m/s</mark>');
           // Dopisz TAPSE nawet gdy brak pomiaru TV, jeśli jest wynik TAPSE
           if (item.valveId === 'tv') {
             const tapseVal = parseFloat(document.getElementById('tapse_val').value);
@@ -3377,11 +3426,13 @@
   // Pobiera tekst sekcji (z textarea lub z automatycznego szablonu)
   function getKonsSectText(sect){
     const el = document.getElementById('k_sect_' + sect);
-    return el ? el.value : '';
+    if(!el) return '';
+    return el.tagName === 'TEXTAREA' ? el.value : (el.innerText || '');
   }
 
   // Aktualizuje textarea sekcji jeśli nie była ręcznie edytowana
   function autoResize(el){
+    if(!el || el.tagName !== 'TEXTAREA') return;
     el.style.height = 'auto';
     el.style.height = el.scrollHeight + 'px';
   }
@@ -3389,9 +3440,14 @@
   function setKonsSectText(sect, text){
     if(KONS_SECT_MANUAL[sect]) return;
     const el = document.getElementById('k_sect_' + sect);
-    if(el && el.value !== text){
-      el.value = text;
-      if(sect === 'echo') autoResize(el);
+    if(!el) return;
+    if(el.tagName === 'TEXTAREA'){
+      if(el.value !== text){ el.value = text; autoResize(el); }
+    } else {
+      // contenteditable div — zawsze aktualizuj jeśli nie jest aktywny
+      if(document.activeElement !== el){
+        el.innerHTML = text.replace(/\n/g,'<br>');
+      }
     }
   }
 
@@ -3476,7 +3532,9 @@
     });
     ['wywiad','phys','ekg','echo','wnioski','zalecenia'].forEach(s => {
       const el = document.getElementById('k_sect_' + s);
-      if(el) el.value = '';
+      if(!el) return;
+      if(el.tagName === 'TEXTAREA') el.value = '';
+      else el.innerHTML = '';
     });
   }
   // ─────────────────────────────────────────────────────────────────────
@@ -3620,28 +3678,28 @@
       .trim();
     setKonsSectText('ekg', ekgPlain);
 
-    // Echo — sekcja (plain text do textarea, HTML do zbiorczego)
+    // Echo — sekcja (HTML z <mark> do div, plain do zbiorczego)
     const echoHtml = buildKonsEchoOnlyDesc(isNaN(bsa)?null:bsa, sex);
-    const echoPlainForTextarea = echoHtml
-      .replace(/<br\s*\/?>/gi, '\n')
-      .replace(/<[^>]+>/g, '')
-      .trim();
     const hasEKGData = !isNaN(parseFloat((document.getElementById('k_hr')||{}).value))
                     || !isNaN(parseFloat((document.getElementById('k_pq')||{}).value))
                     || !isNaN(parseFloat((document.getElementById('k_qrs')||{}).value));
-    let echoPlain = echoPlainForTextarea;
     let echoHtmlFull = echoHtml;
     if(hasEKGData){
       const ref7 = ' 7) Bratincsák A, et al. 2020;';
-      if(echoPlain.includes('1) Kampmann')){
-        echoPlain    = echoPlain.replace(/(\d\).*?;)\s*$/, '$1' + ref7);
+      if(echoHtmlFull.includes('1) Kampmann')){
         echoHtmlFull = echoHtmlFull.replace(/(\d\).*?;)(<br>|$)/, '$1' + ref7 + '$2');
       } else {
-        echoPlain    += '\n' + ref7.trim();
         echoHtmlFull += '<br>' + ref7.trim();
       }
     }
-    setKonsSectText('echo', echoPlain);
+    // Wstaw HTML (z mark) bezpośrednio do div
+    const echoDiv = document.getElementById('k_sect_echo');
+    if(echoDiv && !KONS_SECT_MANUAL.echo){
+      // Aktualizuj zawsze gdy użytkownik edytuje inputy (nie sam div)
+      if(document.activeElement !== echoDiv){
+        echoDiv.innerHTML = echoHtmlFull;
+      }
+    }
     window._konsEchoHtml = echoHtmlFull;
 
     // Zbiorczy opis
