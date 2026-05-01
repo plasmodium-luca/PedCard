@@ -3718,6 +3718,28 @@
     if(!isNaN(w)&&w>0) headerParts.push('Masa: '+w+' kg'+wPct);
     if(!isNaN(h)&&h>0) headerParts.push('Wzrost: '+h+' cm'+hPct);
     if(bsa!==null)      headerParts.push('BSA: '+bsa.toFixed(3)+' m²');
+
+    // BP
+    const sbpVal = parseFloat((document.getElementById('bp_sbp')||{}).value);
+    const dbpVal = parseFloat((document.getElementById('bp_dbp')||{}).value);
+    const bpAge  = getEffectiveAge();
+    const sexKey = sex === 'boy' ? 'boy' : 'girl';
+    if(!isNaN(sbpVal) || !isNaN(dbpVal)){
+      let bpStr = 'RR ';
+      if(!isNaN(sbpVal) && !isNaN(dbpVal)) bpStr += sbpVal+'/'+dbpVal;
+      else if(!isNaN(sbpVal)) bpStr += sbpVal+'/—';
+      else bpStr += '—/'+dbpVal;
+      bpStr += ' mmHg';
+      if(!isNaN(bpAge) && bpAge>=3){
+        const sbpR = !isNaN(sbpVal) ? getBPCentileExact(sbpVal, BP_SBP, sexKey, bpAge) : null;
+        const dbpR = !isNaN(dbpVal) ? getBPCentileExact(dbpVal, BP_DBP, sexKey, bpAge) : null;
+        if(sbpR || dbpR){
+          bpStr += ' (' + (sbpR ? sbpR.pct : '—') + '/' + (dbpR ? dbpR.pct : '—') + ')';
+        }
+      }
+      headerParts.push(bpStr);
+    }
+
     const header = headerParts.length ? '<b>' + headerParts.join('  ') + '</b>' : '';
 
     const BR = '<br>';
@@ -4056,7 +4078,18 @@
     znieczulenie: 'W chwili obecnej nie ma przeciwwskazań kardiologicznych do znieczulenia ogólnego.',
     kolatania:    'W przypadku kołatania proszę zmierzyć akcję serca (np. pulsoksymetr, ciśnieniomierz), wartości powyżej >170/min, czas trwania oraz akcję serca po kołataniu zapisać w zeszycie pomiarów. Ewentualnie wyposażyć się w "event recorder" EKG (np. Istel HR-2000, AliveCor, Lepu 24 EKG ER2-S) i nagrać EKG. W przypadku dłużej utrzymującego się EKG zgłosić się na SOR/izbę przyjęć/POZ celem wykonania spoczynkowego EKG.\nZ zeszytem pomiarów lub nagraniami EKG po wykonanym Holter EKG zgłosić się na kontrolę.',
     pfo:          'Ewentualna kontrola po 4 r.ż.',
-    nadcisnienie: 'Proszę założyć zeszyt pomiarów ciśnienia: pomiaru dokonywać na ramieniu lewym, w pozycji siedzącej - spoczynek co najmniej 5 minut przed pomiarem (mankiet pediatryczny - 3/4 ramienia) wartość 95 percentyla dla wzrostu to / mm Hg.\nZ zeszytem pomiarów co najmniej po miesiącu zgłosić się do pediatry w przypadku pomiarów > 50% nieprawidłowych konsultacja nefrologiczna.',
+    nadcisnienie: function(){
+      const age  = getEffectiveAge();
+      const sex  = (document.getElementById('sex')||{}).value || 'girl';
+      const sKey = sex === 'boy' ? 'boy' : 'girl';
+      let sbp95 = '—', dbp95 = '—';
+      if(!isNaN(age) && age >= 3 && age <= 18){
+        const a = Math.min(18, Math.max(3, Math.round(age)));
+        sbp95 = BP_SBP[sKey][a][2]; // c95
+        dbp95 = BP_DBP[sKey][a][2];
+      }
+      return 'Proszę założyć zeszyt pomiarów ciśnienia: pomiaru dokonywać na ramieniu lewym, w pozycji siedzącej - spoczynek co najmniej 5 minut przed pomiarem (mankiet pediatryczny - 3/4 ramienia) wartość 95 percentyla dla wzrostu to ' + sbp95 + '/' + dbp95 + ' mm Hg.\nZ zeszytem pomiarów co najmniej po miesiącu zgłosić się do pediatry w przypadku pomiarów > 50% nieprawidłowych konsultacja nefrologiczna.';
+    },
     izw:          'Profilaktyka infekcyjnego zapalenia wsierdzia (np. Amoksycylina 50 mg/kg doustnie 30-60 minut przed zabiegiem - pełny wykaz profilaktyki wg: "Wytyczne ESC 2023 dotyczące postępowania w zapaleniu wsierdzia")',
     wysilek:      'W chwili obecnej nie ma przeciwwskazań kardiologicznych do rekreacyjnego wysiłku fizycznego.',
   };
@@ -4066,7 +4099,8 @@
   function addZalecenie(key){
     const el = document.getElementById('k_sect_zalecenia');
     if(!el) return;
-    const tmpl = ZALECENIA_TEMPLATES[key] || '';
+    const tmplRaw = ZALECENIA_TEMPLATES[key];
+    const tmpl = typeof tmplRaw === 'function' ? tmplRaw() : tmplRaw;
     if(!tmpl) return;
 
     ZALECENIA_ACTIVE[key] = !ZALECENIA_ACTIVE[key];
