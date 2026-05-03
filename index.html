@@ -433,7 +433,7 @@
   </div>
   <div class="field">
     <label>Data ur. / Wiek</label>
-    <input type="text" id="pt_dob" placeholder="ddmmrrrr / 8 / 7/12 / 2 7/12"
+    <input type="text" id="pt_dob" placeholder="ddmmrrrr / RRMMDD / 8 / 7/12"
            oninput="onDobRaw(this)" style="width:140px;" maxlength="10"/>
   </div>
   <div class="field">
@@ -2014,32 +2014,32 @@
   // Wiek w latach (półroczne dla BMI, roczne dla wzrostu/masy)
   // [wiek, L, M, S]
   const LMS_HEIGHT = {
-    boy:  [[3,1,97.5,0.038],[3.5,1,101.1,0.039],[4,1,104.9,0.039],[4.5,1,108.4,0.040],
-           [5,1,111.8,0.041],[5.5,1,115.1,0.041],[6,1,118.4,0.042],[6.5,1,121.4,0.042],
+    boy:  [[3,1,97.5,0.038],[3.5,1,101.3,0.039],[4,1,104.9,0.039],[4.5,1,108.4,0.040],
+           [5,1,111.8,0.041],[5.5,1,115.2,0.041],[6,1,118.4,0.042],[6.5,1,121.4,0.042],
            [7,1,124.5763,0.0407],[8,1,130.5084,0.0422],[9,1,136.2700,0.0441],
            [10,1,141.4685,0.0457],[11,1,146.7490,0.0473],[12,1,152.9406,0.0499],
            [13,1,160.2044,0.0511],[14,1,167.2116,0.0481],[15,1,172.4996,0.0430],
            [16,1,175.7266,0.0392],[17,1,177.6036,0.0370],[18,1,178.6756,0.0357]],
-    girl: [[3,1,96.3,0.040],[3.5,1,99.9,0.040],[4,1,103.6,0.040],[4.5,1,107.1,0.041],
-           [5,1,110.4,0.042],[5.5,1,113.7,0.042],[6,1,117.0,0.043],[6.5,1,120.2,0.043],
+    girl: [[3,1,96.3,0.040],[3.5,1,100.1,0.040],[4,1,103.7,0.040],[4.5,1,107.2,0.041],
+           [5,1,110.5,0.042],[5.5,1,113.8,0.042],[6,1,117.0,0.043],[6.5,1,120.2,0.043],
            [7,1,123.0195,0.0419],[8,1,129.3683,0.0440],[9,1,135.2446,0.0457],
            [10,1,140.7839,0.0471],[11,1,147.1313,0.0472],[12,1,153.8132,0.0444],
            [13,1,159.0773,0.0406],[14,1,162.2376,0.0380],[15,1,163.7435,0.0368],
            [16,1,164.3511,0.0363],[17,1,164.7437,0.0360],[18,1,165.0598,0.0358]]
   };
   const LMS_WEIGHT = {
-    boy:  [[3,-1.289,15.5,0.131],[3.5,-1.350,16.0,0.131],[4,-1.382,17.1,0.130],
+    boy:  [[3,-1.289,14.9,0.131],[3.5,-1.350,16.0,0.131],[4,-1.382,17.1,0.130],
            [4.5,-1.379,18.4,0.134],[5,-1.369,19.7,0.142],[5.5,-1.384,21.1,0.152],
-           [6,-1.416,22.4,0.163],[6.5,-1.390,23.5,0.169],
+           [6,-1.416,22.3,0.163],[6.5,-1.390,23.5,0.169],
            [7,-1.3451,24.4425,0.1739],[8,-1.2241,27.5948,0.1853],
            [9,-1.1007,30.8200,0.1969],[10,-0.9733,34.2322,0.2077],
            [11,-0.8410,38.1082,0.2164],[12,-0.7093,42.7117,0.2205],
            [13,-0.6043,48.1026,0.2164],[14,-0.5548,53.7776,0.2034],
            [15,-0.5641,59.0021,0.1864],[16,-0.6093,63.3307,0.1716],
            [17,-0.6625,66.8807,0.1601],[18,-0.7110,69.8692,0.1510]],
-    girl: [[3,-1.211,14.9,0.129],[3.5,-1.202,15.4,0.135],[4,-1.192,16.2,0.141],
-           [4.5,-1.182,17.0,0.147],[5,-1.170,18.0,0.153],[5.5,-1.157,19.1,0.158],
-           [6,-1.142,20.2,0.164],[6.5,-1.130,21.3,0.168],
+    girl: [[3,-1.211,14.5,0.129],[3.5,-1.202,15.5,0.135],[4,-1.192,16.6,0.141],
+           [4.5,-1.182,17.6,0.147],[5,-1.170,18.7,0.153],[5.5,-1.157,19.8,0.158],
+           [6,-1.142,21.0,0.164],[6.5,-1.130,21.3,0.168],
            [7,-1.0642,23.4756,0.1703],[8,-1.0484,26.6216,0.1825],
            [9,-0.9785,29.9233,0.1940],[10,-0.8443,33.5526,0.2050],
            [11,-0.6766,37.8737,0.2133],[12,-0.5461,42.8172,0.2095],
@@ -2198,7 +2198,12 @@
     function showPct(val, table, elId, label) {
       const el = document.getElementById(elId);
       if (!el) return;
-      if (isNaN(val) || isNaN(age) || age <= 0) { el.style.display='none'; el.textContent=''; return; }
+      if (isNaN(val) || isNaN(age) || age <= 0 || age > 20) { el.style.display='none'; el.textContent=''; return; }
+      // Sprawdź czy wiek mieści się w zakresie tabeli
+      const rows = table[sexKey === 'boy' ? 'boy' : 'girl'];
+      if (!rows) { el.style.display='none'; return; }
+      const minAge = rows[0][0], maxAge = rows[rows.length-1][0];
+      if (age < minAge * 0.8 || age > maxAge * 1.1) { el.style.display='none'; el.textContent=''; return; }
       const lms = getLMS(table, sexKey, age);
       if (!lms) { el.style.display='none'; el.textContent=''; return; }
       const [L, M, S] = lms;
@@ -2994,9 +2999,24 @@
     let ageLabel = '';
     let formattedDob = '';
 
-    // Format 1: ddmmrrrr lub dd.mm.rrrr — data urodzenia
+    // Format 0: 6 cyfr — początek PESEL (RRMMDD, gdzie MM>20 = XXI wiek)
     const digitsOnly = raw.replace(/\D/g,'');
-    if(digitsOnly.length >= 6 && /^\d/.test(raw) && !raw.includes('/')){
+    if(digitsOnly.length === 6 && /^\d{6}$/.test(raw)){
+      const yy = parseInt(raw.slice(0,2));
+      const mm = parseInt(raw.slice(2,4));
+      const dd = parseInt(raw.slice(4,6));
+      let year, month;
+      if(mm > 20 && mm <= 32){ year = 2000 + yy; month = mm - 20; }
+      else if(mm >= 1 && mm <= 12){ year = 1900 + yy; month = mm; }
+      if(year && month >= 1 && month <= 12 && dd >= 1 && dd <= 31){
+        const fmt2 = String(dd).padStart(2,'0')+'.'+String(month).padStart(2,'0')+'.'+year;
+        el.value = fmt2;
+        ageYears = parseDobToYears(fmt2);
+        ageLabel = formatAgeFromDob(fmt2) || '';
+      }
+
+    // Format 1: ddmmrrrr lub dd.mm.rrrr — data urodzenia
+    } else if(digitsOnly.length >= 6 && /^\d/.test(raw) && !raw.includes('/')){
       // Autoformat daty
       let d = digitsOnly.slice(0,8);
       let fmt = d;
@@ -3512,167 +3532,138 @@
 
   // Aktualizuje textarea sekcji jeśli nie była ręcznie edytowana
   // ── Centyle ciśnienia tętniczego ──────────────────────────────────────
-  // OLA (Grajda et al. 2016, J Hum Hypertens) — przedszkolaki 3-6 lat, mediana wzrostu
-  // OLAF (Kułaga et al. 2012, J Hypertens) — dzieci szkolne 7-18 lat, mediana wzrostu
+  // OLA (Grajda 2016) — model wielomianowy dla 3-6 lat (lnBP ~ age + z_height)
+  // OLAF (Kułaga 2012) — interpolacja tabelaryczna dla 7-18 lat (wg mediany wzrostu)
+  // LMS wzrostu: Kułaga 2011 (7-18 lat) + OLA Table 2 (3-6 lat)
+
+  const HEIGHT_LMS = {
+    girl: { 7:[1,123.0195,0.0419],8:[1,129.3683,0.0440],9:[1,135.2446,0.0457],10:[1,140.7839,0.0471],11:[1,147.1313,0.0472],12:[1,153.8132,0.0444],13:[1,159.0773,0.0406],14:[1,162.2376,0.0380],15:[1,163.7435,0.0368],16:[1,164.3511,0.0363],17:[1,164.7437,0.0360],18:[1,165.0598,0.0358] },
+    boy:  { 7:[1,124.5763,0.0407],8:[1,130.5084,0.0422],9:[1,136.2700,0.0441],10:[1,141.4685,0.0457],11:[1,146.7490,0.0473],12:[1,152.9406,0.0499],13:[1,160.2044,0.0511],14:[1,167.2116,0.0481],15:[1,172.4996,0.0430],16:[1,175.7266,0.0392],17:[1,177.6036,0.0370],18:[1,178.6756,0.0357] }
+  };
+  // OLA: mediana wzrostu dla 3-6 lat (Grajda Table 2): [M_cm, S_cv]
+  const HEIGHT_PRESCHOOL = {
+    girl: { 3:[97.0,0.044],4:[103.6,0.043],5:[107.4,0.045],6:[116.9,0.046] },
+    boy:  { 3:[98.3,0.044],4:[105.1,0.044],5:[111.8,0.044],6:[118.3,0.046] }
+  };
+
+  function getHeightZscore(h, age, sex) {
+    if(!h||isNaN(h)||h<=0) return 0;
+    const s = sex==='boy'?'boy':'girl';
+    if(age>=7&&age<=18){
+      const ages=[7,8,9,10,11,12,13,14,15,16,17,18];
+      let L,M,S;
+      if(age<=7){[L,M,S]=HEIGHT_LMS[s][7];}
+      else if(age>=18){[L,M,S]=HEIGHT_LMS[s][18];}
+      else{
+        const a0=Math.floor(age),a1=a0+1,t=age-a0;
+        const[L0,M0,S0]=HEIGHT_LMS[s][a0]||HEIGHT_LMS[s][7];
+        const[L1,M1,S1]=HEIGHT_LMS[s][a1]||HEIGHT_LMS[s][18];
+        L=L0+t*(L1-L0);M=M0+t*(M1-M0);S=S0+t*(S1-S0);
+      }
+      return (h/M-1)/S;
+    } else if(age>=3&&age<7){
+      const tbl=HEIGHT_PRESCHOOL[s];
+      const a0=Math.min(6,Math.max(3,Math.floor(age))),a1=Math.min(6,a0+1),t=age-a0;
+      const[M0,S0]=tbl[a0]||tbl[3],[M1,S1]=tbl[a1]||tbl[6];
+      return (h/(M0+t*(M1-M0))-1)/(S0+t*(S1-S0));
+    }
+    return 0;
+  }
+
+  // Koeficjenty wielomianowe lnBP — Grajda 2016 Table 3 (centrum age=4.5)
+  const POLY_OLA = {
+    girl_sbp:{int:4.5452,z:0.0106,z2:0.0022,z3:0.0005,z4:-0.0003,a:0.0183,a2:0.0027,a3:-0.0035,a4:0.0004,s:0.0795},
+    girl_dbp:{int:4.0215,z:0.0083,z2:-0.0014,z3:0.0007,z4:0.0000,a:0.0192,a2:-0.0014,a3:-0.0030,a4:0.0008,s:0.1204},
+    boy_sbp: {int:4.5386,z:0.0105,z2:0.0034,z3:0.0008,z4:-0.0004,a:0.0055,a2:0.0004,a3:0.0025,a4:0.0004,s:0.0776},
+    boy_dbp: {int:4.0076,z:0.0111,z2:0.0016,z3:0.0004,z4:-0.0001,a:0.0031,a2:-0.0107,a3:0.0037,a4:0.0030,s:0.1148}
+  };
+
+  // Tabele percentylowe OLAF Kułaga 2012 Table 2/3 wg mediany wzrostu
   // Format: wiek → [c50, c90, c95, c99]
-
-  const BP_SBP = {
-    boy: {
-      // OLA 2016 Table 4 — wiek 3-6, mediana wzrostu (50. centyl wg tabeli)
-      3: [90, 100, 102, 107],
-      4: [91, 102, 104, 109],
-      5: [92, 103, 105, 110],
-      6: [93, 105, 107, 112],
-      // OLAF 2012 Table 2 — wiek 7-18, mediana wzrostu
-      7:  [101, 112, 116, 123],
-      8:  [102, 113, 116, 123],
-      9:  [103, 114, 118, 125],
-      10: [104, 115, 119, 126],
-      11: [105, 117, 120, 127],
-      12: [106, 118, 121, 129],
-      13: [109, 122, 125, 133],
-      14: [112, 126, 130, 139],
-      15: [116, 130, 135, 143],
-      16: [118, 133, 137, 146],
-      17: [118, 133, 138, 147],
-      18: [119, 134, 139, 148]
-    },
-    girl: {
-      // OLA 2016 Table 4 — wiek 3-6, mediana wzrostu
-      3: [91, 101, 104, 112],
-      4: [92, 103, 105, 114],
-      5: [93, 104, 107, 116],
-      6: [94, 105, 108, 118],
-      // OLAF 2012 Table 3 — wiek 7-18, mediana wzrostu
-      7:  [101, 113, 116, 123],
-      8:  [101, 113, 117, 124],
-      9:  [102, 115, 118, 126],
-      10: [104, 117, 120, 128],
-      11: [106, 119, 123, 130],
-      12: [108, 121, 125, 132],
-      13: [110, 123, 127, 135],
-      14: [112, 125, 129, 137],
-      15: [112, 126, 130, 138],
-      16: [113, 126, 130, 138],
-      17: [113, 127, 131, 139],
-      18: [112, 126, 130, 138]
-    }
+  const OLAF_SBP = {
+    boy:  {7:[101,112,116,123],8:[102,113,116,123],9:[103,114,118,125],10:[104,115,119,126],11:[105,117,120,127],12:[106,118,121,129],13:[109,122,125,133],14:[112,126,130,139],15:[116,130,135,143],16:[118,133,137,146],17:[118,133,138,147],18:[119,134,139,148]},
+    girl: {7:[101,113,116,123],8:[101,113,117,124],9:[102,115,118,126],10:[104,117,120,128],11:[106,119,123,130],12:[108,121,125,132],13:[110,123,127,135],14:[112,125,129,137],15:[112,126,130,138],16:[113,126,130,138],17:[113,127,131,139],18:[112,126,130,138]}
+  };
+  const OLAF_DBP = {
+    boy:  {7:[59,68,71,76],8:[59,68,71,75],9:[60,69,72,77],10:[61,70,72,77],11:[61,70,73,78],12:[61,70,73,78],13:[62,71,74,79],14:[62,72,76,82],15:[63,74,78,84],16:[64,75,78,85],17:[64,75,79,86],18:[65,76,79,86]},
+    girl: {7:[60,69,71,76],8:[60,69,72,77],9:[60,70,72,77],10:[61,70,73,78],11:[62,71,74,79],12:[63,72,75,80],13:[63,73,75,80],14:[64,73,76,81],15:[65,74,77,82],16:[65,74,77,82],17:[66,75,78,83],18:[66,75,78,83]}
   };
 
-  const BP_DBP = {
-    boy: {
-      // OLA 2016 Table 4 — mediana wzrostu
-      3: [53, 61, 63, 71],
-      4: [54, 61, 64, 70],
-      5: [55, 62, 65, 70],
-      6: [56, 63, 66, 71],
-      // OLAF 2012 Table 2 — mediana wzrostu
-      7:  [59, 68, 71, 76],
-      8:  [59, 68, 71, 75],
-      9:  [60, 69, 72, 77],
-      10: [61, 70, 72, 77],
-      11: [61, 70, 73, 78],
-      12: [61, 70, 73, 78],
-      13: [62, 71, 74, 79],
-      14: [62, 72, 76, 82],
-      15: [63, 74, 78, 84],
-      16: [64, 75, 78, 85],
-      17: [64, 75, 79, 86],
-      18: [65, 76, 79, 86]
-    },
-    girl: {
-      // OLA 2016 Table 4 — mediana wzrostu
-      3: [54, 63, 66, 73],
-      4: [55, 63, 66, 73],
-      5: [55, 64, 67, 74],
-      6: [56, 65, 68, 75],
-      // OLAF 2012 Table 3 — mediana wzrostu
-      7:  [60, 69, 71, 76],
-      8:  [60, 69, 72, 77],
-      9:  [60, 70, 72, 77],
-      10: [61, 70, 73, 78],
-      11: [62, 71, 74, 79],
-      12: [63, 72, 75, 80],
-      13: [63, 73, 75, 80],
-      14: [64, 73, 76, 81],
-      15: [65, 74, 77, 82],
-      16: [65, 74, 77, 82],
-      17: [66, 75, 78, 83],
-      18: [66, 75, 78, 83]
-    }
-  };
-
-  // Normalny dystrybuanta (przybliżenie)
-  function normCDF(z) {
-    const t = 1 / (1 + 0.2316419 * Math.abs(z));
-    const d = 0.3989423 * Math.exp(-z * z / 2);
-    const p = d * t * (0.3193815 + t * (-0.3565638 + t * (1.7814779 + t * (-1.8212560 + t * 1.3302744))));
-    return z >= 0 ? 1 - p : p;
+  function normCDF(z){
+    const t=1/(1+0.2316419*Math.abs(z)),d=0.3989423*Math.exp(-z*z/2);
+    const p=d*t*(0.3193815+t*(-0.3565638+t*(1.7814779+t*(-1.8212560+t*1.3302744))));
+    return z>=0?1-p:p;
   }
 
-  // Interpolacja percentyla z 4 znanych wartości (c50, c90, c95, c99)
-  function interpolateBPPct(val, c50, c90, c95, c99) {
-    // Znane z-score dla percentyli: z50=0, z90=1.2816, z95=1.6449, z99=2.3263
-    const knownZ = [0, 1.2816, 1.6449, 2.3263];
-    const knownV = [c50, c90, c95, c99];
-
-    // Liniowa interpolacja SD (odchylenie standardowe) z par (val, z)
-    // Znajdź przedział i interpoluj z-score
+  function interpPct(val,c50,c90,c95,c99){
     let z;
-    if (val <= c50) {
-      // Poniżej mediany — symetryczne
-      const sd = (c90 - c50) / 1.2816;
-      z = (val - c50) / sd;
-    } else if (val <= c90) {
-      const sd90 = (c90 - c50) / 1.2816;
-      z = (val - c50) / sd90;
-    } else if (val <= c95) {
-      const t = (val - c90) / (c95 - c90);
-      z = knownZ[1] + t * (knownZ[2] - knownZ[1]);
-    } else if (val <= c99) {
-      const t = (val - c95) / (c99 - c95);
-      z = knownZ[2] + t * (knownZ[3] - knownZ[2]);
-    } else {
-      // Powyżej c99 — ekstrapolacja
-      const sd99 = (c99 - c95) / (knownZ[3] - knownZ[2]);
-      z = knownZ[3] + (val - c99) / sd99;
-    }
-
-    const pct = normCDF(z) * 100;
-    return Math.min(99.9, Math.max(0.1, pct));
+    const sd50_90=(c90-c50)/1.2816;
+    if(val<=c90){ z=sd50_90>0?(val-c50)/sd50_90:0; }
+    else if(val<=c95){ const t=(val-c90)/(c95-c90); z=1.2816+t*(1.6449-1.2816); }
+    else if(val<=c99){ const t=(val-c95)/(c99-c95); z=1.6449+t*(2.3263-1.6449); }
+    else{ const sd=(c99-c95)/(2.3263-1.6449); z=2.3263+(sd>0?(val-c99)/sd:0); }
+    return normCDF(z)*100;
   }
 
-  function getBPCentileExact(val, table, sex, ageYears) {
-    if (isNaN(val) || isNaN(ageYears) || ageYears < 3 || ageYears > 18) return null;
-    const age = Math.min(18, Math.max(3, Math.round(ageYears)));
-    const sexKey = sex === 'boy' ? 'boy' : 'girl';
-    const [c50, c90, c95, c99] = table[sexKey][age];
+  function getBPCentileExact(val, type, sex, ageYears, heightCm){
+    if(isNaN(val)||isNaN(ageYears)||ageYears<3||ageYears>18) return null;
+    const s=sex==='boy'?'boy':'girl';
+    let c50, c90, c95, c99;
 
-    const pct = interpolateBPPct(val, c50, c90, c95, c99);
-    const pctRound = Math.round(pct * 10) / 10;
+    if(ageYears<7){
+      // OLA: użyj modelu wielomianowego do wyznaczenia progów centylowych
+      const key=s+'_'+type;
+      const c=POLY_OLA[key]; if(!c) return null;
+      const zHt=getHeightZscore(heightCm,ageYears,s);
+      const a=ageYears-4.5;
+      const lnMu=c.int+c.z*zHt+c.z2*zHt**2+c.z3*zHt**3+c.z4*zHt**4+c.a*a+c.a2*a**2+c.a3*a**3+c.a4*a**4;
+      const mu=Math.exp(lnMu);
+      // Oblicz progi centylowe z modelu
+      c50=Math.round(mu);
+      c90=Math.round(Math.exp(lnMu+1.2816*c.s));
+      c95=Math.round(Math.exp(lnMu+1.6449*c.s));
+      c99=Math.round(Math.exp(lnMu+2.3263*c.s));
+    } else {
+      const tbl=type==='sbp'?OLAF_SBP[s]:OLAF_DBP[s];
+      if(!tbl) return null;
+      const ages=Object.keys(tbl).map(Number).sort((a,b)=>a-b);
+      const age=Math.max(ages[0],Math.min(ages[ages.length-1],ageYears));
+      let a0=ages[0],a1=ages[0];
+      for(let i=0;i<ages.length-1;i++){if(ages[i]<=age&&age<=ages[i+1]){a0=ages[i];a1=ages[i+1];break;}}
+      const t=a1>a0?(age-a0)/(a1-a0):0;
+      const v0=tbl[a0],v1=tbl[a1];
+      c50=v0[0]+t*(v1[0]-v0[0]);
+      c90=v0[1]+t*(v1[1]-v0[1]);
+      c95=v0[2]+t*(v1[2]-v0[2]);
+      c99=v0[3]+t*(v1[3]-v0[3]);
+    }
 
-    let color;
-    if (pct < 90)       color = '#276749';
-    else if (pct < 95)  color = '#b7791f';
-    else                color = '#c53030';
+    // Przypisz przedział centylowy
+    let label, color;
+    if(val < c50)       { label='<50c';    color='#276749'; }
+    else if(val < c90)  { label='50–90c';  color='#276749'; }
+    else if(val < c95)  { label='90–95c';  color='#b7791f'; }
+    else if(val < c99)  { label='95–99c';  color='#c53030'; }
+    else                { label='>99c';    color='#c53030'; }
 
-    return { pct: pctRound.toFixed(1) + 'c', color };
+    return {pct: label, color};
   }
 
   function recalcBP(){
-    const sbp   = parseFloat((document.getElementById('bp_sbp')||{}).value);
-    const dbp   = parseFloat((document.getElementById('bp_dbp')||{}).value);
-    const sex   = (document.getElementById('sex')||{}).value || 'girl';
-    const age   = getEffectiveAge();
-    function showBPPct(val, table, elId){
-      const el = document.getElementById(elId); if(!el) return;
+    const sbp=parseFloat((document.getElementById('bp_sbp')||{}).value);
+    const dbp=parseFloat((document.getElementById('bp_dbp')||{}).value);
+    const sex=(document.getElementById('sex')||{}).value||'girl';
+    const age=getEffectiveAge();
+    const ht=parseFloat((document.getElementById('height')||{}).value);
+    function show(val,type,elId){
+      const el=document.getElementById(elId);if(!el)return;
       if(isNaN(val)||isNaN(age)||age<3){el.style.display='none';return;}
-      const r = getBPCentileExact(val, table, sex, age);
+      const r=getBPCentileExact(val,type,sex,age,isNaN(ht)?null:ht);
       if(!r){el.style.display='none';return;}
-      el.style.display=''; el.style.color=r.color; el.textContent=r.pct;
+      el.style.display='';el.style.color=r.color;el.textContent=r.pct;
     }
-    showBPPct(sbp, BP_SBP, 'bp_sbp_pct');
-    showBPPct(dbp, BP_DBP, 'bp_dbp_pct');
+    show(sbp,'sbp','bp_sbp_pct');
+    show(dbp,'dbp','bp_dbp_pct');
   }
 
   function autoResize(el){
@@ -3714,10 +3705,11 @@
     }
     const wPct = extractPctPlain('weight_pct_display');
     const hPct = extractPctPlain('height_pct_display');
+    const sex = (document.getElementById('sex')||{}).value || 'girl';
     const headerParts = [];
-    if(!isNaN(w)&&w>0) headerParts.push('Masa: '+w+' kg'+wPct);
-    if(!isNaN(h)&&h>0) headerParts.push('Wzrost: '+h+' cm'+hPct);
-    if(bsa!==null)      headerParts.push('BSA: '+bsa.toFixed(3)+' m²');
+    if(!isNaN(w)&&w>0) headerParts.push('<b>Masa:</b> <i>'+w+' kg'+wPct+'</i>');
+    if(!isNaN(h)&&h>0) headerParts.push('<b>Wzrost:</b> <i>'+h+' cm'+hPct+'</i>');
+    if(bsa!==null)      headerParts.push('<b>BSA:</b> <i>'+bsa.toFixed(3)+' m²</i>');
 
     // BP
     const sbpVal = parseFloat((document.getElementById('bp_sbp')||{}).value);
@@ -3725,35 +3717,31 @@
     const bpAge  = getEffectiveAge();
     const sexKey = sex === 'boy' ? 'boy' : 'girl';
     if(!isNaN(sbpVal) || !isNaN(dbpVal)){
-      let bpStr = 'RR ';
-      if(!isNaN(sbpVal) && !isNaN(dbpVal)) bpStr += sbpVal+'/'+dbpVal;
-      else if(!isNaN(sbpVal)) bpStr += sbpVal+'/—';
-      else bpStr += '—/'+dbpVal;
-      bpStr += ' mmHg';
+      let bpVal = '';
+      if(!isNaN(sbpVal) && !isNaN(dbpVal)) bpVal = sbpVal+'/'+dbpVal;
+      else if(!isNaN(sbpVal)) bpVal = sbpVal+'/—';
+      else bpVal = '—/'+dbpVal;
+      let bpPct = '';
       if(!isNaN(bpAge) && bpAge>=3){
-        const sbpR = !isNaN(sbpVal) ? getBPCentileExact(sbpVal, BP_SBP, sexKey, bpAge) : null;
-        const dbpR = !isNaN(dbpVal) ? getBPCentileExact(dbpVal, BP_DBP, sexKey, bpAge) : null;
-        if(sbpR || dbpR){
-          bpStr += ' (' + (sbpR ? sbpR.pct : '—') + '/' + (dbpR ? dbpR.pct : '—') + ')';
-        }
+        const sbpR = !isNaN(sbpVal) ? getBPCentileExact(sbpVal, 'sbp', sexKey, bpAge, null) : null;
+        const dbpR = !isNaN(dbpVal) ? getBPCentileExact(dbpVal, 'dbp', sexKey, bpAge, null) : null;
+        if(sbpR || dbpR) bpPct = ' '+(sbpR?sbpR.pct:'—')+'/'+(dbpR?dbpR.pct:'—');
       }
-      headerParts.push(bpStr);
+      headerParts.push('<b>RR:</b> <i>'+bpVal+' mmHg'+bpPct+'</i>');
     }
 
-    const header = headerParts.length ? '<b>' + headerParts.join('  ') + '</b>' : '';
+    const header = headerParts.length ? headerParts.join('  ') : '';
 
     const BR = '<br>';
     const GAP = '<br><br>';
     const parts = [];
 
-    // 1. Wywiad
+    // 1+2. Wywiad + Masa/Wzrost/BSA/RR (bez pustego wiersza między nimi)
     const wywiad = getKonsSectText('wywiad').trim();
-    if(wywiad) parts.push(wywiad.replace(/\n/g, BR));
-
-    // 2. Masa/Wzrost/BSA
-    if(header) parts.push(header);
-
-    // 3. Badanie fizykalne
+    const topParts = [];
+    if(wywiad) topParts.push(wywiad.replace(/\n/g, BR));
+    if(header) topParts.push(header);
+    if(topParts.length) parts.push(topParts.join(BR));
     const phys = getKonsSectText('phys').trim();
     if(phys) parts.push(phys.replace(/\n/g, BR));
 
@@ -3764,7 +3752,7 @@
     // 5. Echo (HTML z bold)
     if(!KONS_SECT_MANUAL.echo){
       const bsaV = bsa;
-      const sexV = (document.getElementById('sex')||{}).value || 'girl';
+      const sexV = sex;
       let echoHtmlV = buildKonsEchoOnlyDesc(isNaN(bsaV)?null:bsaV, sexV);
       const hasEKG = !isNaN(parseFloat((document.getElementById('k_hr')||{}).value))
                   || !isNaN(parseFloat((document.getElementById('k_pq')||{}).value))
@@ -4081,12 +4069,31 @@
     nadcisnienie: function(){
       const age  = getEffectiveAge();
       const sex  = (document.getElementById('sex')||{}).value || 'girl';
-      const sKey = sex === 'boy' ? 'boy' : 'girl';
+      const s    = sex === 'boy' ? 'boy' : 'girl';
       let sbp95 = '—', dbp95 = '—';
       if(!isNaN(age) && age >= 3 && age <= 18){
-        const a = Math.min(18, Math.max(3, Math.round(age)));
-        sbp95 = BP_SBP[sKey][a][2]; // c95
-        dbp95 = BP_DBP[sKey][a][2];
+        if(age < 7){
+          // OLA: wylicz c95 z modelu wielomianowego
+          const ht = parseFloat((document.getElementById('height')||{}).value);
+          const zHt = getHeightZscore(isNaN(ht)?null:ht, age, s);
+          const a = age - 4.5;
+          const cs = POLY_OLA[s+'_sbp'], cd = POLY_OLA[s+'_dbp'];
+          if(cs && cd){
+            const lnS = cs.int+cs.z*zHt+cs.z2*zHt**2+cs.z3*zHt**3+cs.z4*zHt**4+cs.a*a+cs.a2*a**2+cs.a3*a**3+cs.a4*a**4;
+            const lnD = cd.int+cd.z*zHt+cd.z2*zHt**2+cd.z3*zHt**3+cd.z4*zHt**4+cd.a*a+cd.a2*a**2+cd.a3*a**3+cd.a4*a**4;
+            sbp95 = Math.round(Math.exp(lnS + 1.6449*cs.s));
+            dbp95 = Math.round(Math.exp(lnD + 1.6449*cd.s));
+          }
+        } else {
+          // OLAF: interpolacja z tabel
+          const ages = Object.keys(OLAF_SBP[s]).map(Number).sort((a,b)=>a-b);
+          const ag = Math.max(ages[0], Math.min(ages[ages.length-1], age));
+          let a0=ages[0], a1=ages[0];
+          for(let i=0;i<ages.length-1;i++){if(ages[i]<=ag&&ag<=ages[i+1]){a0=ages[i];a1=ages[i+1];break;}}
+          const t = a1>a0?(ag-a0)/(a1-a0):0;
+          sbp95 = Math.round(OLAF_SBP[s][a0][2]+t*(OLAF_SBP[s][a1][2]-OLAF_SBP[s][a0][2]));
+          dbp95 = Math.round(OLAF_DBP[s][a0][2]+t*(OLAF_DBP[s][a1][2]-OLAF_DBP[s][a0][2]));
+        }
       }
       return 'Proszę założyć zeszyt pomiarów ciśnienia: pomiaru dokonywać na ramieniu lewym, w pozycji siedzącej - spoczynek co najmniej 5 minut przed pomiarem (mankiet pediatryczny - 3/4 ramienia) wartość 95 percentyla dla wzrostu to ' + sbp95 + '/' + dbp95 + ' mm Hg.\nZ zeszytem pomiarów co najmniej po miesiącu zgłosić się do pediatry w przypadku pomiarów > 50% nieprawidłowych konsultacja nefrologiczna.';
     },
