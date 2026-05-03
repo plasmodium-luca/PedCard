@@ -3001,21 +3001,25 @@
     let ageLabel = '';
     let formattedDob = '';
 
-    // Format 0: 6 cyfr — początek PESEL (RRMMDD, gdzie MM>20 = XXI wiek)
+    // Format 0: 6 cyfr PESEL — konwertuj TYLKO gdy MM>20 (XXI wiek, jednoznaczne)
+    // Gdy MM<=12 może być początkiem daty ddmmrrrr — czekamy na więcej cyfr
     const digitsOnly = raw.replace(/\D/g,'');
     if(digitsOnly.length === 6 && /^\d{6}$/.test(raw)){
       const yy = parseInt(raw.slice(0,2));
       const mm = parseInt(raw.slice(2,4));
       const dd = parseInt(raw.slice(4,6));
-      let year, month;
-      if(mm > 20 && mm <= 32){ year = 2000 + yy; month = mm - 20; }
-      else if(mm >= 1 && mm <= 12){ year = 1900 + yy; month = mm; }
-      if(year && month >= 1 && month <= 12 && dd >= 1 && dd <= 31){
-        const fmt2 = String(dd).padStart(2,'0')+'.'+String(month).padStart(2,'0')+'.'+year;
-        el.value = fmt2;
-        ageYears = parseDobToYears(fmt2);
-        ageLabel = formatAgeFromDob(fmt2) || '';
+      if(mm > 20 && mm <= 32){
+        // Jednoznaczny PESEL XXI wiek
+        const year = 2000 + yy;
+        const month = mm - 20;
+        if(month >= 1 && month <= 12 && dd >= 1 && dd <= 31){
+          const fmt2 = String(dd).padStart(2,'0')+'.'+String(month).padStart(2,'0')+'.'+year;
+          el.value = fmt2;
+          ageYears = parseDobToYears(fmt2);
+          ageLabel = formatAgeFromDob(fmt2) || '';
+        }
       }
+      // Gdy mm<=12: nie konwertuj — czekaj na pełną datę 8 cyfr
 
     // Format 1: ddmmrrrr lub dd.mm.rrrr — data urodzenia
     } else if(digitsOnly.length >= 6 && /^\d/.test(raw) && !raw.includes('/')){
@@ -3964,24 +3968,8 @@
   }
 
   function updateZbarK(id, z, predFn){
-    // Używa tej samej logiki co updateZbar ale dla k_ prefix
+    // Deleguj do updateZbar — ukrywa zEl i pokazuje pasek
     updateZbar('k_' + id, z, predFn);
-    // updateZbar chowa zEl i pokazuje pasek — w konsultacji chcemy pokazywać oba
-    const zEl = document.getElementById('k_' + id + '_z');
-    if(zEl) {
-      zEl.style.display = '';
-      if(z === null || isNaN(z)){
-        zEl.textContent = '—'; zEl.className = 'result-cell'; zEl.style.color = ''; zEl.style.fontWeight = '';
-      } else {
-        const zFmt = (z>=0?'+':'') + z.toFixed(2) + 'z';
-        const p2 = predFn(2), m2 = predFn(-2);
-        zEl.innerHTML = '<span style="font-weight:700">' + zFmt + '</span>'
-          + '<span style="font-size:0.72rem;color:#718096;margin-left:0.3rem;">[' + m2.toFixed(1) + '–' + p2.toFixed(1) + ']</span>';
-        if(Math.abs(z) > 3)       { zEl.style.color = '#c53030'; zEl.style.fontWeight = '700'; }
-        else if(Math.abs(z) >= 2) { zEl.style.color = '#d69e2e'; zEl.style.fontWeight = '700'; }
-        else                      { zEl.style.color = '#276749'; zEl.style.fontWeight = '700'; }
-      }
-    }
   }
 
   function recalcKonsTAPSE(){
