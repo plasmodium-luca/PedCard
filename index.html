@@ -432,9 +432,11 @@
     <input type="hidden" id="sex" value="girl"/>
   </div>
   <div class="field">
-    <label>Data ur. / Wiek</label>
-    <input type="text" id="pt_dob" placeholder="ddmmrrrr / RRMMDD / 8 / 7/12"
-           oninput="onDobRaw(this)" style="width:140px;" maxlength="10"/>
+    <label>DOB / Wiek / PESEL</label>
+    <input type="text" id="pt_dob"
+           placeholder="ddmmrrrr / RRMMDD / 8 / 7/12"
+           oninput="onDobRaw(this)" style="width:140px;" maxlength="10"
+           title="Data urodzenia: ddmmrrrr (np. 12052018)&#10;Pierwsze 6 cyfr PESEL (np. 180512)&#10;Wiek w latach: np. 8&#10;Wiek w miesiącach: np. 7/12&#10;Lata i miesiące: np. 2 7/12"/>
   </div>
   <div class="field">
     <label>Wzrost (cm)</label>
