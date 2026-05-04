@@ -2136,10 +2136,15 @@
     if (!wrap) return;
     if (z === null || isNaN(z)) {
       wrap.classList.remove('visible');
-      if (zCell) zCell.style.display = '';
+      if (zCell) { zCell.style.display = ''; zCell.textContent = '—'; }
       return;
     }
-    if (zCell) zCell.style.display = 'none';
+    // Zachowaj z-score w zCell (ukryty wizualnie) żeby buildEchoDescription mógł go odczytać
+    if (zCell) {
+      const zFmt = (z >= 0 ? '+' : '') + z.toFixed(2) + 'z';
+      zCell.textContent = zFmt;
+      zCell.style.display = 'none';
+    }
 
     const zm2 = mmAt(-2), z0 = mmAt(0), zp2 = mmAt(2);
     if (zm2 === null || z0 === null || zp2 === null) return;
@@ -4157,6 +4162,17 @@
       if(kEl) return kEl;
       return _orig.call(document, id);
     };
+    // DEBUG
+    ['RVDD','IVSd','LVEDD','LVESD','LVPWd'].forEach(id=>{
+      const el = _orig.call(document,'k_'+id+'_z');
+      const inp = _orig.call(document,'k_'+id);
+      console.log(`k_${id}: val=${inp?inp.value:'NO_EL'}, z=${el?el.textContent:'NO_EL'}`);
+    });
+    ['mv','tv','av','pv'].forEach(id=>{
+      const el = _orig.call(document,'k_'+id+'_z');
+      const inp = _orig.call(document,'k_'+id+'_val');
+      console.log(`k_${id}: val=${inp?inp.value:'NO_EL'}, z=${el?el.textContent:'NO_EL'}`);
+    });
     const savedVariants = {};
     Object.keys(VARIANTS).forEach(k => { savedVariants[k] = VARIANTS[k]; VARIANTS[k] = KONS_VARIANTS[k] !== undefined ? KONS_VARIANTS[k] : VARIANTS[k]; });
     let html = buildEchoDescription(bsa, sex);
