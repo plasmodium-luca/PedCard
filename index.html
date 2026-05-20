@@ -9,14 +9,14 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="PedCard">
-  <meta name="theme-color" content="#c53030">
+  <meta name="theme-color" content="#e00020">
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Segoe UI', sans-serif; background: #1a0000; color: #1a202c; min-height: 100vh; }
 
     header {
-      background: linear-gradient(135deg,#c53030 0%,#9b2c2c 60%,#742a2a 100%);
+      background: linear-gradient(135deg,#e00020 0%,#9b2c2c 60%,#742a2a 100%);
       color:#fff;
       padding:0.85rem 2.5rem;
       display:flex;
@@ -34,7 +34,7 @@
       display:flex;
       gap:0.5rem;
       padding:0.4rem 2.5rem 0 220px;
-      background:linear-gradient(135deg,#c53030 0%,#9b2c2c 60%,#742a2a 100%);
+      background:linear-gradient(135deg,#e00020 0%,#9b2c2c 60%,#742a2a 100%);
       overflow-x:auto;
     }
     .tab-button{
@@ -52,7 +52,7 @@
     }
     .tab-button.active{
       background:#fff;
-      color:#c53030;
+      color:#e00020;
     }
     .tab-panel{display:none;}
     .tab-panel.active-tab{display:block;}
@@ -83,7 +83,7 @@
     }
     .patient-card h2{
       font-size:0.78rem;
-      color:#c53030;
+      color:#e00020;
       font-weight:800;
       white-space:nowrap;
       align-self:center;
@@ -111,12 +111,12 @@
     }
     .field input:focus,.field select:focus{
       outline:none;
-      border-color:#c53030;
+      border-color:#e00020;
       box-shadow:0 0 0 3px rgba(197,48,48,0.12);
     }
     .bsa-result{
       font-size:0.9rem;
-      color:#c53030;
+      color:#e00020;
       font-weight:800;
       padding:0.45rem 1.1rem;
       background:#fff;
@@ -141,12 +141,12 @@
       background:#fff;
       border-radius:10px;
       box-shadow:0 4px 20px rgba(197,48,48,0.10);
-      border-top:4px solid #c53030;
+      border-top:4px solid #e00020;
       padding:1.1rem 1.4rem;
     }
     .calc-card h2{
       font-size:0.82rem;
-      color:#c53030;
+      color:#e00020;
       font-weight:800;
       text-transform:uppercase;
       letter-spacing:0.08em;
@@ -162,11 +162,12 @@
     .tbl-header,.tbl-row{display:grid;align-items:center;gap:0.4rem;padding:0.28rem 0.2rem;}
     .mm-cols{grid-template-columns:70px 110px 1fr;}
     .vv-cols{grid-template-columns:50px 110px 1fr;}
+    .zbar-wrap--narrow{max-width:110px;}
     .tbl-header{border-bottom:2px solid #fed7d7;padding-bottom:0.3rem;margin-bottom:0.1rem;}
     .tbl-header span{
       font-size:0.65rem;
       font-weight:800;
-      color:#c53030;
+      color:#e00020;
       text-transform:uppercase;
       letter-spacing:0.06em;
       text-align:center;
@@ -189,15 +190,23 @@
     }
     .input-wrap input:focus{
       outline:none;
-      border-color:#c53030;
+      border-color:#e00020;
       box-shadow:0 0 0 3px rgba(197,48,48,0.12);
     }
     .input-wrap .unit{font-size:0.68rem;color:#a0aec0;}
 
     .result-cell{text-align:center;font-size:0.9rem;font-weight:700;color:#e2e8f0;transition:color 0.2s;}
     .result-cell.normal{color:#276749;}
-    .result-cell.warning{color:#b7791f;}
-    .result-cell.error{color:#c53030;}
+    .result-cell.warning-mild{color:#ffd700;}
+    .result-cell.warning{color:#ff4a0f;}
+    .result-cell.error{color:#e00020;}
+
+    /* ── ACM kalkulator ── */
+    .acm-item { display:flex; align-items:flex-start; gap:0.35rem; font-size:0.72rem; margin-bottom:0.25rem; cursor:pointer; line-height:1.35; }
+    .acm-item input[type=checkbox] { margin-top:2px; flex-shrink:0; accent-color:#7c3aed; }
+    .acm-maj { display:inline-block; background:#7c3aed; color:#fff; font-size:0.58rem; font-weight:800; padding:1px 4px; border-radius:3px; white-space:nowrap; flex-shrink:0; min-width:14px; text-align:center; }
+    .acm-min { display:inline-block; background:#94a3b8; color:#fff; font-size:0.58rem; font-weight:700; padding:1px 4px; border-radius:3px; white-space:nowrap; flex-shrink:0; min-width:14px; text-align:center; }
+    .acm-cat { font-size:0.68rem; font-weight:700; margin:0.45rem 0 0.2rem; border-bottom:1px solid; padding-bottom:2px; }
 
     /* ── Toggle płeć ── */
     .sex-toggle{
@@ -212,7 +221,7 @@
     .sex-knob{
       position:absolute;left:3px;
       width:84px;height:26px;
-      background:#c53030;border-radius:13px;
+      background:#e00020;border-radius:13px;
       transition:left 0.25s,background 0.25s;z-index:1;
     }
     .sex-toggle.boy .sex-knob{left:89px;background:#2563eb;}
@@ -221,7 +230,7 @@
       z-index:2;transition:color 0.2s;pointer-events:none;
     }
     .sex-label-left{left:10px;color:#fff;}
-    .sex-label-right{right:10px;color:#c53030;}
+    .sex-label-right{right:10px;color:#e00020;}
     .sex-toggle.boy .sex-label-left{color:#2563eb;}
     .sex-toggle.boy .sex-label-right{color:#fff;}
 
@@ -236,20 +245,22 @@
       border-radius:2px;
       background:#e2e8f0;
     }
-    .zbar-fill.normal { background:#276749; }
-    .zbar-fill.warning{ background:#b7791f; }
-    .zbar-fill.error  { background:#c53030; }
+    .zbar-fill.normal      { background:#276749; }
+    .zbar-fill.warning-mild{ background:#ffd700; }
+    .zbar-fill.warning     { background:#ff4a0f; }
+    .zbar-fill.error       { background:#e00020; }
     .zbar-dot{
       position:absolute;top:-4px;
       width:10px;height:10px;
-      border-radius:50%;background:#c53030;
+      border-radius:50%;background:#e00020;
       transform:translateX(-50%);
       border:2px solid #fff;
-      box-shadow:0 0 0 1.5px #c53030;
+      box-shadow:0 0 0 1.5px #e00020;
     }
     .zbar-dot.normal{background:#276749;box-shadow:0 0 0 1.5px #276749;}
-    .zbar-dot.warning{background:#b7791f;box-shadow:0 0 0 1.5px #b7791f;}
-    .zbar-dot.error{background:#c53030;box-shadow:0 0 0 1.5px #c53030;}
+    .zbar-dot.warning-mild{background:#ffd700;box-shadow:0 0 0 1.5px #ffd700;}
+    .zbar-dot.warning{background:#ff4a0f;box-shadow:0 0 0 1.5px #ff4a0f;}
+    .zbar-dot.error{background:#e00020;box-shadow:0 0 0 1.5px #e00020;}
     .zbar-labels{
       display:flex;justify-content:space-between;
       font-size:0.6rem;color:#a0aec0;margin-top:0.1rem;
@@ -261,8 +272,9 @@
       white-space:nowrap;
     }
     .zbar-val.normal{color:#276749;}
-    .zbar-val.warning{color:#b7791f;}
-    .zbar-val.error{color:#c53030;}
+    .zbar-val.warning-mild{color:#ffd700;}
+    .zbar-val.warning{color:#ff4a0f;}
+    .zbar-val.error{color:#e00020;}
 
     @media (max-width: 991.98px) {
       header{
@@ -371,7 +383,7 @@
   color:#fca5a5;font-family:'Segoe UI',sans-serif;
   padding:0.8rem 1.5rem;
   display:none;align-items:center;justify-content:space-between;gap:1rem;
-  border-top:3px solid #c53030;box-shadow:0 -4px 20px rgba(197,48,48,0.5);">
+  border-top:3px solid #e00020;box-shadow:0 -4px 20px rgba(197,48,48,0.5);">
   <div style="display:flex;align-items:center;gap:1rem;flex:1;">
     <span style="font-size:2rem;animation:march 1s steps(1) infinite;">⚔️</span>
     <div>
@@ -412,17 +424,18 @@
 
 <div class="tabs">
   <button class="tab-button active" onclick="switchTab('konsultacja')">Konsultacja</button>
-  <button class="tab-button" onclick="switchTab('echo')">Echo</button>
-  <button class="tab-button" onclick="switchTab('echophn')">Echo pełne</button>
+  <button class="tab-button" id="tab-btn-echo"    onclick="switchTab('echo')"    style="display:none;">Echo</button>
+  <button class="tab-button" id="tab-btn-echophn" onclick="switchTab('echophn')" style="display:none;">Echo pełne</button>
   <button class="tab-button" onclick="switchTab('ekg')">EKG</button>
   <button class="tab-button" onclick="switchTab('refs')">Źródła</button>
+  <button class="tab-button" id="tab-btn-lab" onclick="switchTab('lab')" style="display:none;background:#1a1a2e;color:#7dd3fc;border-color:#38bdf8;font-family:monospace;">🧪 Lab</button>
 </div>
 
 <!-- Wspólna karta pacjenta — widoczna we wszystkich zakładkach -->
 <div class="patient-card" id="global-patient-card" style="margin-bottom:0;">
   <div class="field">
     <div style="display:flex;flex-direction:column;gap:0.2rem;">
-      <span id="toggle_age_display" style="font-size:0.85rem;font-weight:800;color:#c53030;text-align:center;min-height:1.1rem;white-space:nowrap;"></span>
+      <span id="toggle_age_display" style="font-size:0.85rem;font-weight:800;color:#e00020;text-align:center;min-height:1.1rem;white-space:nowrap;"></span>
       <div class="sex-toggle" id="sex_toggle" onclick="toggleSex()">
         <div class="sex-knob" id="sex_knob"></div>
         <span class="sex-label-left">Dziewczynka</span>
@@ -442,7 +455,7 @@
     <label>Wzrost (cm)</label>
     <div style="display:flex;align-items:center;gap:0.35rem;">
       <input type="number" id="height" step="0.1" min="30" max="250"
-             placeholder="120" oninput="recalcActive()" style="width:80px;"/>
+             placeholder="—" oninput="recalcActive()" style="width:80px;"/>
       <span id="height_pct_display" style="font-size:0.75rem;font-weight:700;display:none;"></span>
     </div>
   </div>
@@ -450,7 +463,7 @@
     <label>Masa ciała (kg)</label>
     <div style="display:flex;align-items:center;gap:0.35rem;">
       <input type="number" id="weight" step="0.1" min="0.5" max="200"
-             placeholder="22" oninput="recalcActive()" style="width:80px;"/>
+             placeholder="—" oninput="recalcActive()" style="width:80px;"/>
       <span id="weight_pct_display" style="font-size:0.75rem;font-weight:700;display:none;"></span>
     </div>
   </div>
@@ -462,6 +475,7 @@
     </div>
   </div>
   <input type="hidden" id="pt_age" value=""/>
+  <div id="bp_fields_wrap" style="display:none;">
   <div class="field">
     <label>SBP (mmHg)</label>
     <div style="display:flex;align-items:center;gap:0.35rem;">
@@ -477,6 +491,7 @@
              placeholder="—" oninput="recalcBP()" style="width:60px;"/>
       <span id="bp_dbp_pct" style="font-size:0.75rem;font-weight:700;display:none;"></span>
     </div>
+  </div>
   </div>
   <div class="bsa-result" id="bsa_display">BSA: — m²</div>
 </div>
@@ -592,7 +607,7 @@
         </div>
         <div id="tapse_group_info" style="font-size:0.68rem;color:#718096;margin:0.2rem 0 0.5rem;font-style:italic;line-height:1.4;">— wpisz wiek lub datę urodzenia</div>
         <div style="border-top:1px solid #fed7d7;padding-top:0.4rem;margin-bottom:0.3rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem;">Funkcja skurczowa LV</div>
+          <div style="font-size:0.65rem;font-weight:800;color:#e00020;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem;">Funkcja skurczowa LV</div>
           <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.25rem;">
             <span class="var-name" style="min-width:36px;">FS</span>
             <span class="result-cell" id="fk_fs_result">—</span>
@@ -675,7 +690,7 @@
                outline:none;white-space:pre-wrap;"></div>
       <div style="display:flex;gap:0.6rem;margin-top:0.5rem;align-items:center;flex-wrap:wrap;">
         <button onclick="copyEchoNotes()" style="padding:0.4rem 1.1rem;
-          background:#c53030;color:#fff;border:none;border-radius:7px;font-size:0.82rem;
+          background:#e00020;color:#fff;border:none;border-radius:7px;font-size:0.82rem;
           font-weight:700;cursor:pointer;letter-spacing:0.05em;">📋 Kopiuj do schowka</button>
         <button onclick="copyZscores()" style="padding:0.4rem 1.1rem;
           background:#742a2a;color:#fff;border:none;border-radius:7px;font-size:0.82rem;
@@ -689,7 +704,7 @@
   <button id="btn_reset_echo" onclick="resetEcho()" title="Resetuj wszystkie karty"
     style="position:fixed;bottom:1.2rem;right:1.2rem;z-index:999;
            padding:0.5rem 1.1rem;background:#1a0000;color:#fca5a5;
-           border:2px solid #c53030;border-radius:8px;font-size:0.78rem;
+           border:2px solid #e00020;border-radius:8px;font-size:0.78rem;
            font-weight:700;cursor:pointer;letter-spacing:0.05em;
            box-shadow:0 2px 10px rgba(197,48,48,0.35);
            display:block;">🗑 Resetuj</button>
@@ -769,7 +784,7 @@
     <!-- ═══ CANTINOTTI 2014 ═══════════════════════════════════════════ -->
     <!-- Nadkafelek: grupuje wszystkie kafelki z jednego artykułu -->
     <div style="margin-top:1.2rem;border:2px solid #feb2b2;border-radius:12px;padding:0.8rem 0.8rem 0.4rem;background:#fff5f5;">
-      <div style="font-size:0.72rem;font-weight:700;color:#c53030;margin-bottom:0.7rem;letter-spacing:0.04em;">
+      <div style="font-size:0.72rem;font-weight:700;color:#e00020;margin-bottom:0.7rem;letter-spacing:0.04em;">
         CANTINOTTI et al. — Chambers, Valves &amp; Great Arteries (JASE 2014)
         <span style="font-weight:400;color:#718096;font-size:0.68rem;"> · BSA Haycock · Z = {ln(pomiar) − [a + b·ln(BSA)]} / SEE</span>
       </div>
@@ -886,7 +901,7 @@
                line-height:1.8;min-height:10rem;background:#fff;
                outline:none;white-space:pre-wrap;"></div>
       <button onclick="copyPHNNotes()" style="margin-top:0.5rem;padding:0.4rem 1.1rem;
-        background:#c53030;color:#fff;border:none;border-radius:7px;font-size:0.82rem;
+        background:#e00020;color:#fff;border:none;border-radius:7px;font-size:0.82rem;
         font-weight:700;cursor:pointer;letter-spacing:0.05em;">Kopiuj do schowka</button>
     </div>
 
@@ -915,10 +930,10 @@
             </div>
           </div>
           <div style="margin-top:1rem;display:flex;flex-direction:column;gap:0.45rem;font-size:0.9rem;">
-            <div style="font-weight:700;">Bazett: <span id="qtc_bazett" style="color:#c53030;">—</span> ms <span id="qtc_bazett_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
-            <div style="font-weight:700;">Fridericia: <span id="qtc_fridericia" style="color:#c53030;">—</span> ms <span id="qtc_fridericia_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
-            <div style="font-weight:700;">Framingham: <span id="qtc_framingham" style="color:#c53030;">—</span> ms <span id="qtc_framingham_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
-            <div style="font-weight:700;">Hodges: <span id="qtc_hodges" style="color:#c53030;">—</span> ms <span id="qtc_hodges_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
+            <div style="font-weight:700;">Bazett: <span id="qtc_bazett" style="color:#e00020;">—</span> ms <span id="qtc_bazett_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
+            <div style="font-weight:700;">Fridericia: <span id="qtc_fridericia" style="color:#e00020;">—</span> ms <span id="qtc_fridericia_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
+            <div style="font-weight:700;">Framingham: <span id="qtc_framingham" style="color:#e00020;">—</span> ms <span id="qtc_framingham_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
+            <div style="font-weight:700;">Hodges: <span id="qtc_hodges" style="color:#e00020;">—</span> ms <span id="qtc_hodges_flag" style="font-size:0.78rem;font-weight:600;margin-left:0.5rem;"></span></div>
           </div>
         </div>
 
@@ -926,26 +941,13 @@
         <div class="calc-card">
           <h2>Normy Holter EKG</h2>
           <div class="reference">Salameh, Aida et al. 2008</div>
-          <div style="display:flex;gap:1rem;margin-bottom:0.8rem;flex-wrap:wrap;align-items:flex-end;margin-top:0.5rem;">
-            <div class="field">
-              <label>Płeć</label>
-              <select id="hr_sex" onchange="recalcHR()" style="width:120px;">
-                <option value="M">Chłopiec</option>
-                <option value="F">Dziewczynka</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Wiek (lata)</label>
-              <input type="text" id="hr_age" placeholder="np. 10 lub 7/12" oninput="recalcHR()" style="width:130px;"/>
-            </div>
-          </div>
-          <div id="hr_header" style="font-size:0.75rem;font-weight:700;margin-bottom:0.4rem;color:#2d3748;">—</div>
+          <div id="hr_header" style="font-size:0.75rem;font-weight:700;margin-bottom:0.4rem;color:#2d3748;margin-top:0.5rem;">—</div>
           <div style="display:grid;grid-template-columns:90px 70px 50px 50px 100px;gap:0.3rem;align-items:center;padding:0.2rem 0;border-bottom:2px solid #fed7d7;margin-bottom:0.1rem;">
-            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;"></span>
-            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">/min</span>
-            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">Wart.</span>
-            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">%</span>
-            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">Norma P5–P95</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#e00020;text-transform:uppercase;"></span>
+            <span style="font-size:0.63rem;font-weight:800;color:#e00020;text-transform:uppercase;text-align:center;">/min</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#e00020;text-transform:uppercase;text-align:center;">Wart.</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#e00020;text-transform:uppercase;text-align:center;">%</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#e00020;text-transform:uppercase;text-align:center;">Norma P5–P95</span>
           </div>
           <div style="display:grid;grid-template-columns:90px 70px 50px 50px 100px;gap:0.3rem;align-items:center;padding:0.25rem 0;border-bottom:1px solid #fff5f5;">
             <div class="var-name" style="font-size:0.82rem;">Średnio</div>
@@ -974,26 +976,12 @@
         <div class="calc-card">
           <h2>Spoczynkowe EKG</h2>
           <div class="reference">Bratincsák A, et al. 2020</div>
-          <!-- wiek i płeć -->
-          <div style="display:flex;gap:1rem;margin-bottom:0.8rem;flex-wrap:wrap;align-items:flex-end;margin-top:0.5rem;">
-            <div class="field">
-              <label>Płeć</label>
-              <select id="rekg_sex" onchange="recalcREKG()" style="width:120px;">
-                <option value="M">Chłopiec</option>
-                <option value="F">Dziewczynka</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Wiek (lata)</label>
-              <input type="text" id="rekg_age" placeholder="np. 10 lub 7/12" oninput="recalcREKG()" style="width:130px;"/>
-            </div>
-          </div>
-          <div id="rekg_group_label" style="font-size:0.75rem;font-weight:700;margin-bottom:0.5rem;color:#2d3748;">—</div>
+          <div id="rekg_group_label" style="font-size:0.75rem;font-weight:700;margin-bottom:0.5rem;color:#2d3748;margin-top:0.5rem;">—</div>
           <!-- tabela parametrów -->
           <div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0.3rem;align-items:center;padding:0.2rem 0;border-bottom:2px solid #fed7d7;margin-bottom:0.1rem;">
-            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;">Parametr</span>
-            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">Wartość</span>
-            <span style="font-size:0.63rem;font-weight:800;color:#c53030;text-transform:uppercase;text-align:center;">Z-score [norma Z±2.5]</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#e00020;text-transform:uppercase;">Parametr</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#e00020;text-transform:uppercase;text-align:center;">Wartość</span>
+            <span style="font-size:0.63rem;font-weight:800;color:#e00020;text-transform:uppercase;text-align:center;">Z-score [norma Z±2.5]</span>
           </div>
           <!-- HR -->
           <div style="display:grid;grid-template-columns:110px 90px 1fr;gap:0.3rem;align-items:center;padding:0.25rem 0;border-bottom:1px solid #fff5f5;">
@@ -1040,14 +1028,14 @@
         <h2>Schwartz Score (LQTS)</h2>
         <div class="reference">Schwartz PJ, Crotti L. Circulation 2011;124:2181–2184</div>
         <div style="margin-top:0.7rem;font-size:0.82rem;display:flex;flex-direction:column;gap:0.1rem;">
-          <div style="font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin:0.5rem 0 0.2rem;">Historia pacjenta</div>
+          <div style="font-weight:800;color:#e00020;text-transform:uppercase;letter-spacing:0.06em;margin:0.5rem 0 0.2rem;">Historia pacjenta</div>
           <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" id="sw_syncope_stress" data-pts="2" data-group="syncope" onchange="recalcSchwartz()"> Omdlenie w sytuacji stresowej†</span><span style="color:#742a2a;font-weight:700;">2</span></label>
           <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" id="sw_syncope_nostress" data-pts="1" data-group="syncope" onchange="recalcSchwartz()"> Omdlenie bez sytuacji stresowej†</span><span style="color:#742a2a;font-weight:700;">1</span></label>
           <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="0.5" onchange="recalcSchwartz()"> Wrodzona głuchota</span><span style="color:#742a2a;font-weight:700;">0.5</span></label>
-          <div style="font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin:0.5rem 0 0.2rem;">Historia rodzinna</div>
+          <div style="font-weight:800;color:#e00020;text-transform:uppercase;letter-spacing:0.06em;margin:0.5rem 0 0.2rem;">Historia rodzinna</div>
           <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" id="sw_family_lqts" data-pts="1" data-group="family" onchange="recalcSchwartz()"> Członek rodziny z potwierdzonym LQTS‡</span><span style="color:#742a2a;font-weight:700;">1</span></label>
           <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" id="sw_family_death" data-pts="0.5" data-group="family" onchange="recalcSchwartz()"> Nagły zgon sercowy członka rodziny &lt;30 r.ż.‡</span><span style="color:#742a2a;font-weight:700;">0.5</span></label>
-          <div style="font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin:0.5rem 0 0.2rem;">EKG</div>
+          <div style="font-weight:800;color:#e00020;text-transform:uppercase;letter-spacing:0.06em;margin:0.5rem 0 0.2rem;">EKG</div>
           <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="3" data-group="qtc" onchange="recalcSchwartz()"> QTc ≥ 480 ms</span><span style="color:#742a2a;font-weight:700;">3</span></label>
           <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="2" data-group="qtc" onchange="recalcSchwartz()"> QTc 460–479 ms</span><span style="color:#742a2a;font-weight:700;">2</span></label>
           <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="1" data-group="qtc" onchange="recalcSchwartz()"> QTc 450–459 ms (tylko chłopcy)</span><span style="color:#742a2a;font-weight:700;">1</span></label>
@@ -1058,11 +1046,11 @@
           <label style="display:flex;justify-content:space-between;padding:0.2rem 0.3rem;cursor:pointer;border-radius:4px;" onmouseover="this.style.background='#fff5f5'" onmouseout="this.style.background=''"><span><input type="checkbox" class="schwartz-cb" data-pts="0.5" onchange="recalcSchwartz()"> Spoczynkowe HR &lt; 2. percentyla dla wieku</span><span style="color:#742a2a;font-weight:700;">0.5</span></label>
         </div>
         <div style="margin-top:1rem;padding-top:0.7rem;border-top:2px solid #fed7d7;display:flex;align-items:center;gap:0.7rem;flex-wrap:nowrap;">
-          <div style="font-size:0.9rem;font-weight:700;white-space:nowrap;">Suma: <span id="schwartz_total" style="color:#c53030;font-size:1.1rem;">0</span> pkt</div>
+          <div style="font-size:0.9rem;font-weight:700;white-space:nowrap;">Suma: <span id="schwartz_total" style="color:#e00020;font-size:1.1rem;">0</span> pkt</div>
           <div id="schwartz_interp" style="font-size:0.78rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:6px;background:#e2e8f0;color:#2d3748;white-space:nowrap;">niskie prawdopodobieństwo</div>
           <button onclick="resetSchwartz()" style="margin-left:auto;padding:0.25rem 0.7rem;background:#e2e8f0;border:none;border-radius:6px;font-size:0.75rem;cursor:pointer;font-weight:600;white-space:nowrap;">Reset</button>
         </div>
-        <div id="schwartz_summary" style="margin-top:0.6rem;font-size:0.8rem;color:#2d3748;background:#fff5f5;border-radius:7px;padding:0.5rem 0.7rem;border-left:3px solid #c53030;display:none;"></div>
+        <div id="schwartz_summary" style="margin-top:0.6rem;font-size:0.8rem;color:#2d3748;background:#fff5f5;border-radius:7px;padding:0.5rem 0.7rem;border-left:3px solid #e00020;display:none;"></div>
         <div style="font-size:0.68rem;color:#a0aec0;margin-top:0.5rem;">
           † Wzajemnie wykluczające się &nbsp;‡ Wzajemnie wykluczające się &nbsp;§ Jeśli TdP — nie punktuj omdlenia
         </div>
@@ -1083,13 +1071,18 @@
         <h2>Wywiad</h2>
         <div style="font-size:0.65rem;color:#718096;font-style:italic;" id="k_wywiad_sect_group"></div>
         <div style="display:flex;gap:0.3rem;flex-wrap:wrap;">
-          <button id="k_wywiad_btn_auto"    onclick="setKonsWywiadTemplate('auto')"    style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#c53030;color:#fff;font-size:0.68rem;font-weight:700;cursor:pointer;">auto</button>
+          <button id="k_wywiad_btn_auto"    onclick="setKonsWywiadTemplate('auto')"    style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#e00020;color:#fff;font-size:0.68rem;font-weight:700;cursor:pointer;">auto</button>
           <button id="k_wywiad_btn_niemowl" onclick="setKonsWywiadTemplate('niemowl')" style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">niemowlę</button>
           <button id="k_wywiad_btn_sredni"  onclick="setKonsWywiadTemplate('sredni')"  style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">średni</button>
           <button id="k_wywiad_btn_duzy"    onclick="setKonsWywiadTemplate('duzy')"    style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">duży</button>
         </div>
+        <div style="display:flex;gap:0.3rem;flex-wrap:wrap;margin-top:0.25rem;">
+          <button id="k_wywiad_btn_szmer"     onclick="toggleKonsWywiadPowod('szmer')"     style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">Szmer</button>
+          <button id="k_wywiad_btn_kolatanie" onclick="toggleKonsWywiadPowod('kolatanie')" style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">Kołatanie</button>
+          <button id="k_wywiad_btn_omdlenie"  onclick="toggleKonsWywiadPowod('omdlenie')"  style="padding:0.2rem 0.5rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">Omdlenie</button>
+        </div>
         <div id="k_birth_weight_row" style="display:none;align-items:center;gap:0.5rem;flex-wrap:wrap;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;">Masa urodzeniowa</div>
+          <div style="font-size:0.65rem;font-weight:800;color:#e00020;text-transform:uppercase;">Masa urodzeniowa</div>
           <div class="input-wrap"><input type="number" id="k_birth_weight" step="1" min="400" max="6000" placeholder="—" oninput="recalcKons()" style="width:75px;"/><span class="unit">g</span></div>
         </div>
         <textarea id="k_sect_wywiad" rows="6" oninput="onKonsSectEdit('wywiad');autoResize(this)" style="width:100%;border:1.5px solid #feb2b2;border-radius:7px;padding:0.5rem;font-size:0.8rem;font-family:'Segoe UI',sans-serif;line-height:1.6;resize:none;outline:none;background:#fff;overflow:hidden;min-height:7rem;"></textarea>
@@ -1097,7 +1090,7 @@
         <div style="border-top:3px solid #fed7d7;margin:0.2rem 0;"></div>
         <h2>Badanie fizykalne</h2>
         <div style="display:flex;align-items:center;gap:0.5rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;">HR</div>
+          <div style="font-size:0.65rem;font-weight:800;color:#e00020;text-transform:uppercase;">HR</div>
           <div class="input-wrap"><input type="number" id="k_phys_hr" step="1" min="20" max="300" placeholder="lub z EKG" oninput="recalcKons()" style="width:90px;"/><span class="unit">/min</span></div>
         </div>
         <textarea id="k_sect_phys" rows="4" oninput="onKonsSectEdit('phys');autoResize(this)" style="width:100%;border:1.5px solid #feb2b2;border-radius:7px;padding:0.5rem;font-size:0.8rem;font-family:'Segoe UI',sans-serif;line-height:1.6;resize:none;outline:none;background:#fff;overflow:hidden;min-height:6rem;"></textarea>
@@ -1107,12 +1100,12 @@
         <div class="reference">Bratincsák A, et al. 2020</div>
         <div id="k_ekg_group" style="font-size:0.68rem;color:#718096;font-style:italic;">— wpisz wiek pacjenta</div>
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.2rem;text-align:center;">
-          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">HR</div>
-          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">PQ</div>
-          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">QRS</div>
-          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">RR</div>
-          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">QT</div>
-          <div style="font-size:0.62rem;font-weight:800;color:#c53030;">QTc</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#e00020;">HR</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#e00020;">PQ</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#e00020;">QRS</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#e00020;">RR</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#e00020;">QT</div>
+          <div style="font-size:0.62rem;font-weight:800;color:#e00020;">QTc</div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:0.2rem;">
           <input type="number" id="k_hr"  step="1" min="20"  max="300"  placeholder="—" oninput="recalcKons()" style="width:100%;text-align:center;border:1.5px solid #feb2b2;border-radius:5px;padding:0.25rem 0.1rem;font-size:0.8rem;"/>
@@ -1146,18 +1139,18 @@
       <div class="calc-card" style="display:flex;flex-direction:column;gap:0.4rem;">
 
         <div>
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Oś QRS</div>
+          <div style="font-size:0.65rem;font-weight:800;color:#e00020;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Oś QRS</div>
           <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
-            <button id="k_axis_posrednia"    onclick="setKonsAxis('posrednia')"    style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#c53030;color:#fff;font-size:0.68rem;font-weight:700;cursor:pointer;">pośrednia</button>
+            <button id="k_axis_posrednia"    onclick="setKonsAxis('posrednia')"    style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#e00020;color:#fff;font-size:0.68rem;font-weight:700;cursor:pointer;">pośrednia</button>
             <button id="k_axis_prawogram"    onclick="setKonsAxis('prawogram')"    style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">prawogram</button>
             <button id="k_axis_lewogram"     onclick="setKonsAxis('lewogram')"     style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">lewogram</button>
             <button id="k_axis_nieokreslona" onclick="setKonsAxis('nieokreslona')" style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">nieokreślona</button>
           </div>
         </div>
         <div style="border-top:1px solid #fed7d7;padding-top:0.4rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Rytm</div>
+          <div style="font-size:0.65rem;font-weight:800;color:#e00020;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Rytm</div>
           <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
-            <button id="k_rhythm_zatokowy"           onclick="setKonsRhythm('zatokowy')"           style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#c53030;color:#fff;font-size:0.68rem;font-weight:700;cursor:pointer;">zatokowy</button>
+            <button id="k_rhythm_zatokowy"           onclick="setKonsRhythm('zatokowy')"           style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#e00020;color:#fff;font-size:0.68rem;font-weight:700;cursor:pointer;">zatokowy</button>
             <button id="k_rhythm_pozazatokowy"       onclick="setKonsRhythm('pozazatokowy')"       style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">pozazatokowy</button>
             <button id="k_rhythm_dolnoprzedsionkowy" onclick="setKonsRhythm('dolnoprzedsionkowy')" style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">dolnoprzedsionkowy</button>
             <button id="k_rhythm_wezlowy"            onclick="setKonsRhythm('wezlowy')"            style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">węzłowy</button>
@@ -1165,7 +1158,7 @@
           </div>
         </div>
         <div style="border-top:1px solid #fed7d7;padding-top:0.4rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Przewodzenie</div>
+          <div style="font-size:0.65rem;font-weight:800;color:#e00020;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.3rem;">Przewodzenie</div>
           <div style="display:flex;flex-wrap:wrap;gap:0.25rem;">
             <button id="k_btn_irbbb"        onclick="toggleKonsEKGBtn('irbbb')"        style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">iRBBB</button>
             <button id="k_btn_rbbb"         onclick="toggleKonsEKGBtn('rbbb')"         style="padding:0.2rem 0.45rem;border:1.5px solid #feb2b2;border-radius:5px;background:#fff;color:#742a2a;font-size:0.68rem;font-weight:700;cursor:pointer;">RBBB</button>
@@ -1202,7 +1195,7 @@
         <div class="tbl-row vv-cols"><div class="var-name">TAPSE</div><div class="input-wrap"><input type="number" id="k_tapse_val" step="0.1" min="0" max="50" placeholder="—" oninput="recalcKonsTAPSE()" style="width:56px;"/><span class="unit">mm</span></div><div class="result-cell" id="k_tapse_z">—</div></div>
         <div id="k_tapse_group_info" style="font-size:0.68rem;color:#718096;margin:0.2rem 0 0.5rem;font-style:italic;line-height:1.4;">— wpisz wiek lub datę urodzenia</div>
         <div style="border-top:1px solid #fed7d7;padding-top:0.4rem;margin-bottom:0.3rem;">
-          <div style="font-size:0.65rem;font-weight:800;color:#c53030;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem;">Funkcja skurczowa LV</div>
+          <div style="font-size:0.65rem;font-weight:800;color:#e00020;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:0.35rem;">Funkcja skurczowa LV</div>
           <div style="display:flex;align-items:center;gap:0.4rem;margin-bottom:0.25rem;"><span class="var-name" style="min-width:36px;">FS</span><span class="result-cell" id="k_fk_fs_result">—</span><span style="font-size:0.65rem;color:#a0aec0;">norma 28–44%</span></div>
           <div style="display:flex;align-items:center;gap:0.4rem;"><span class="var-name" style="min-width:36px;">EF</span><span class="result-cell" id="k_fk_ef_result">—</span><span style="font-size:0.65rem;color:#a0aec0;">norma ≥55%</span></div>
           <div style="font-size:0.62rem;color:#a0aec0;margin-top:0.3rem;font-style:italic;">Teichholtz z LVEDD/LVESD</div>
@@ -1213,9 +1206,9 @@
         <div class="reference">Cantinotti et al. 2014</div>
         <div class="tbl-header vv-cols"><span>Symbol</span><span>Pomiar</span><span>Z-score</span></div>
         <div class="tbl-row vv-cols"><div class="var-name">MV</div><div class="input-wrap"><input type="number" id="k_mv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_mv_z">—</div><div class="zbar-wrap" id="k_mv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_mv_bar_fill"></div><div class="zbar-dot" id="k_mv_bar_dot"></div><div class="zbar-val" id="k_mv_bar_val"></div></div><div class="zbar-labels"><span id="k_mv_bar_m2">—</span><span id="k_mv_bar_0">—</span><span id="k_mv_bar_p2">—</span></div></div></div></div></div>
-        <div class="tbl-row vv-cols"><div class="var-name">TV</div><div class="input-wrap"><input type="number" id="k_tv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_tv_z">—</div><div class="zbar-wrap" id="k_tv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_tv_bar_fill"></div><div class="zbar-dot" id="k_tv_bar_dot"></div><div class="zbar-val" id="k_tv_bar_val"></div></div><div class="zbar-labels"><span id="k_tv_bar_m2">—</span><span id="k_tv_bar_0">—</span><span id="k_tv_bar_p2">—</span></div></div></div></div></div>
-        <div class="tbl-row vv-cols"><div class="var-name">AV</div><div style="display:flex;align-items:center;gap:0.3rem;"><div class="input-wrap"><input type="number" id="k_av_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="input-wrap"><input type="number" id="k_av_vmax" step="0.1" min="0" max="10" placeholder="Vmax" oninput="recalcKons()" style="width:50px;"/><span class="unit">m/s</span></div></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_av_z">—</div><div class="zbar-wrap" id="k_av_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_av_bar_fill"></div><div class="zbar-dot" id="k_av_bar_dot"></div><div class="zbar-val" id="k_av_bar_val"></div></div><div class="zbar-labels"><span id="k_av_bar_m2">—</span><span id="k_av_bar_0">—</span><span id="k_av_bar_p2">—</span></div></div></div></div></div>
-        <div class="tbl-row vv-cols"><div class="var-name">PV</div><div style="display:flex;align-items:center;gap:0.3rem;"><div class="input-wrap"><input type="number" id="k_pv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="input-wrap"><input type="number" id="k_pv_vmax" step="0.1" min="0" max="10" placeholder="Vmax" oninput="recalcKons()" style="width:50px;"/><span class="unit">m/s</span></div></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_pv_z">—</div><div class="zbar-wrap" id="k_pv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_pv_bar_fill"></div><div class="zbar-dot" id="k_pv_bar_dot"></div><div class="zbar-val" id="k_pv_bar_val"></div></div><div class="zbar-labels"><span id="k_pv_bar_m2">—</span><span id="k_pv_bar_0">—</span><span id="k_pv_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row vv-cols"><div class="var-name">TV</div><div style="display:flex;align-items:center;gap:0.3rem;"><div class="input-wrap"><input type="number" id="k_tv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()" style="width:42px;"/><span class="unit">mm</span></div><div class="input-wrap"><input type="number" id="k_tv_pgmax" step="0.1" min="0" max="20" placeholder="PGmax" oninput="recalcKons()" style="width:52px;"/><span class="unit">mmHg</span></div></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;"><div class="result-cell" id="k_tv_z">—</div><div class="zbar-wrap" id="k_tv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_tv_bar_fill"></div><div class="zbar-dot" id="k_tv_bar_dot"></div><div class="zbar-val" id="k_tv_bar_val"></div></div><div class="zbar-labels"><span id="k_tv_bar_m2">—</span><span id="k_tv_bar_0">—</span><span id="k_tv_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row vv-cols"><div class="var-name">AV</div><div style="display:flex;align-items:center;gap:0.3rem;"><div class="input-wrap"><input type="number" id="k_av_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="input-wrap"><input type="number" id="k_av_vmax" step="0.1" min="0" max="10" placeholder="Vmax" oninput="recalcKons()" style="width:50px;"/><span class="unit">m/s</span></div></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;"><div class="result-cell" id="k_av_z">—</div><div class="zbar-wrap" id="k_av_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_av_bar_fill"></div><div class="zbar-dot" id="k_av_bar_dot"></div><div class="zbar-val" id="k_av_bar_val"></div></div><div class="zbar-labels"><span id="k_av_bar_m2">—</span><span id="k_av_bar_0">—</span><span id="k_av_bar_p2">—</span></div></div></div></div></div>
+        <div class="tbl-row vv-cols"><div class="var-name">PV</div><div style="display:flex;align-items:center;gap:0.3rem;"><div class="input-wrap"><input type="number" id="k_pv_val" step="0.1" min="1" max="100" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="input-wrap"><input type="number" id="k_pv_vmax" step="0.1" min="0" max="10" placeholder="Vmax" oninput="recalcKons()" style="width:50px;"/><span class="unit">m/s</span></div></div><div style="display:flex;flex-direction:column;justify-content:center;min-width:0;overflow:hidden;"><div class="result-cell" id="k_pv_z">—</div><div class="zbar-wrap" id="k_pv_bar" style="padding:0;"><div style="position:relative;padding-top:18px;"><div class="zbar-track"><div class="zbar-fill" id="k_pv_bar_fill"></div><div class="zbar-dot" id="k_pv_bar_dot"></div><div class="zbar-val" id="k_pv_bar_val"></div></div><div class="zbar-labels"><span id="k_pv_bar_m2">—</span><span id="k_pv_bar_0">—</span><span id="k_pv_bar_p2">—</span></div></div></div></div></div>
 
       </div><!-- /kol 3 -->
 
@@ -1225,7 +1218,7 @@
     <div class="calc-card" style="margin-top:1.2rem;padding:0.6rem 1rem;">
       <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;" onclick="toggleKonsRow2()">
         <h2 style="margin:0;">Aorta · Wieńcowe · Płucna</h2>
-        <span id="k_row2_icon" style="font-size:1.1rem;color:#c53030;user-select:none;">▶</span>
+        <span id="k_row2_icon" style="font-size:1.1rem;color:#e00020;user-select:none;">▶</span>
       </div>
       <div id="k_row2_content" style="display:none;margin-top:0.8rem;">
     <div class="boxes-row" style="grid-template-columns:1fr 1fr;margin-top:0;">
@@ -1243,6 +1236,11 @@
           <div class="tbl-row mm-cols"><div class="var-name">TArch</div><div class="input-wrap"><input type="number" id="k_TArch" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_TArch_z">—</div></div>
           <div class="tbl-row mm-cols"><div class="var-name">Isthm</div><div class="input-wrap"><input type="number" id="k_Isthm" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_Isthm_z">—</div></div>
           <div class="tbl-row mm-cols"><div class="var-name">DistAo</div><div class="input-wrap"><input type="number" id="k_DistAo" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">mm</span></div><div class="result-cell" id="k_DistAo_z">—</div></div>
+        </div>
+        <div style="border-top:1px solid #fed7d7;margin-top:0.4rem;padding-top:0.3rem;">
+          <div class="reference" style="margin-bottom:0.3rem;">Cantinotti et al. 2014</div>
+          <div class="tbl-row mm-cols"><div class="var-name">LA area</div><div class="input-wrap"><input type="number" id="k_LAA" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">cm²</span></div><div class="result-cell" id="k_LAA_z">—</div></div>
+          <div class="tbl-row mm-cols"><div class="var-name">RA area</div><div class="input-wrap"><input type="number" id="k_RAA" step="0.1" min="0" placeholder="—" oninput="recalcKons()"/><span class="unit">cm²</span></div><div class="result-cell" id="k_RAA_z">—</div></div>
         </div>
       </div>
 
@@ -1332,7 +1330,7 @@
         </div>
 
         <div style="display:flex;gap:0.5rem;flex-wrap:wrap;">
-          <button onclick="copyKonsNotes()"   style="padding:0.4rem 0.9rem;background:#c53030;color:#fff;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;">📋 Kopiuj opis</button>
+          <button onclick="copyKonsNotes()"   style="padding:0.4rem 0.9rem;background:#e00020;color:#fff;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;">📋 Kopiuj opis</button>
           <button onclick="copyKonsZscores()" style="padding:0.4rem 0.9rem;background:#742a2a;color:#fff;border:none;border-radius:7px;font-size:0.78rem;font-weight:700;cursor:pointer;">📊 Kopiuj z-score</button>
         </div>
 
@@ -1345,7 +1343,7 @@
       <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;"
            onclick="toggleKonsFullDesc()">
         <h2 style="margin:0;">Opis zbiorczy</h2>
-        <span id="k_desc_toggle_icon" style="font-size:1.1rem;color:#c53030;user-select:none;">▼</span>
+        <span id="k_desc_toggle_icon" style="font-size:1.1rem;color:#e00020;user-select:none;">▼</span>
       </div>
       <div id="k_desc_collapsed" style="display:none;margin-top:0.8rem;">
         <div id="k_echo_notes_box" contenteditable="true"
@@ -1356,7 +1354,7 @@
         <div style="display:flex;gap:0.6rem;margin-top:0.5rem;flex-wrap:wrap;align-items:center;">
           <button onclick="applyKonsBold()"
             style="padding:0.4rem 0.8rem;background:#fff;color:#742a2a;border:1.5px solid #feb2b2;border-radius:7px;font-size:0.9rem;font-weight:900;cursor:pointer;" title="Pogrub zaznaczony tekst (Ctrl+B)"><b>B</b></button>
-          <button onclick="copyKonsNotes()" style="padding:0.4rem 1.1rem;background:#c53030;color:#fff;border:none;border-radius:7px;font-size:0.82rem;font-weight:700;cursor:pointer;">📋 Kopiuj do schowka</button>
+          <button onclick="copyKonsNotes()" style="padding:0.4rem 1.1rem;background:#e00020;color:#fff;border:none;border-radius:7px;font-size:0.82rem;font-weight:700;cursor:pointer;">📋 Kopiuj do schowka</button>
           <button onclick="copyKonsZscores()" style="padding:0.4rem 1.1rem;background:#742a2a;color:#fff;border:none;border-radius:7px;font-size:0.82rem;font-weight:700;cursor:pointer;">📊 Kopiuj z-score</button>
         </div>
       </div>
@@ -1496,6 +1494,132 @@
     </div>
   </div>
 
+  <!-- ═══ LAB — środowisko testowe (?lab=1) ════════════════════════════ -->
+  <div id="tab-lab" class="tab-panel">
+    <div style="border:2px dashed #38bdf8;border-radius:12px;padding:1rem;background:#0f172a;color:#7dd3fc;font-family:monospace;font-size:0.8rem;margin-bottom:1rem;">
+      🧪 <strong style="color:#38bdf8;">PedCard Lab</strong>
+      — środowisko testowe. Dostępne tylko pod adresem
+      <code style="background:#1e3a5f;padding:2px 6px;border-radius:4px;">pedcard.netlify.app/?lab=1</code>
+      <span style="float:right;color:#475569;font-size:0.7rem;">belka pacjenta działa normalnie ↑</span>
+    </div>
+
+    <!-- ════ KALKULATOR ACM — European Task Force 2023 ════ -->
+    <div class="calc-card" style="border:2px solid #9333ea;max-width:960px;">
+      <h2 style="color:#7c3aed;">🫀 Kalkulator ACM</h2>
+      <div class="reference">European Task Force Criteria · Int J Cardiol 2023 · doi:10.1016/j.ijcard.2023.131447</div>
+
+      <!-- ── Główna siatka: RV | LV ── -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.8rem;margin-top:0.8rem;">
+
+        <!-- ── KOLUMNA RV ── -->
+        <div style="background:#fdf4ff;border:1.5px solid #c084fc;border-radius:8px;padding:0.7rem;">
+          <div style="font-weight:800;color:#7c3aed;font-size:0.78rem;text-transform:uppercase;margin-bottom:0.5rem;letter-spacing:0.05em;">🫁 Prawa komora (RV)</div>
+
+          <div class="acm-cat" style="color:#6d28d9;border-color:#e9d5ff;">I. Morfofunkcjonalne</div>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_mf_maj" onchange="calcACM()"><span class="acm-maj">M</span>Regionalna akineza/dyskineza lub tętniak + globalne powiększenie RV lub globalna dysfunkcja skurczowa RV</label>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_mf_min" onchange="calcACM()"><span class="acm-min">m</span>Regionalna akineza/dyskineza lub tętniak wolnej ściany RV</label>
+
+          <div class="acm-cat" style="color:#6d28d9;border-color:#e9d5ff;">II. Strukturalne (tkankowe)</div>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_st_maj" onchange="calcACM()"><span class="acm-maj">M</span>Włóknienie miokardium (±tłuszcz) w ≥1 próbce biopsji — histologia</label>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_st_min" onchange="calcACM()"><span class="acm-min">m</span>LGE w RV w ≥1 regionie (2 prostopadłe projekcje, bez pierścienia zastawki trójdzielnej)</label>
+
+          <div class="acm-cat" style="color:#6d28d9;border-color:#e9d5ff;">III. Repolaryzacja</div>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_rep_maj" onchange="calcACM()"><span class="acm-maj">M</span>Ujemne T w V1, V2 i V3 u osób ≥14 r.ż. (bez RBBB; bez uniesienia J/ST)</label>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_rep_min1" onchange="calcACM()"><span class="acm-min">m</span>Ujemne T w V1 i V2 u mężczyzn ≥14 r.ż. (bez RBBB; bez uniesienia J/ST)</label>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_rep_min2" onchange="calcACM()"><span class="acm-min">m</span>Ujemne T poza V3 przy pełnym RBBB</label>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_rep_min3" onchange="calcACM()"><span class="acm-min">m</span>Ujemne T poza V3 u osób &lt;14 r.ż.</label>
+
+          <div class="acm-cat" style="color:#6d28d9;border-color:#e9d5ff;">IV. Depolaryzacja / przewodzenie</div>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_dep_min1" onchange="calcACM()"><span class="acm-min">m</span>Fala epsilon (powtarzalne sygnały o niskiej amplitudzie między końcem QRS a początkiem T) w V1–V3</label>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_dep_min2" onchange="calcACM()"><span class="acm-min">m</span>TAD ≥55 ms od nadiru S do końca QRS (z R') w V1, V2 lub V3 (bez pełnego RBBB)</label>
+
+          <div class="acm-cat" style="color:#6d28d9;border-color:#e9d5ff;">V. Arytmie</div>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_arr_maj" onchange="calcACM()"><span class="acm-maj">M</span>Częste VES (&gt;500/24h), nieutrwalony lub utrwalony VT o morfologii LBBB z osią niegorną</label>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_arr_min1" onchange="calcACM()"><span class="acm-min">m</span>Częste VES (&gt;500/24h), nieutrwalony lub utrwalony VT LBBB z osią dolną (wzorzec RVOT)</label>
+          <label class="acm-item"><input type="checkbox" id="acm_rv_arr_min2" onchange="calcACM()"><span class="acm-min">m</span>Wywiad zatrzymania krążenia z powodu VF lub VT nieznanej morfologii</label>
+        </div>
+
+        <!-- ── KOLUMNA LV ── -->
+        <div style="background:#fff7ed;border:1.5px solid #fb923c;border-radius:8px;padding:0.7rem;">
+          <div style="font-weight:800;color:#c2410c;font-size:0.78rem;text-transform:uppercase;margin-bottom:0.5rem;letter-spacing:0.05em;">🫀 Lewa komora (LV)</div>
+
+          <div class="acm-cat" style="color:#c2410c;border-color:#fed7aa;">I. Morfofunkcjonalne</div>
+          <label class="acm-item"><input type="checkbox" id="acm_lv_mf_min" onchange="calcACM()"><span class="acm-min">m</span>Globalna dysfunkcja skurczowa LV ±powiększenie LV (wg nomogramów dla wieku, płci i BSA)</label>
+
+          <div class="acm-cat" style="color:#c2410c;border-color:#fed7aa;">II. Strukturalne (tkankowe)</div>
+          <label class="acm-item"><input type="checkbox" id="acm_lv_st_maj" onchange="calcACM()"><span class="acm-maj">M</span>LGE „ring-like" LV (subepikardialny lub śródścienny) ≥3 segmenty (2 prostopadłe projekcje)</label>
+          <label class="acm-item"><input type="checkbox" id="acm_lv_st_min" onchange="calcACM()"><span class="acm-min">m</span>LGE LV (subepikardialny lub śródścienny) w 1–2 segmentach wolnej ściany, przegrody lub obu (2 projekcje)</label>
+
+          <div class="acm-cat" style="color:#c2410c;border-color:#fed7aa;">III. Repolaryzacja</div>
+          <label class="acm-item"><input type="checkbox" id="acm_lv_rep_min" onchange="calcACM()"><span class="acm-min">m</span>Ujemne T w odprowadzeniach lewokomorowych (V4–V6) (bez pełnego LBBB)</label>
+
+          <div class="acm-cat" style="color:#c2410c;border-color:#fed7aa;">IV. Depolaryzacja / przewodzenie</div>
+          <label class="acm-item"><input type="checkbox" id="acm_lv_dep_maj" onchange="calcACM()"><span class="acm-maj">M</span>Niskie woltaże QRS (&lt;0,5 mV peak-to-peak) we wszystkich odprowadzeniach kończynowych (bez innych przyczyn)</label>
+
+          <div class="acm-cat" style="color:#c2410c;border-color:#fed7aa;">V. Arytmie</div>
+          <label class="acm-item"><input type="checkbox" id="acm_lv_arr_min1" onchange="calcACM()"><span class="acm-min">m</span>Częste VES (&gt;500/24h) lub wysiłkowe VES o morfologii RBBB albo wielokształtne RBBB (bez wzorca pęczkowego)</label>
+          <label class="acm-item"><input type="checkbox" id="acm_lv_arr_min2" onchange="calcACM()"><span class="acm-min">m</span>Nieutrwalony lub utrwalony VT o morfologii RBBB (bez wzorca pęczkowego)</label>
+          <label class="acm-item"><input type="checkbox" id="acm_lv_arr_min3" onchange="calcACM()"><span class="acm-min">m</span>Wywiad zatrzymania krążenia z powodu VF lub VT nieznanej morfologii</label>
+        </div>
+      </div><!-- end RV/LV grid -->
+
+      <!-- ── VI. GENETYKA — wspólna dla obu komór ── -->
+      <div style="margin-top:0.7rem;background:#fefce8;border:1.5px solid #fbbf24;border-radius:8px;padding:0.7rem;">
+        <div style="font-weight:800;color:#92400e;font-size:0.78rem;text-transform:uppercase;margin-bottom:0.4rem;letter-spacing:0.05em;">VI. Wywiad rodzinny / genetyka <span style="font-weight:400;font-size:0.7rem;color:#78716c;">(wspólna kategoria dla RV i LV)</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 1rem;">
+          <label class="acm-item"><input type="checkbox" id="acm_gen_maj1" onchange="calcACM()"><span class="acm-maj">M</span>Patogenny wariant genu ACM u ocenianego pacjenta</label>
+          <label class="acm-item"><input type="checkbox" id="acm_gen_min1" onchange="calcACM()"><span class="acm-min">m</span>Prawdopodobnie patogenny wariant genu ACM u pacjenta</label>
+          <label class="acm-item"><input type="checkbox" id="acm_gen_maj2" onchange="calcACM()"><span class="acm-maj">M</span>ACM potwierdzone u krewnego I° spełniającego kryteria diagnostyczne</label>
+          <label class="acm-item"><input type="checkbox" id="acm_gen_min2" onchange="calcACM()"><span class="acm-min">m</span>Wywiad ACM u krewnego I° bez możliwości weryfikacji kryteriów</label>
+          <label class="acm-item"><input type="checkbox" id="acm_gen_maj3" onchange="calcACM()"><span class="acm-maj">M</span>ACM potwierdzone patologicznie (autopsja/operacja) u krewnego I°</label>
+          <label class="acm-item"><input type="checkbox" id="acm_gen_min3" onchange="calcACM()"><span class="acm-min">m</span>Nagły zgon &lt;35 r.ż. podejrzany o ACM u krewnego I°</label>
+          <div></div>
+          <label class="acm-item"><input type="checkbox" id="acm_gen_min4" onchange="calcACM()"><span class="acm-min">m</span>ACM potwierdzone patologicznie lub wg kryteriów u krewnego II°</label>
+        </div>
+      </div>
+
+      <!-- WYNIK -->
+      <div id="acm_result" style="margin-top:0.8rem;padding:0.8rem 1rem;border-radius:8px;background:#f8fafc;border:2px solid #cbd5e1;text-align:center;">
+        <div style="font-size:0.8rem;color:#64748b;">Zaznacz kryteria powyżej</div>
+      </div>
+
+      <div style="font-size:0.68rem;color:#94a3b8;margin-top:0.4rem;">
+        M = kryterium duże (major) · m = kryterium małe (minor) · Wynik ma charakter pomocniczy · Int J Cardiol 2023
+      </div>
+    </div>
+    <!-- ════ KONIEC KALKULATORA ACM ════ -->
+
+    <!-- ════ KALKULATOR RR — LAB ════ -->
+    <div class="calc-card" style="border:2px solid #0ea5e9;max-width:700px;margin-top:1rem;">
+      <h2 style="color:#0369a1;">🩺 Kalkulator RR (Lab)</h2>
+      <div class="reference">OLA: Grajda 2016 (3–6 lat, model wielomianowy) · OLAF: Kułaga 2012 (7–18 lat, tabele wg wzrostu)</div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:0.6rem;margin-top:0.8rem;align-items:end;">
+        <div class="field">
+          <label>SBP (mmHg)</label>
+          <input type="number" id="lab_sbp" step="1" min="40" max="220" placeholder="—" oninput="calcLabBP()" style="width:80px;">
+        </div>
+        <div class="field">
+          <label>DBP (mmHg)</label>
+          <input type="number" id="lab_dbp" step="1" min="20" max="150" placeholder="—" oninput="calcLabBP()" style="width:80px;">
+        </div>
+        <div style="font-size:0.72rem;color:#64748b;padding-bottom:0.4rem;">
+          Wiek, płeć i wzrost pobierane z belki pacjenta ↑
+        </div>
+      </div>
+
+      <div id="lab_bp_result" style="margin-top:0.8rem;"></div>
+
+      <div style="font-size:0.68rem;color:#94a3b8;margin-top:0.5rem;">
+        OLA: model ln(BP) = α + Σβᵢzᵢ + Σβⱼ(age−4.5)ʲ &nbsp;·&nbsp;
+        OLAF: interpolacja tabelaryczna wg wieku i wzrostu
+      </div>
+    </div>
+    <!-- ════ KONIEC KALKULATORA RR ════ -->
+
+    <!-- ════ KONIEC MODUŁÓW TESTOWYCH ════ -->
+  </div>
+
 </div><!-- /container -->
 
 <footer style="
@@ -1505,7 +1629,7 @@
   padding:1rem 2rem;
   text-align:center;
   letter-spacing:0.04em;
-  border-top:3px solid #c53030;
+  border-top:3px solid #e00020;
   margin-top:1.5rem;
 ">
   <div style="font-weight:700;color:#fff;font-size:0.8rem;margin-bottom:0.25rem;">PedCard Imperial v7.6 &mdash; <a href="mailto:pedcard@proton.me" style="color:#fff;text-decoration:underline;">Made by Chodor</a> &mdash; Powered by SBJP</div>
@@ -1617,7 +1741,7 @@
     VARIANTS[name] = !VARIANTS[name];
     const btn = document.getElementById('btn_' + name);
     if (VARIANTS[name]) {
-      btn.style.background = '#c53030'; btn.style.color = '#fff'; btn.style.borderColor = '#c53030';
+      btn.style.background = '#e00020'; btn.style.color = '#fff'; btn.style.borderColor = '#e00020';
     } else {
       btn.style.background = '#fff'; btn.style.color = '#742a2a'; btn.style.borderColor = '#feb2b2';
     }
@@ -1638,7 +1762,7 @@
       text_default: 'Situs solitus. Spływ żył systemowych do RA, spływ żył płucnych do LA. Zgodne połączenia przedsionkowo-komorowe, komorowo-tętnicze.',
       text_ivc:     'Situs solitus. Spływ żył systemowych do RA, IVC nieposzerzona podatna oddechowo, spływ żył płucnych do LA. Zgodne połączenia przedsionkowo-komorowe, komorowo-tętnicze.'
     },
-    { type: 'text',    text: 'RA i LA niepowiększone.' },
+    { type: 'atria_area' },
     { type: 'text_variant', key: 'pfo',
       text_default: 'IAS ciągła',
       text_pfo:     'W IAS drożny otwór owalny z L-P przeciekiem o średnicy  mm'
@@ -1651,7 +1775,7 @@
     { type: 'valve_variant',
       before: 'Zastawka TV ', valveId: 'tv', ref: '²',
       after_default: ' prawidłowa budowa i funkcja',
-      after_tvi:     ' prawidłowa budowa, czynnościowa niedomykalność z PGmax  mmHg'
+      after_tvi:     ' prawidłowa budowa, czynnościowa niedomykalność z PGmax= mmHg'
     },
     { type: 'text_variant', key: 'struna',
       text_default: 'Wymiary komór prawidłowe. Funkcja skurczowa komór prawidłowa.',
@@ -1713,11 +1837,27 @@
     if (!isNaN(h) && h > 0)   headerParts.push('Wzrost: ' + h + ' cm' + hPct);
     if (bsaVal !== null)       headerParts.push('BSA: ' + bsaVal.toFixed(3) + ' m²');
     if (headerParts.length)    htmlLines.push('<b>' + headerParts.join('  ') + '</b>');
-    htmlLines.push('');
 
     ECHO_TEMPLATE_LINES.forEach(item => {
       if (item.type === 'text') {
         htmlLines.push(item.text);
+      } else if (item.type === 'atria_area') {
+        // RA i LA niepowiększone + opcjonalnie LA area i RA area (Cantinotti 2014)
+        const laaEl = document.getElementById('LAA');
+        const raaEl = document.getElementById('RAA');
+        const laaZEl = document.getElementById('LAA_z');
+        const raaZEl = document.getElementById('RAA_z');
+        const laa = laaEl ? parseFloat(laaEl.value) : NaN;
+        const raa = raaEl ? parseFloat(raaEl.value) : NaN;
+        const laaZ = laaZEl ? laaZEl.textContent : '—';
+        const raaZ = raaZEl ? raaZEl.textContent : '—';
+        htmlLines.push('RA i LA niepowiększone.');
+        const parts = [];
+        if (!isNaN(laa) && laa > 0 && laaZ !== '—')
+          parts.push('<b>LA area</b> <i>' + laa.toFixed(1) + ' cm² (' + laaZ + ')' + refNum('cantinotti') + '</i>');
+        if (!isNaN(raa) && raa > 0 && raaZ !== '—')
+          parts.push('<b>RA area</b> <i>' + raa.toFixed(1) + ' cm² (' + raaZ + ')' + refNum('cantinotti') + '</i>');
+        if (parts.length) htmlLines.push(parts.join('; ') + ';');
       } else if (item.type === 'text_variant') {
         const txt = VARIANTS[item.key] ? item['text_' + item.key] : item.text_default;
         if (txt !== '') htmlLines.push(txt);
@@ -1839,6 +1979,14 @@
               }
             }
           }
+          // PGmax TV — wstaw wartość jeśli wpisana
+          if(item.valveId === 'tv'){
+            const pgEl = document.getElementById('tv_pgmax');
+            const pgVal = pgEl ? parseFloat(pgEl.value) : NaN;
+            if(!isNaN(pgVal) && pgVal > 0){
+              line = line.replace(/PGmax=\s*(mmHg)/, 'PGmax= ' + pgVal.toFixed(0) + ' mmHg');
+            }
+          }
           // Dopisz TAPSE nawet gdy brak pomiaru TV, jeśli jest wynik TAPSE
           if (item.valveId === 'tv') {
             const tapseVal = parseFloat(document.getElementById('tapse_val').value);
@@ -1901,17 +2049,30 @@
       return !isNaN(mm) && mm > 0;
     });
     if (refOrder.length > 0) {
-      htmlLines.push('');
       htmlLines.push(refList());
     }
 
     return htmlLines.join('<br>');
   }
 
+  function htmlToPlainText(html) {
+    // Zamień <br> na \n, usuń pozostałe tagi HTML
+    return html
+      .replace(/<br\s*\/?>/gi, '\n')
+      .replace(/<\/p>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&amp;/g, '&')
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&nbsp;/g, ' ')
+      // Usuń wielokrotne puste linie
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
   function copyEchoNotes() {
     const box = document.getElementById('echo_notes_box');
-    // kopiuj czysty tekst (bez tagów HTML)
-    const plain = box.innerText;
+    const plain = htmlToPlainText(box.innerHTML);
     navigator.clipboard.writeText(plain).catch(() => {
       const ta = document.createElement('textarea');
       ta.value = plain;
@@ -2080,8 +2241,8 @@
 
     // Konsultacja
     ['k_RVDD','k_IVSd','k_LVEDD','k_LVESD','k_LVPWd',
-     'k_mv_val','k_tv_val','k_av_val','k_pv_val','k_tapse_val',
-     'k_AoAnn','k_Sinus','k_STJ','k_AoAsc','k_TArch','k_Isthm','k_DistAo',
+     'k_mv_val','k_tv_val','k_tv_pgmax','k_av_val','k_pv_val','k_tapse_val',
+     'k_AoAnn','k_Sinus','k_STJ','k_AoAsc','k_TArch','k_Isthm','k_DistAo','k_LAA','k_RAA',
      'k_PVAnn','k_MPA','k_RPA','k_LPA',
      'k_CA_LMCA','k_CA_LAD','k_CA_Cx','k_CA_RCAprox','k_CA_RCAmed','k_CA_RCAdist',
      'k_hr','k_pq','k_qrs','k_rr','k_qt','k_phys_hr','k_birth_weight'
@@ -2346,7 +2507,7 @@
     if (pct === null) { el.textContent = ''; return; }
     const p = pct.toFixed(1);
     let color = '#276749';
-    if (pct < 3 || pct > 97) color = '#c53030';
+    if (pct < 3 || pct > 97) color = '#e00020';
     else if (pct < 10 || pct > 90) color = '#b7791f';
     el.innerHTML = '<span style="font-size:0.72rem;font-weight:700;color:' + color + ';">' + p + 'c</span>';
   }
@@ -2375,7 +2536,8 @@
     // pozycja na pasku: od z=-3 do z=+3
     const minZ = -3, maxZ = 3;
     const pct = Math.max(0, Math.min(100, (z - minZ) / (maxZ - minZ) * 100));
-    const c = z < -2 ? 'error' : z > 2 ? 'error' : z < -1 || z > 1 ? 'warning' : 'normal';
+    const az = Math.abs(z);
+    const c = az <= 1.9 ? 'normal' : az <= 2.0 ? 'warning-mild' : az <= 2.5 ? 'warning' : 'error';
 
     const fill = document.getElementById(id + '_bar_fill');
     fill.style.width = pct + '%';
@@ -2432,8 +2594,10 @@
       // Sprawdź czy wiek mieści się w zakresie tabeli
       const rows = table[sexKey === 'boy' ? 'boy' : 'girl'];
       if (!rows) { el.style.display='none'; return; }
+      const isMonths = rows[rows.length-1][0] > 20;
       const minAge = rows[0][0], maxAge = rows[rows.length-1][0];
-      if (age < minAge * 0.8 || age > maxAge * 1.1) { el.style.display='none'; el.textContent=''; return; }
+      const key = isMonths ? age * 12 : age;
+      if (key < minAge * 0.8 || key > maxAge * 1.1) { el.style.display='none'; el.textContent=''; return; }
       const lms = getLMS(table, sexKey, age);
       if (!lms) { el.style.display='none'; el.textContent=''; return; }
       const [L, M, S] = lms;
@@ -2444,7 +2608,7 @@
       else if (pct > 99.9)  pStr = '>99.9c';
       else                  pStr = pct.toFixed(1) + 'c';
       let color = '#276749';
-      if (pct < 3 || pct > 97) color = '#c53030';
+      if (pct < 3 || pct > 97) color = '#e00020';
       else if (pct < 10 || pct > 90) color = '#b7791f';
       el.style.display = '';
       el.style.color = color;
@@ -2458,6 +2622,21 @@
     const bmiTable = (!isNaN(age) && age < 5) ? LMS_BMI_WHO : (!isNaN(age) && age < 7) ? LMS_BMI_OLA : LMS_BMI;
     if (!isNaN(bmi)) showPct(bmi, bmiTable, 'bmi_pct_display', 'BMI');
     else document.getElementById('bmi_pct_display').style.display='none';
+
+    // Aktualizuj placeholder wzrost i masa — pokaż c50 dla aktualnego wieku/płci
+    const hInp = document.getElementById('height');
+    const wInp = document.getElementById('weight');
+    if(hInp && wInp){
+      if(!isNaN(age) && age > 0){
+        const hLms = getLMS(hTable, sexKey, age);
+        const wLms = getLMS(wTable, sexKey, age);
+        hInp.placeholder = hLms ? Math.round(hLms[1]) + '' : '—';
+        wInp.placeholder = wLms ? Math.round(wLms[1] * 10) / 10 + '' : '—';
+      } else {
+        hInp.placeholder = '—';
+        wInp.placeholder = '—';
+      }
+    }
 
     mmVars.forEach(id=>{
       const m=parseFloat(document.getElementById(id).value);
@@ -2742,9 +2921,11 @@
     zEl.innerHTML = '<span style="font-weight:700">' + zFmt + '</span>'
       + '<span style="font-size:0.72rem;color:#718096;margin-left:0.4rem;">[' + m2mm + '–' + p2mm + ' mm]</span>';
 
-    if (z < -3 || z > 3)          { zEl.style.color = '#c53030'; zEl.style.fontWeight = '700'; }
-    else if (Math.abs(z) >= 2.0)  { zEl.style.color = '#d69e2e'; zEl.style.fontWeight = '700'; }
-    else                           { zEl.style.color = '#276749'; zEl.style.fontWeight = '700'; }
+    const azT = Math.abs(z);
+    if (azT > 2.5)       { zEl.style.color = '#e00020'; zEl.style.fontWeight = '700'; }
+    else if (azT > 2.0)  { zEl.style.color = '#ff4a0f'; zEl.style.fontWeight = '700'; }
+    else if (azT > 1.9)  { zEl.style.color = '#ffd700'; zEl.style.fontWeight = '700'; }
+    else                  { zEl.style.color = '#276749'; zEl.style.fontWeight = '700'; }
   }
   // ──────────────────────────────────────────────────────────────────────
   function syncFromEcho() { recalcPHN(); }
@@ -2855,7 +3036,7 @@
   }
   function copyPHNNotes() {
     const box = document.getElementById('phn_notes_box');
-    const plain = box.innerText;
+    const plain = htmlToPlainText(box.innerHTML);
     navigator.clipboard.writeText(plain).catch(() => {
       const ta = document.createElement('textarea');
       ta.value = plain; document.body.appendChild(ta);
@@ -2871,7 +3052,7 @@
     PHN_VARIANTS[name] = !PHN_VARIANTS[name];
     const btn = document.getElementById('phn_btn_' + name);
     if (PHN_VARIANTS[name]) {
-      btn.style.background='#c53030';btn.style.color='#fff';btn.style.borderColor='#c53030';
+      btn.style.background='#e00020';btn.style.color='#fff';btn.style.borderColor='#e00020';
     } else {
       btn.style.background='#fff';btn.style.color='#742a2a';btn.style.borderColor='#feb2b2';
     }
@@ -2960,7 +3141,7 @@
     let tvLine = 'Zastawka <b>TV</b>';
     if (tvParts.length) tvLine += ' ' + tvParts.join(', ');
     if (PHN_VARIANTS.tvi) {
-      tvLine += ' prawidłowa budowa, czynnościowa niedomykalność z PGmax  mmHg';
+      tvLine += ' prawidłowa budowa, czynnościowa niedomykalność z PGmax= mmHg';
     } else {
       tvLine += ' prawidłowa budowa i funkcja';
     }
@@ -3133,19 +3314,6 @@
     const sex = document.getElementById('sex').value;
     const sexEKG = (sex === 'boy') ? 'M' : 'F';
 
-    // PHN używa globalnych pól bezpośrednio już po tym przeróbce
-    // EKG Holter — synchronizuj wiek i płeć
-    const hrAge = document.getElementById('hr_age');
-    const hrSex = document.getElementById('hr_sex');
-    if(hrAge && !hrAge.dataset.manual) hrAge.value = age || dob;
-    if(hrSex) hrSex.value = sexEKG;
-
-    // EKG Spoczynkowe — synchronizuj wiek i płeć
-    const rekgAge = document.getElementById('rekg_age');
-    const rekgSex = document.getElementById('rekg_sex');
-    if(rekgAge && !rekgAge.dataset.manual) rekgAge.value = age || dob;
-    if(rekgSex) rekgSex.value = sexEKG;
-
     // Konsultacja — k_* pola czytają z globalnych przez getKonsAge2/k_sex
     const kSex = document.getElementById('k_sex');
     if(kSex) kSex.value = sex;
@@ -3171,10 +3339,6 @@
     const kToggle = document.getElementById('k_sex_toggle');
     if(kSex) kSex.value = hidden.value;
     if(kToggle){ if(hidden.value==='boy') kToggle.classList.add('boy'); else kToggle.classList.remove('boy'); }
-    // Synchronizuj EKG selects
-    const sexEKG = (hidden.value === 'boy') ? 'M' : 'F';
-    const hrSex = document.getElementById('hr_sex'); if(hrSex) hrSex.value = sexEKG;
-    const rekgSex = document.getElementById('rekg_sex'); if(rekgSex) rekgSex.value = sexEKG;
     recalcAll(); recalcPHN(); recalcCant(); recalcHR(); recalcREKG(); recalcKons(); recalcBP();
   }
 
@@ -3359,7 +3523,7 @@
     }
     el.textContent = val.toFixed(0);
     if (val > 480) {
-      el.style.color = '#c53030'; flag.textContent = '⚠ wydłużone'; flag.style.color = '#c53030';
+      el.style.color = '#e00020'; flag.textContent = '⚠ wydłużone'; flag.style.color = '#e00020';
     } else if (val > 450) {
       el.style.color = '#b7791f'; flag.textContent = '⚠ graniczne'; flag.style.color = '#b7791f';
     } else {
@@ -3414,7 +3578,7 @@
       interpEl.style.background = '#fefcbf'; interpEl.style.color = '#744210';
     } else {
       interpText = 'wysokie prawdopodobieństwo'; interpWord = 'wysokie';
-      interpEl.style.background = '#fed7d7'; interpEl.style.color = '#c53030';
+      interpEl.style.background = '#fed7d7'; interpEl.style.color = '#e00020';
     }
     interpEl.textContent = interpText;
 
@@ -3588,15 +3752,278 @@
       const zFmt = (z>=0?'+':'') + z.toFixed(2) + 'z';
       zEl.textContent = zFmt;
       zEl.style.fontWeight = '700';
-      if(Math.abs(z)>3)      zEl.style.color='#c53030';
-      else if(Math.abs(z)>=2) zEl.style.color='#d69e2e';
-      else                    zEl.style.color='#276749';
+      const azC=Math.abs(z);
+      if(azC>2.5)      zEl.style.color='#e00020';
+      else if(azC>2.0) zEl.style.color='#ff4a0f';
+      else if(azC>1.9) zEl.style.color='#ffd700';
+      else             zEl.style.color='#276749';
     });
   }
 
+  // ── Lab: Kalkulator RR ──────────────────────────────────────────────
+  const OLAF_POLY = {
+    boy_sbp:  {b0:4.693788,b1:0.010865,b2:0.000732,b3:-0.000300,b4:-0.000321,b5:0.028070,b6:0.001795,b7:-0.000427,b8:-0.000062,s:0.086732,C:13},
+    boy_dbp:  {b0:4.122460,b1:0.008924,b2:-0.003771,b3:0.000401,b4:0.001684,b5:0.015747,b6:0.001785,b7:-0.000152,b8:-0.000047,s:0.113525,C:13},
+    girl_sbp: {b0:4.702865,b1:0.006780,b2:-0.001801,b3:-0.000124,b4:0.000171,b5:0.014407,b6:-0.002029,b7:-0.000171,b8:0.000024,s:0.087434,C:13},
+    girl_dbp: {b0:4.149802,b1:0.004375,b2:0.000186,b3:-0.000131,b4:-0.000277,b5:0.009559,b6:-0.000591,b7:-0.000067,b8:0.000007,s:0.103762,C:13},
+  };
+
+  const LAB_OLA = {
+    boy_sbp:  {a:4.5386, b1:0.0105, b2:0.0034, b3:0.0008, b4:-0.0004, c1:0.0055, c2:0.0004, c3:0.0025, c4:0.0004, s:0.0776},
+    boy_dbp:  {a:4.0076, b1:0.0111, b2:0.0016, b3:0.0004, b4:-0.0001, c1:0.0031, c2:-0.0107, c3:0.0037, c4:0.0030, s:0.1148},
+    girl_sbp: {a:4.5452, b1:0.0106, b2:0.0022, b3:0.0005, b4:-0.0003, c1:0.0183, c2:0.0027, c3:-0.0035, c4:0.0004, s:0.0795},
+    girl_dbp: {a:4.0215, b1:0.0083, b2:-0.0014, b3:0.0007, b4:0.0000, c1:0.0192, c2:-0.0014, c3:-0.0030, c4:0.0008, s:0.1204},
+  };
+
+  // OLAF Table 2/3: [wiek, wzrost_cm, c50, c90, c95, c99]
+  const LAB_OLAF_SBP = {
+    boy: [
+      [7,116,98,109,113,119],[7,118,99,110,113,120],[7,120,99,111,114,121],[7,124,100,112,115,122],[7,127,101,112,116,123],[7,130,102,113,117,123],[7,131,102,113,117,124],
+      [8,121,99,110,113,120],[8,123,99,110,114,120],[8,126,100,111,114,121],[8,130,101,112,115,122],[8,133,101,113,116,123],[8,136,102,114,117,124],[8,138,102,114,117,124],
+      [9,126,100,112,115,122],[9,128,101,112,115,122],[9,131,102,113,116,123],[9,135,102,114,117,124],[9,139,103,115,118,125],[9,143,104,115,119,126],[9,145,104,116,119,126],
+      [10,130,102,113,117,123],[10,133,102,114,117,124],[10,136,103,115,118,125],[10,140,104,115,119,126],[10,144,105,116,120,127],[10,148,105,117,121,128],[10,150,106,117,121,128],
+      [11,135,103,114,118,125],[11,137,103,115,118,125],[11,141,104,116,119,126],[11,145,105,117,120,127],[11,150,106,117,121,128],[11,154,106,118,122,129],[11,156,107,119,122,129],
+      [12,140,104,116,119,126],[12,142,104,116,120,127],[12,147,105,117,120,127],[12,152,106,118,121,129],[12,157,107,119,122,129],[12,161,107,119,123,130],[12,164,108,120,124,131],
+      [13,146,107,119,123,130],[13,149,108,120,123,131],[13,154,109,121,124,132],[13,159,109,122,125,133],[13,165,110,123,126,134],[13,170,111,123,127,134],[13,172,111,124,128,135],
+      [14,154,111,125,129,137],[14,156,111,125,129,137],[14,161,111,125,129,138],[14,167,112,126,130,139],[14,172,113,127,131,140],[14,177,113,128,132,141],[14,180,114,128,132,141],
+      [15,160,114,129,133,142],[15,163,115,129,133,142],[15,167,115,129,134,142],[15,172,116,130,135,143],[15,177,117,131,136,144],[15,182,117,132,136,145],[15,185,118,132,137,146],
+      [16,164,117,131,136,144],[16,167,117,131,136,145],[16,171,117,132,136,145],[16,176,118,133,137,146],[16,180,119,134,138,147],[16,185,120,134,139,148],[16,187,120,135,139,148],
+      [17,167,117,132,136,145],[17,169,117,132,137,146],[17,173,118,133,137,146],[17,178,118,133,138,147],[17,182,119,134,139,148],[17,186,120,135,140,149],[17,188,120,136,140,149],
+      [18,168,118,133,137,146],[18,170,118,133,138,147],[18,174,119,134,138,147],[18,179,119,134,139,148],[18,183,120,135,140,149],[18,187,121,136,141,150],[18,189,121,137,141,150],
+    ],
+    girl: [
+      [7,114,99,111,115,122],[7,116,100,111,115,122],[7,119,100,112,116,123],[7,123,101,113,116,123],[7,126,101,113,116,123],[7,129,101,113,117,124],[7,131,101,113,117,124],
+      [8,120,100,111,115,122],[8,121,100,112,115,123],[8,125,101,112,116,123],[8,128,101,113,117,124],[8,132,101,114,117,124],[8,135,102,114,117,125],[8,137,102,114,118,125],
+      [9,125,101,113,117,124],[9,127,101,113,117,124],[9,130,102,114,118,125],[9,134,102,115,118,126],[9,138,103,115,119,126],[9,142,103,115,119,126],[9,144,103,115,119,126],
+      [10,129,103,115,119,126],[10,132,103,115,119,126],[10,136,104,116,120,127],[10,140,104,117,120,128],[10,144,105,117,121,128],[10,148,105,117,121,129],[10,150,105,117,121,129],
+      [11,135,105,117,121,129],[11,137,105,118,121,129],[11,142,106,118,122,130],[11,146,106,119,123,130],[11,151,107,119,123,131],[11,155,107,120,124,131],[11,157,107,120,124,131],
+      [12,142,107,120,123,131],[12,145,107,120,124,131],[12,149,108,121,125,132],[12,153,108,121,125,133],[12,158,109,122,126,133],[12,162,109,122,126,134],[12,164,109,122,126,134],
+      [13,148,109,122,125,133],[13,150,109,122,126,134],[13,154,110,123,127,134],[13,159,110,123,127,135],[13,163,111,124,128,136],[13,167,111,124,128,136],[13,169,111,124,128,136],
+      [14,152,110,123,127,135],[14,154,110,123,127,135],[14,158,111,124,128,136],[14,162,112,125,129,137],[14,166,112,125,129,137],[14,170,112,126,130,138],[14,172,112,126,130,138],
+      [15,154,111,124,128,136],[15,156,111,124,128,136],[15,160,112,125,129,137],[15,164,112,126,130,138],[15,168,113,126,130,138],[15,171,113,127,131,139],[15,174,113,127,131,139],
+      [16,154,111,124,128,136],[16,157,112,125,129,137],[16,160,112,125,130,137],[16,164,113,126,130,138],[16,168,113,127,131,139],[16,172,113,127,131,139],[16,174,114,127,131,139],
+      [17,155,111,124,128,136],[17,157,111,125,129,136],[17,161,112,125,129,137],[17,165,113,126,130,138],[17,169,113,126,130,138],[17,172,113,127,131,139],[17,175,113,127,131,139],
+      [18,155,110,123,127,135],[18,157,111,124,128,136],[18,161,111,125,129,136],[18,165,112,125,129,137],[18,169,112,126,130,138],[18,173,113,126,130,138],[18,175,113,126,130,138],
+    ]
+  };
+  const LAB_OLAF_DBP = {
+    boy: [
+      [7,116,58,67,70,75],[7,118,58,67,70,75],[7,120,58,67,70,75],[7,124,58,68,70,75],[7,127,59,68,71,76],[7,130,59,68,71,76],[7,131,59,68,71,76],
+      [8,121,58,67,70,75],[8,123,58,67,70,75],[8,126,58,68,70,75],[8,130,59,68,71,75],[8,133,59,68,71,76],[8,136,59,69,71,76],[8,138,59,69,71,76],
+      [9,126,59,68,71,76],[9,128,59,68,71,76],[9,131,59,69,71,76],[9,135,60,69,72,77],[9,139,60,69,72,77],[9,143,60,70,72,77],[9,145,60,70,72,77],
+      [10,130,60,69,72,77],[10,133,60,69,72,77],[10,136,60,70,72,77],[10,140,61,70,72,77],[10,144,61,70,73,78],[10,148,61,70,73,78],[10,150,61,71,73,78],
+      [11,135,60,69,72,77],[11,137,60,69,72,77],[11,141,60,70,72,77],[11,145,61,70,73,78],[11,150,61,70,73,78],[11,154,61,71,73,78],[11,156,62,71,73,78],
+      [12,140,60,69,72,77],[12,142,60,70,72,77],[12,147,61,70,73,77],[12,152,61,70,73,78],[12,157,61,71,73,78],[12,161,62,71,73,78],[12,164,62,71,74,79],
+      [13,146,61,71,73,78],[13,149,62,71,74,78],[13,154,62,71,74,79],[13,159,62,71,74,79],[13,165,62,72,74,79],[13,170,63,72,75,80],[13,172,63,72,75,80],
+      [14,154,61,71,74,81],[14,156,61,71,74,81],[14,161,61,72,75,81],[14,167,62,72,76,82],[14,172,62,73,76,83],[14,177,63,74,77,84],[14,180,63,74,77,84],
+      [15,160,62,73,76,83],[15,163,62,73,76,83],[15,167,63,73,77,83],[15,172,63,74,78,84],[15,177,64,75,78,85],[15,182,64,75,79,86],[15,185,65,76,79,86],
+      [16,164,64,74,78,85],[16,167,64,74,78,85],[16,171,64,75,78,85],[16,176,65,76,79,86],[16,180,65,76,80,87],[16,185,66,77,80,88],[16,187,66,77,81,88],
+      [17,167,64,75,78,85],[17,169,64,75,78,85],[17,173,64,75,79,86],[17,178,65,76,80,87],[17,182,66,77,81,88],[17,186,66,78,81,88],[17,188,66,78,81,88],
+      [18,168,65,76,79,86],[18,170,65,76,79,86],[18,174,65,76,80,86],[18,179,66,77,80,87],[18,183,66,78,81,88],[18,187,67,78,82,89],[18,189,67,78,82,89],
+    ],
+    girl: [
+      [7,114,59,68,71,76],[7,116,59,68,71,76],[7,119,59,69,71,76],[7,123,59,69,71,76],[7,126,60,69,72,77],[7,129,60,69,72,77],[7,131,60,69,72,77],
+      [8,120,59,69,71,76],[8,121,59,69,71,76],[8,125,60,69,72,77],[8,128,60,69,72,77],[8,132,60,69,72,77],[8,135,60,69,72,77],[8,137,60,70,72,77],
+      [9,125,60,69,72,77],[9,127,60,69,72,77],[9,130,60,70,72,77],[9,134,60,70,72,77],[9,138,61,70,73,78],[9,142,61,70,73,78],[9,144,61,70,73,78],
+      [10,129,61,70,73,77],[10,132,61,70,73,78],[10,136,61,70,73,78],[10,140,61,70,73,78],[10,144,61,71,73,78],[10,148,61,71,73,78],[10,150,61,71,73,78],
+      [11,135,61,71,73,78],[11,137,61,71,73,78],[11,142,62,71,74,79],[11,146,62,71,74,79],[11,151,62,71,74,79],[11,155,62,72,74,79],[11,157,62,72,74,79],
+      [12,142,62,71,74,79],[12,145,62,72,74,79],[12,149,62,72,74,79],[12,153,63,72,75,80],[12,158,63,72,75,80],[12,162,63,72,75,80],[12,164,63,72,75,80],
+      [13,148,63,72,75,80],[13,150,63,72,75,80],[13,154,63,73,75,80],[13,159,63,73,75,80],[13,163,64,73,76,81],[13,167,64,73,76,81],[13,169,64,73,76,81],
+      [14,152,63,73,75,80],[14,154,64,73,76,81],[14,158,64,73,76,81],[14,162,64,73,76,81],[14,166,64,74,76,81],[14,170,64,74,76,81],[14,172,64,74,76,81],
+      [15,154,64,73,76,81],[15,156,64,73,76,81],[15,160,64,74,76,81],[15,164,65,74,77,82],[15,168,65,74,77,82],[15,171,65,74,77,82],[15,174,65,74,77,82],
+      [16,154,64,74,76,81],[16,157,65,74,77,82],[16,160,65,74,77,82],[16,164,65,74,77,82],[16,168,65,74,77,82],[16,172,65,75,77,82],[16,174,65,75,77,82],
+      [17,155,65,74,77,82],[17,157,65,74,77,82],[17,161,65,74,77,82],[17,165,65,75,77,82],[17,169,65,75,78,82],[17,172,66,75,78,83],[17,175,66,75,78,83],
+      [18,155,65,74,77,82],[18,157,65,74,77,82],[18,161,65,75,77,82],[18,165,65,75,77,82],[18,169,66,75,78,83],[18,173,66,75,78,83],[18,175,66,75,78,83],
+    ]
+  };
+
+  function labOlafInterp(table, sex, age, height) {
+    const rows = table[sex];
+    const ages = [...new Set(rows.map(r=>r[0]))].sort((a,b)=>a-b);
+    const clampAge = Math.max(ages[0], Math.min(ages[ages.length-1], age));
+    let a0=ages[0], a1=ages[0];
+    for(let i=0;i<ages.length-1;i++){if(ages[i]<=clampAge&&clampAge<=ages[i+1]){a0=ages[i];a1=ages[i+1];break;}}
+    function interpAtAge(targetAge){
+      const ar = rows.filter(r=>r[0]===targetAge);
+      if(!ar.length) return null;
+      const clampH = Math.max(ar[0][1], Math.min(ar[ar.length-1][1], height));
+      let r0=ar[0], r1=ar[0];
+      for(let i=0;i<ar.length-1;i++){if(ar[i][1]<=clampH&&clampH<=ar[i+1][1]){r0=ar[i];r1=ar[i+1];break;}}
+      const t = r1[1]>r0[1]?(clampH-r0[1])/(r1[1]-r0[1]):0;
+      return [1,2,3,4,5].map(i=>r0[i]+t*(r1[i]-r0[i]));
+    }
+    const v0=interpAtAge(a0), v1=interpAtAge(a1);
+    if(!v0||!v1) return null;
+    const tAge = a1>a0?(clampAge-a0)/(a1-a0):0;
+    return v0.map((x,i)=>x+tAge*(v1[i]-x));
+  }
+
+  function calcLabBP(){
+    const sbpVal = parseFloat(document.getElementById('lab_sbp').value);
+    const dbpVal = parseFloat(document.getElementById('lab_dbp').value);
+    const age    = getEffectiveAge();
+    const sex    = (document.getElementById('sex')||{}).value||'girl';
+    const height = parseFloat((document.getElementById('height')||{}).value);
+    const el     = document.getElementById('lab_bp_result');
+    if((!sbpVal && !dbpVal) || isNaN(age) || age<3 || age>18){
+      el.innerHTML = '<span style="font-size:0.8rem;color:#94a3b8;">Wprowadź wartości ciśnienia · wiek 3–18 lat</span>';
+      return;
+    }
+    const sKey = sex==='boy'?'boy':'girl';
+    function bpColor(pct){ return pct>=95?'#e00020':pct>=90?'#ff4a0f':'#276749'; }
+    function rangeColor(r){ return r==='>99c'||r==='95–99c'?'#e00020':r==='90–95c'?'#ff4a0f':'#276749'; }
+    let html='', src='';
+    if(age < 7){
+      const zHt = isNaN(height) ? 0 : getHeightZscore(height, age, sKey);
+      const a = age - 4.5;
+      function calcOLA(c, val){
+        if(isNaN(val)||val<=0) return null;
+        const lnMu = c.a + c.b1*zHt + c.b2*zHt**2 + c.b3*zHt**3 + c.b4*zHt**4
+                        + c.c1*a + c.c2*a**2 + c.c3*a**3 + c.c4*a**4;
+        const pct = normCDF((Math.log(val)-lnMu)/c.s)*100;
+        return {
+          pct: Math.min(99.9,Math.max(0.1,pct)),
+          p50: Math.round(Math.exp(lnMu)),
+          p90: Math.round(Math.exp(lnMu+1.28155*c.s)),
+          p95: Math.round(Math.exp(lnMu+1.64485*c.s)),
+          p99: Math.round(Math.exp(lnMu+2.32635*c.s))
+        };
+      }
+      const sr=calcOLA(LAB_OLA[sKey+'_sbp'],sbpVal);
+      const dr=calcOLA(LAB_OLA[sKey+'_dbp'],dbpVal);
+      src = `OLA · model wielomianowy · z-score wzrostu: ${isNaN(height)?'brak':getHeightZscore(height,age,sKey).toFixed(2)}`;
+      if(sr) html+=`SBP: <b>${sbpVal}</b> mmHg → <b style="color:${bpColor(sr.pct)}">${sr.pct.toFixed(1)}c</b> <span style="color:#94a3b8;font-size:0.7em;">p50=${sr.p50} p90=${sr.p90} p95=${sr.p95} p99=${sr.p99}</span><br>`;
+      if(dr) html+=`DBP: <b>${dbpVal}</b> mmHg → <b style="color:${bpColor(dr.pct)}">${dr.pct.toFixed(1)}c</b> <span style="color:#94a3b8;font-size:0.7em;">p50=${dr.p50} p90=${dr.p90} p95=${dr.p95} p99=${dr.p99}</span><br>`;
+      el.innerHTML=`<div style="font-size:0.82rem;line-height:2;background:#f0f9ff;border:1px solid #bae6fd;border-radius:6px;padding:0.6rem 0.8rem;">${html}<div style="font-size:0.68rem;color:#64748b;">📐 ${src}</div></div>`;
+    } else {
+      if(isNaN(height)){el.innerHTML='<span style="color:#ff4a0f;font-size:0.8rem;">⚠️ Wpisz wzrost w belce pacjenta — wymagany dla OLAF</span>';return;}
+      // Model wielomianowy OLAF (koeficjenty wyliczone numerycznie z tabel Kułaga 2012)
+      const zHt = getHeightZscore(height, age, sKey);
+      function calcOLAFpoly(c, val){
+        if(isNaN(val)||val<=0) return null;
+        const a = age - c.C;
+        const lnMu = c.b0 + c.b1*zHt + c.b2*zHt**2 + c.b3*zHt**3 + c.b4*zHt**4
+                         + c.b5*a + c.b6*a**2 + c.b7*a**3 + c.b8*a**4;
+        const pct = normCDF((Math.log(val)-lnMu)/c.s)*100;
+        return {
+          pct: Math.min(99.9,Math.max(0.1,pct)),
+          p50: Math.round(Math.exp(lnMu)),
+          p90: Math.round(Math.exp(lnMu+1.28155*c.s)),
+          p95: Math.round(Math.exp(lnMu+1.64485*c.s)),
+          p99: Math.round(Math.exp(lnMu+2.32635*c.s))
+        };
+      }
+      const sr=calcOLAFpoly(OLAF_POLY[sKey+'_sbp'],sbpVal);
+      const dr=calcOLAFpoly(OLAF_POLY[sKey+'_dbp'],dbpVal);
+      src=`OLAF · model wielomianowy (regresja z tabel) · z-score wzrostu: ${zHt.toFixed(2)}`;
+      if(sr) html+=`SBP: <b>${sbpVal}</b> mmHg → <b style="color:${bpColor(sr.pct)}">${sr.pct.toFixed(1)}c</b> <span style="color:#94a3b8;font-size:0.7em;">p50=${sr.p50} p90=${sr.p90} p95=${sr.p95} p99=${sr.p99}</span><br>`;
+      if(dr) html+=`DBP: <b>${dbpVal}</b> mmHg → <b style="color:${bpColor(dr.pct)}">${dr.pct.toFixed(1)}c</b> <span style="color:#94a3b8;font-size:0.7em;">p50=${dr.p50} p90=${dr.p90} p95=${dr.p95} p99=${dr.p99}</span><br>`;
+      el.innerHTML=`<div style="font-size:0.82rem;line-height:2;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:6px;padding:0.6rem 0.8rem;">${html}<div style="font-size:0.68rem;color:#64748b;">📊 ${src}</div></div>`;
+    }
+  }
+
+  function calcACM() {
+    const get = id => document.getElementById(id)?.checked ? 1 : 0;
+
+    // RV kryteria (kategorie I-V)
+    const rv_maj = get('acm_rv_mf_maj') + get('acm_rv_st_maj') + get('acm_rv_rep_maj') + get('acm_rv_arr_maj');
+    const rv_min = get('acm_rv_mf_min') + get('acm_rv_st_min') +
+                   get('acm_rv_rep_min1') + get('acm_rv_rep_min2') + get('acm_rv_rep_min3') +
+                   get('acm_rv_dep_min1') + get('acm_rv_dep_min2') +
+                   get('acm_rv_arr_min1') + get('acm_rv_arr_min2');
+
+    // LV kryteria (kategorie I-V)
+    const lv_maj = get('acm_lv_st_maj') + get('acm_lv_dep_maj');
+    const lv_min = get('acm_lv_mf_min') + get('acm_lv_st_min') + get('acm_lv_rep_min') +
+                   get('acm_lv_arr_min1') + get('acm_lv_arr_min2') + get('acm_lv_arr_min3');
+
+    // Genetyka — wspólne, liczone po obu stronach
+    const gen_maj = get('acm_gen_maj1') + get('acm_gen_maj2') + get('acm_gen_maj3');
+    const gen_min = get('acm_gen_min1') + get('acm_gen_min2') + get('acm_gen_min3') + get('acm_gen_min4');
+
+    const RV_maj = rv_maj + gen_maj;
+    const RV_min = rv_min + gen_min;
+    const LV_maj = lv_maj + gen_maj;
+    const LV_min = lv_min + gen_min;
+
+    // Morfofunkcjonalne i strukturalne RV (kategorie I+II bez genetyki)
+    const rv_morph_struct = get('acm_rv_mf_maj') + get('acm_rv_mf_min') + get('acm_rv_st_maj') + get('acm_rv_st_min');
+    const lv_morph_struct = get('acm_lv_mf_min') + get('acm_lv_st_maj') + get('acm_lv_st_min');
+
+    // Schemat decyzyjny z obrazka
+    const hasRV = rv_morph_struct >= 1;  // ≥1 major/minor morfofunkcjonalne lub strukturalne RV
+    const hasLV = lv_morph_struct >= 1;  // ≥1 major/minor morfofunkcjonalne lub strukturalne LV
+
+    function classify(maj, min) {
+      // Definite: ≥2 major, lub 1 major+2 minor, lub 1 major+2 minor, lub 4 minor
+      if (maj >= 2 || (maj >= 1 && min >= 2) || min >= 4) return 'DEFINITE';
+      // Borderline: 1 major + 1 minor, lub 3 minor
+      if ((maj >= 1 && min >= 1) || min >= 3) return 'BORDERLINE';
+      // Possible: 1 major lub 2 minor
+      if (maj >= 1 || min >= 2) return 'POSSIBLE';
+      return null;
+    }
+
+    const el = document.getElementById('acm_result');
+    const total_maj = RV_maj + LV_maj - gen_maj; // gen_maj liczymy raz
+    const total_min = RV_min + LV_min - gen_min;
+
+    let phenotype, result, color, desc;
+
+    if (hasRV && hasLV) {
+      // BIV-ACM — liczymy SUMĘ obu komór
+      const biv_maj = rv_maj + lv_maj + gen_maj;
+      const biv_min = rv_min + lv_min + gen_min;
+      phenotype = 'BIV-ACM';
+      result = classify(biv_maj, biv_min);
+      desc = `Obie komory zajęte · MAJOR: ${biv_maj} · minor: ${biv_min}`;
+    } else if (hasRV && !hasLV) {
+      // ARVC — tylko RV
+      phenotype = 'ARVC';
+      result = classify(RV_maj, RV_min);
+      desc = `Tylko prawa komora · MAJOR: ${RV_maj} · minor: ${RV_min}`;
+    } else if (!hasRV && hasLV) {
+      // ALVC — tylko LV (strukturalne)
+      phenotype = 'ALVC';
+      result = classify(LV_maj, LV_min);
+      desc = `Tylko lewa komora · MAJOR: ${LV_maj} · minor: ${LV_min}`;
+    } else {
+      // Żadne kryteria morfofunkcjonalne/strukturalne
+      if (RV_maj + RV_min + LV_maj + LV_min === 0) {
+        el.innerHTML = '<div style="font-size:0.8rem;color:#64748b;">Zaznacz kryteria powyżej</div>';
+      } else {
+        el.innerHTML = '<div style="font-size:0.85rem;color:#b45309;font-weight:700;">⚠️ Brak kryteriów morfofunkcjonalnych / strukturalnych — nie można sklasyfikować fenotypu</div>';
+      }
+      return;
+    }
+
+    const colors = {
+      DEFINITE:   {bg:'#fef2f2', border:'#e00020', text:'#e00020'},
+      BORDERLINE: {bg:'#fffbeb', border:'#ff4a0f', text:'#c2410c'},
+      POSSIBLE:   {bg:'#f0fdf4', border:'#16a34a', text:'#15803d'},
+    };
+    const phenoColors = {
+      'ARVC':    '#7c3aed', 'BIV-ACM': '#1d4ed8', 'ALVC': '#c2410c'
+    };
+
+    const col = colors[result] || {bg:'#f8fafc', border:'#94a3b8', text:'#475569'};
+    el.style.background = col.bg;
+    el.style.borderColor = col.border;
+
+    el.innerHTML = `
+      <div style="font-size:1.1rem;font-weight:800;color:${col.text};">${result} ${phenotype}</div>
+      <div style="font-size:0.75rem;color:${phenoColors[phenotype]||'#64748b'};margin-top:0.2rem;font-weight:700;">${phenotype === 'ARVC' ? 'Arytmogenna kardiomiopatia prawej komory' : phenotype === 'ALVC' ? 'Arytmogenna kardiomiopatia lewej komory' : 'Kardiomiopatia arytmogenna obustronna'}</div>
+      <div style="font-size:0.72rem;color:#64748b;margin-top:0.3rem;">${desc}</div>
+      <div style="font-size:0.68rem;color:#94a3b8;margin-top:0.4rem;">
+        Possible: ≥1 major lub ≥2 minor &nbsp;·&nbsp;
+        Borderline: 1 major+1 minor lub ≥3 minor &nbsp;·&nbsp;
+        Definite: ≥2 major lub 1 major+≥2 minor lub ≥4 minor
+      </div>`;
+  }
+
   function recalcHR(){
-    const sex = document.getElementById('hr_sex').value;
-    const age = parseAgeToYears(document.getElementById('hr_age').value);
+    const sex = (document.getElementById('sex')||{value:'M'}).value === 'girl' ? 'F' : 'M';
+    const age = getEffectiveAge();
     const mean = parseFloat(document.getElementById('hr_mean').value);
     const minv = parseFloat(document.getElementById('hr_min').value);
     const maxv = parseFloat(document.getElementById('hr_max').value);
@@ -3651,6 +4078,15 @@
     notesBox.innerHTML = buildEchoDescription(null, 'girl');
     // Generuj opis echo w konsultacji przy starcie
     recalcKons();
+    // Pokaż zakładkę Lab i pola BP jeśli ?lab=1 w URL
+    if(new URLSearchParams(window.location.search).get('lab') === '1'){
+      ['tab-btn-lab','tab-btn-echo','tab-btn-echophn'].forEach(id=>{
+        const btn = document.getElementById(id);
+        if(btn) btn.style.display = '';
+      });
+      const bpWrap = document.getElementById('bp_fields_wrap');
+      if(bpWrap) bpWrap.style.display = 'contents';
+    }
   });
 
   function switchTab(name){
@@ -3757,14 +4193,16 @@
     const zFmt = (z >= 0 ? '+' : '') + z.toFixed(2) + 'z';
     const normFmt = low + (unit === 'mV' ? '' : '') + '–' + high + (unit ? ' ' + unit : '');
     el.innerHTML = '<span style="font-weight:700">' + zFmt + '</span><br><span style="font-size:0.68rem;color:#718096;">[' + low + '–' + high + (unit ? ' ' + unit : '') + ']</span>';
-    if (z < -2.5 || z > 2.5)      { el.style.color = '#c53030'; el.style.fontWeight = '700'; }
-    else if (Math.abs(z) >= 2.0)  { el.style.color = '#d69e2e'; el.style.fontWeight = '700'; }
-    else                           { el.style.color = '#276749'; el.style.fontWeight = '700'; }
+    const azP=Math.abs(z);
+    if (azP > 2.5)       { el.style.color = '#e00020'; el.style.fontWeight = '700'; }
+    else if (azP > 2.0)  { el.style.color = '#ff4a0f'; el.style.fontWeight = '700'; }
+    else if (azP > 1.9)  { el.style.color = '#ffd700'; el.style.fontWeight = '700'; }
+    else                  { el.style.color = '#276749'; el.style.fontWeight = '700'; }
   }
 
   function recalcREKG() {
-    const sex = document.getElementById('rekg_sex').value;
-    const age = parseAgeToYears(document.getElementById('rekg_age').value);
+    const sex = (document.getElementById('sex')||{value:'M'}).value === 'girl' ? 'F' : 'M';
+    const age = getEffectiveAge();
     const lbl = document.getElementById('rekg_group_label');
 
     const params = [
@@ -3818,7 +4256,7 @@
       const inRange = axVal >= ax_l && axVal <= ax_h;
       elAx.innerHTML = (inRange
         ? '<span style="color:#276749;font-weight:700;">prawidłowa</span>'
-        : '<span style="color:#c53030;font-weight:700;">poza normą</span>')
+        : '<span style="color:#e00020;font-weight:700;">poza normą</span>')
         + '<span style="font-size:0.72rem;color:#718096;margin-left:0.4rem;">[' + ax_l + '–' + ax_h + ' °]</span>';
     } else {
       elAx.textContent = '—'; elAx.className = 'result-cell'; elAx.style.color='';
@@ -3831,13 +4269,27 @@
 
   // 'auto' = wybór wg wieku, 'niemowl'/'sredni'/'duzy' = wymuszony
   let KONS_WYWIAD_TEMPLATE = 'auto';
+  let KONS_WYWIAD_POWOD = null; // null | 'szmer' | 'kolatanie' | 'omdlenie'
+
+  function toggleKonsWywiadPowod(val){
+    KONS_WYWIAD_POWOD = (KONS_WYWIAD_POWOD === val) ? null : val;
+    ['szmer','kolatanie','omdlenie'].forEach(k => {
+      const btn = document.getElementById('k_wywiad_btn_' + k);
+      if(!btn) return;
+      const active = KONS_WYWIAD_POWOD === k;
+      btn.style.background = active ? '#e00020' : '#fff';
+      btn.style.color      = active ? '#fff'    : '#742a2a';
+    });
+    KONS_SECT_MANUAL.wywiad = false;
+    recalcKons();
+  }
 
   function setKonsWywiadTemplate(val){
     KONS_WYWIAD_TEMPLATE = val;
     ['auto','niemowl','sredni','duzy'].forEach(k => {
       const btn = document.getElementById('k_wywiad_btn_' + k);
       if(!btn) return;
-      if(k === val){ btn.style.background='#c53030'; btn.style.color='#fff'; btn.style.borderColor='#c53030'; }
+      if(k === val){ btn.style.background='#e00020'; btn.style.color='#fff'; btn.style.borderColor='#e00020'; }
       else { btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
     });
     // Pokaż masę urodzeniową tylko dla niemowlęcia
@@ -3994,8 +4446,8 @@
     if(val < c50)       { label='<50c';    color='#276749'; }
     else if(val < c90)  { label='50–90c';  color='#276749'; }
     else if(val < c95)  { label='90–95c';  color='#b7791f'; }
-    else if(val < c99)  { label='95–99c';  color='#c53030'; }
-    else                { label='>99c';    color='#c53030'; }
+    else if(val < c99)  { label='95–99c';  color='#e00020'; }
+    else                { label='>99c';    color='#e00020'; }
 
     return {pct: label, color};
   }
@@ -4174,7 +4626,10 @@
     const age       = getKonsAge2();
     const bsa = (!isNaN(heightVal)&&!isNaN(weightVal)) ? Math.sqrt((heightVal*weightVal)/3600) : NaN;
     const bmi = (!isNaN(heightVal)&&!isNaN(weightVal)&&heightVal>0) ? weightVal/Math.pow(heightVal/100,2) : NaN;
-    // BSA/BMI wyświetlane w globalnej karcie pacjenta (recalcAll to obsługuje)
+
+    // Auto-TVI: jeśli wpisano PGmax TV → włącz wariant TVI
+    const tvPgmax = parseFloat((document.getElementById('k_tv_pgmax')||{}).value);
+    if(!isNaN(tvPgmax) && tvPgmax > 0) setKonsVariant('tvi', true);
 
     // Percentyle — wyświetlane w globalnej karcie przez recalcAll
 
@@ -4217,21 +4672,21 @@
         const m=parseFloat((document.getElementById('k_'+id)||{}).value);
         const z=gautierZ(id,m,bsa,sex);
         const el=document.getElementById('k_'+id+'_z');
-        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#c53030':'#d69e2e'):'#276749'; }
+        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#e00020':'#d69e2e'):'#276749'; }
       });
       // Aorta — Pettersen
       ['TArch','Isthm','DistAo'].forEach(id=>{
         const m=parseFloat((document.getElementById('k_'+id)||{}).value);
         const z=pettersenZ(id,m,bsa);
         const el=document.getElementById('k_'+id+'_z');
-        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#c53030':'#d69e2e'):'#276749'; }
+        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#e00020':'#d69e2e'):'#276749'; }
       });
       // T. płucna — Pettersen
       ['PVAnn','MPA','RPA','LPA'].forEach(id=>{
         const m=parseFloat((document.getElementById('k_'+id)||{}).value);
         const z=pettersenZ(id,m,bsa);
         const el=document.getElementById('k_'+id+'_z');
-        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#c53030':'#d69e2e'):'#276749'; }
+        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#e00020':'#d69e2e'):'#276749'; }
       });
       // Wieńcowe — Dallaire (klucze: LMCA, LAD, Cx, RCAprox, RCAmed, RCAdist)
       const caMap={CA_LMCA:'LMCA',CA_LAD:'LAD',CA_Cx:'Cx',CA_RCAprox:'RCAprox',CA_RCAmed:'RCAmed',CA_RCAdist:'RCAdist'};
@@ -4239,13 +4694,27 @@
         const m=parseFloat((document.getElementById('k_'+id)||{}).value);
         const z=dallaireZ(seg,m,bsa);
         const el=document.getElementById('k_'+id+'_z');
-        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#c53030':'#d69e2e'):'#276749'; }
+        if(el){ el.textContent=(z!==null&&!isNaN(z))?(z>=0?'+':'')+z.toFixed(2)+'z':'—'; el.style.color=(z!==null&&Math.abs(z)>=2)?(Math.abs(z)>=3?'#e00020':'#d69e2e'):'#276749'; }
+      });
+      // LA area i RA area — Cantinotti 2014 (ln[y]=a+b*ln[BSA])
+      const atriaCant = {LAA:{a:2.191,b:0.894,s:0.165}, RAA:{a:2.235,b:0.911,s:0.178}};
+      Object.entries(atriaCant).forEach(([id,c])=>{
+        const m=parseFloat((document.getElementById('k_'+id)||{}).value);
+        const z=(!isNaN(m)&&m>0&&bsa>0)?(Math.log(m)-(c.a+c.b*Math.log(bsa)))/c.s:null;
+        const el=document.getElementById('k_'+id+'_z');
+        if(el){
+          if(z===null||isNaN(z)){el.textContent='—';el.style.color='';return;}
+          const az=Math.abs(z);
+          el.textContent=(z>=0?'+':'')+z.toFixed(2)+'z';
+          el.style.fontWeight='700';
+          el.style.color=az>2.5?'#e00020':az>2.0?'#ff4a0f':az>1.9?'#ffd700':'#276749';
+        }
       });
     } else {
       mmVarsList.forEach(id=>updateZbarK(id,null,()=>null));
       ['mv','tv','av','pv'].forEach(id=>updateZbarK(id,null,()=>null));
       [...Object.keys({AoAnn:1,Sinus:1,STJ:1,AoAsc:1,TArch:1,Isthm:1,DistAo:1,
-                       PVAnn:1,MPA:1,RPA:1,LPA:1,
+                       PVAnn:1,MPA:1,RPA:1,LPA:1,LAA:1,RAA:1,
                        CA_LMCA:1,CA_LAD:1,CA_Cx:1,CA_RCAprox:1,CA_RCAmed:1,CA_RCAdist:1})
       ].forEach(id=>{ const el=document.getElementById('k_'+id+'_z'); if(el){el.textContent='—';el.style.color='';} });
     }
@@ -4321,7 +4790,7 @@
     const z=tapseZscore(tVal,mean,m2sd,p2sd);
     const zFmt=(z>=0?'+':'')+z.toFixed(2)+'z';
     zEl.innerHTML='<span style="font-weight:700">'+zFmt+'</span><span style="font-size:0.72rem;color:#718096;margin-left:0.4rem;">['+m2mm+'\u2013'+p2mm+' mm]</span>';
-    if(z<-3||z>3){zEl.style.color='#c53030';zEl.style.fontWeight='700';}
+    if(z<-3||z>3){zEl.style.color='#e00020';zEl.style.fontWeight='700';}
     else if(Math.abs(z)>=2){zEl.style.color='#d69e2e';zEl.style.fontWeight='700';}
     else{zEl.style.color='#276749';zEl.style.fontWeight='700';}
   }
@@ -4363,7 +4832,7 @@
         if(qtInfoEl){qtInfoEl.textContent='\u2192 QTc: '+qtc+' ms';qtInfoEl.style.color='#276749';}
         rekgCell('k_qtc_z',rekgZscore(qtc,qtc_l,qtc_m,qtc_h),qtc_l,qtc_m,qtc_h,'ms');
         if(qtcEl){
-          if(qtc>460){qtcEl.style.color='#c53030';qtcEl.style.fontWeight='700';}
+          if(qtc>460){qtcEl.style.color='#e00020';qtcEl.style.fontWeight='700';}
           else if(qtc>440){qtcEl.style.color='#d69e2e';qtcEl.style.fontWeight='700';}
           else{qtcEl.style.color='#276749';qtcEl.style.fontWeight='700';}
         }
@@ -4436,7 +4905,7 @@
     const btn = document.getElementById('k_zal_btn_' + key);
     if(btn){
       if(ZALECENIA_ACTIVE[key]){
-        btn.style.background='#c53030'; btn.style.color='#fff'; btn.style.borderColor='#c53030';
+        btn.style.background='#e00020'; btn.style.color='#fff'; btn.style.borderColor='#e00020';
         // Dodaj tekst
         const cur = el.value.trim();
         el.value = cur ? cur + '\n' + tmpl : tmpl;
@@ -4459,7 +4928,7 @@
 
   function copyKonsNotes(){
     const box=document.getElementById('k_echo_notes_box');if(!box)return;
-    const plain=box.innerText;
+    const plain=htmlToPlainText(box.innerHTML);
     navigator.clipboard.writeText(plain).catch(()=>{const ta=document.createElement('textarea');ta.value=plain;document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);});
   }
   function copyKonsZscores(){
@@ -4474,10 +4943,20 @@
     KONS_VARIANTS[name] = !KONS_VARIANTS[name];
     const btn = document.getElementById('k_btn_' + name);
     if(btn){
-      if(KONS_VARIANTS[name]){ btn.style.background='#c53030';btn.style.color='#fff';btn.style.borderColor='#c53030'; }
+      if(KONS_VARIANTS[name]){ btn.style.background='#e00020';btn.style.color='#fff';btn.style.borderColor='#e00020'; }
       else { btn.style.background='#fff';btn.style.color='#742a2a';btn.style.borderColor='#feb2b2'; }
     }
     recalcKons();
+  }
+
+  function setKonsVariant(name, val){
+    if(KONS_VARIANTS[name] === val) return;
+    KONS_VARIANTS[name] = val;
+    const btn = document.getElementById('k_btn_' + name);
+    if(btn){
+      if(val){ btn.style.background='#e00020';btn.style.color='#fff';btn.style.borderColor='#e00020'; }
+      else { btn.style.background='#fff';btn.style.color='#742a2a';btn.style.borderColor='#feb2b2'; }
+    }
   }
 
   // Buduje opis dla Konsultacji — podmienia getElementById na k_ prefix
@@ -4568,22 +5047,46 @@
     const lbl = ageLabel();
     let text, group;
 
+    // powód wizyty — wstawiony do frazy otwierającej
+    function powodPhrase(tmpl){
+      const p = KONS_WYWIAD_POWOD;
+      if(!p) return null;
+      if(p === 'szmer'){
+        if(tmpl === 'niemowl') return 'ze szmerem nad sercem';
+        return 'ze szmerem nad sercem';
+      }
+      if(p === 'kolatanie') return 'z kołataniem serca';
+      if(p === 'omdlenie')  return 'z wywiadem omdlenia';
+      return null;
+    }
+
+    function openingPhrase(lbl, tmpl){
+      const p = powodPhrase(tmpl);
+      const lblCap = lbl.charAt(0).toUpperCase() + lbl.slice(1);
+      if(!p) return lblCap;
+      return lblCap + ' ' + p;
+    }
+
     if(tmpl === 'niemowl'){
       group = 'Szablon: niemowlę';
-      text  = lbl + '. Masa urodzeniowa ' + bwStr + ', masa obecna ' + weightStr
+      const op = openingPhrase(lbl, tmpl);
+      text  = op + '. Masa urodzeniowa ' + bwStr + ', masa obecna ' + weightStr
             + '. Nie męczy się w trakcie karmienia, matka niepokojących objawów nie zgłasza.'
             + ' Wywiad rodzinny nieobciążony kardiologicznie.';
     } else if(tmpl === 'sredni'){
       group = 'Szablon: średni';
-      text  = lbl.charAt(0).toUpperCase() + lbl.slice(1)
+      const op = openingPhrase(lbl, tmpl);
+      text  = op
             + '. Dziecko przybiera na masie, rozwija się prawidłowo, żywotne,'
             + ' bez omdleń czy innych zaburzeń świadomości, matka niepokojących objawów nie zgłasza.'
             + ' Wywiad rodzinny nieobciążony kardiologicznie.';
     } else {
       group = 'Szablon: duży';
-      const subj = lbl.charAt(0).toUpperCase() + lbl.slice(1);
-      text  = subj
-            + '. Bez omdleń i zasłabnięć, tolerancja wysiłku prawidłowa, kołataniom zaprzecza.'
+      const op = openingPhrase(lbl, tmpl);
+      const bezOmdlen = KONS_WYWIAD_POWOD === 'omdlenie'
+        ? 'Tolerancja wysiłku prawidłowa, kołataniom zaprzecza.'
+        : 'Bez omdleń i zasłabnięć, tolerancja wysiłku prawidłowa, kołataniom zaprzecza.';
+      text  = op + '. ' + bezOmdlen
             + ' Wywiad rodzinny kardiologicznie nieobciążony.';
     }
 
@@ -4695,7 +5198,7 @@
     KONS_EKG_BTNS[key] = !KONS_EKG_BTNS[key];
     const btn = document.getElementById('k_btn_' + key);
     if(btn){
-      if(KONS_EKG_BTNS[key]){ btn.style.background='#c53030'; btn.style.color='#fff'; btn.style.borderColor='#c53030'; }
+      if(KONS_EKG_BTNS[key]){ btn.style.background='#e00020'; btn.style.color='#fff'; btn.style.borderColor='#e00020'; }
       else { btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
     }
     recalcKons();
@@ -4707,7 +5210,7 @@
     ['posrednia','prawogram','lewogram','nieokreslona'].forEach(k => {
       const btn = document.getElementById('k_axis_' + k);
       if(!btn) return;
-      if(k === val){ btn.style.background='#c53030'; btn.style.color='#fff'; btn.style.borderColor='#c53030'; }
+      if(k === val){ btn.style.background='#e00020'; btn.style.color='#fff'; btn.style.borderColor='#e00020'; }
       else { btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
     });
     recalcKons();
@@ -4719,7 +5222,7 @@
     ['zatokowy','pozazatokowy','dolnoprzedsionkowy','wezlowy','komorowy'].forEach(k => {
       const btn = document.getElementById('k_rhythm_' + k);
       if(!btn) return;
-      if(k === val){ btn.style.background='#c53030'; btn.style.color='#fff'; btn.style.borderColor='#c53030'; }
+      if(k === val){ btn.style.background='#e00020'; btn.style.color='#fff'; btn.style.borderColor='#e00020'; }
       else { btn.style.background='#fff'; btn.style.color='#742a2a'; btn.style.borderColor='#feb2b2'; }
     });
     recalcKons();
@@ -4819,8 +5322,8 @@
   function resetKons(){
     if(!confirm('Wyzerować wszystkie pola w karcie Konsultacja?')) return;
     ['k_RVDD','k_IVSd','k_LVEDD','k_LVESD','k_LVPWd',
-     'k_mv_val','k_tv_val','k_av_val','k_pv_val','k_tapse_val',
-     'k_AoAnn','k_Sinus','k_STJ','k_AoAsc','k_TArch','k_Isthm','k_DistAo',
+     'k_mv_val','k_tv_val','k_tv_pgmax','k_av_val','k_pv_val','k_tapse_val',
+     'k_AoAnn','k_Sinus','k_STJ','k_AoAsc','k_TArch','k_Isthm','k_DistAo','k_LAA','k_RAA',
      'k_PVAnn','k_MPA','k_RPA','k_LPA',
      'k_CA_LMCA','k_CA_LAD','k_CA_Cx','k_CA_RCAprox','k_CA_RCAmed','k_CA_RCAdist',
      'k_hr','k_pq','k_qrs','k_rr','k_qt','k_phys_hr','k_birth_weight'
@@ -4833,6 +5336,12 @@
     });
     setKonsAxis('posrednia');
     setKonsRhythm('zatokowy');
+    // Reset powodu wizyty
+    KONS_WYWIAD_POWOD = null;
+    ['szmer','kolatanie','omdlenie'].forEach(k=>{
+      const btn=document.getElementById('k_wywiad_btn_'+k);
+      if(btn){btn.style.background='#fff';btn.style.color='#742a2a';}
+    });
     // Reset opisu
     const notesBox = document.getElementById('k_echo_notes_box');
     if(notesBox) notesBox.innerHTML = buildKonsDescription(null, 'girl');
