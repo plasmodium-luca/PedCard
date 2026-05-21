@@ -1775,7 +1775,7 @@
     { type: 'valve_variant',
       before: 'Zastawka TV ', valveId: 'tv', ref: '²',
       after_default: ' prawidłowa budowa i funkcja',
-      after_tvi:     ' prawidłowa budowa, czynnościowa niedomykalność z PGmax= mmHg'
+      after_tvi:     ' prawidłowa budowa, czynnościowa niedomykalność z PGmax mmHg'
     },
     { type: 'text_variant', key: 'struna',
       text_default: 'Wymiary komór prawidłowe. Funkcja skurczowa komór prawidłowa.',
@@ -1955,6 +1955,14 @@
               }
             }
           }
+          // PGmax TV — wstaw wartość jeśli wpisana
+          if(item.valveId === 'tv'){
+            const pgEl = document.getElementById('tv_pgmax');
+            const pgVal = pgEl ? parseFloat(pgEl.value) : NaN;
+            if(!isNaN(pgVal) && pgVal > 0){
+              line = line.replace('PGmax mmHg', 'PGmax ' + pgVal.toFixed(0) + ' mmHg');
+            }
+          }
           // Dopisz TAPSE za linią TV jeśli jest wynik
           if (item.valveId === 'tv') {
             const tapseVal = parseFloat(document.getElementById('tapse_val').value);
@@ -1984,7 +1992,7 @@
             const pgEl = document.getElementById('tv_pgmax');
             const pgVal = pgEl ? parseFloat(pgEl.value) : NaN;
             if(!isNaN(pgVal) && pgVal > 0){
-              line = line.replace(/PGmax=\s*(mmHg)/, 'PGmax= ' + pgVal.toFixed(0) + ' mmHg');
+              line = line.replace('PGmax mmHg', 'PGmax ' + pgVal.toFixed(0) + ' mmHg');
             }
           }
           // Dopisz TAPSE nawet gdy brak pomiaru TV, jeśli jest wynik TAPSE
@@ -3141,7 +3149,7 @@
     let tvLine = 'Zastawka <b>TV</b>';
     if (tvParts.length) tvLine += ' ' + tvParts.join(', ');
     if (PHN_VARIANTS.tvi) {
-      tvLine += ' prawidłowa budowa, czynnościowa niedomykalność z PGmax= mmHg';
+      tvLine += ' prawidłowa budowa, czynnościowa niedomykalność z PGmax mmHg';
     } else {
       tvLine += ' prawidłowa budowa i funkcja';
     }
@@ -4968,17 +4976,6 @@
       if(kEl) return kEl;
       return _orig.call(document, id);
     };
-    // DEBUG
-    ['RVDD','IVSd','LVEDD','LVESD','LVPWd'].forEach(id=>{
-      const el = _orig.call(document,'k_'+id+'_z');
-      const inp = _orig.call(document,'k_'+id);
-      console.log(`k_${id}: val=${inp?inp.value:'NO_EL'}, z=${el?el.textContent:'NO_EL'}`);
-    });
-    ['mv','tv','av','pv'].forEach(id=>{
-      const el = _orig.call(document,'k_'+id+'_z');
-      const inp = _orig.call(document,'k_'+id+'_val');
-      console.log(`k_${id}: val=${inp?inp.value:'NO_EL'}, z=${el?el.textContent:'NO_EL'}`);
-    });
     const savedVariants = {};
     Object.keys(VARIANTS).forEach(k => { savedVariants[k] = VARIANTS[k]; VARIANTS[k] = KONS_VARIANTS[k] !== undefined ? KONS_VARIANTS[k] : VARIANTS[k]; });
     let html = buildEchoDescription(bsa, sex);
