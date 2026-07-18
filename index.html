@@ -3651,7 +3651,7 @@
     const kToggle = document.getElementById('k_sex_toggle');
     if(kSex) kSex.value = hidden.value;
     if(kToggle){ if(hidden.value==='boy') kToggle.classList.add('boy'); else kToggle.classList.remove('boy'); }
-    recalcAll(); recalcPHN(); recalcCant(); recalcHR(); recalcREKG(); recalcKons(); recalcBP();
+    recalcAll(); recalcPHN(); recalcCant(); recalcHR(); recalcREKG(); recalcKons(); recalcBP(); cmrRecalc();
   }
 
   function formatAgeFromDob(dobStr){
