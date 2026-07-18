@@ -75,11 +75,14 @@
       border:none;
       border-bottom:2px solid #feb2b2;
       margin-bottom:0;
-      padding:0.55rem 1.5rem;
+      padding:0.35rem 1.5rem;
       background:linear-gradient(135deg,#fff5f5 0%,#fff 100%);
       position:sticky;
       top:0;
       z-index:50;
+      flex-wrap:nowrap;
+      overflow-x:auto;
+      gap:0.8rem;
     }
     .patient-card h2{
       font-size:0.78rem;
@@ -224,7 +227,7 @@
       background:#e00020;border-radius:13px;
       transition:left 0.25s,background 0.25s;z-index:1;
     }
-    .sex-toggle.boy .sex-knob{left:89px;background:#2563eb;}
+    .sex-toggle.boy .sex-knob{left:78px;background:#2563eb;}
     .sex-label-left,.sex-label-right{
       position:absolute;font-size:0.7rem;font-weight:700;
       z-index:2;transition:color 0.2s;pointer-events:none;
@@ -291,17 +294,20 @@
         margin:0.8rem auto;
       }
       .patient-card{
-        flex-direction:column;
-        align-items:flex-start;
-        gap:0.6rem;
-        padding:0.7rem 0.9rem;
+        gap:0.5rem;
+        padding:0.3rem 0.75rem;
       }
       .field input,.field select{
-        width:100%;
+        width:70px;
+        font-size:0.78rem;
+        padding:0.25rem 0.35rem;
+      }
+      .field label{
+        font-size:0.58rem;
       }
       .bsa-result{
-        width:100%;
-        text-align:center;
+        font-size:0.72rem;
+        padding:0.25rem 0.5rem;
       }
       .boxes-row{
         grid-template-columns:1fr 1fr;
@@ -314,6 +320,22 @@
       .tab-button{
         padding:0.5rem 1.2rem;
         font-size:0.9rem;
+      }
+    }
+
+    @media (max-width: 680px) {
+      .patient-card{
+        flex-direction:column;
+        align-items:flex-start;
+        gap:0.5rem;
+        padding:0.6rem 0.9rem;
+      }
+      .field input,.field select{
+        width:100%;
+      }
+      .bsa-result{
+        width:100%;
+        text-align:center;
       }
     }
 
@@ -426,7 +448,9 @@
   <button class="tab-button active" onclick="switchTab('konsultacja')">Konsultacja</button>
   <button class="tab-button" id="tab-btn-echo"    onclick="switchTab('echo')"    style="display:none;">Echo</button>
   <button class="tab-button" id="tab-btn-echophn" onclick="switchTab('echophn')" style="display:none;">Echo pełne</button>
+  <button class="tab-button" id="tab-btn-echoext" onclick="switchTab('echoext')" style="display:none;">Echo rozszerzone</button>
   <button class="tab-button" onclick="switchTab('ekg')">EKG</button>
+  <button class="tab-button" id="tab-btn-cmr" onclick="switchTab('cmr')">cMR</button>
   <button class="tab-button" onclick="switchTab('refs')">Źródła</button>
   <button class="tab-button" id="tab-btn-lab" onclick="switchTab('lab')" style="display:none;background:#1a1a2e;color:#7dd3fc;border-color:#38bdf8;font-family:monospace;">🧪 Lab</button>
 </div>
@@ -435,11 +459,11 @@
 <div class="patient-card" id="global-patient-card" style="margin-bottom:0;">
   <div class="field">
     <div style="display:flex;flex-direction:column;gap:0.2rem;">
-      <span id="toggle_age_display" style="font-size:0.85rem;font-weight:800;color:#e00020;text-align:center;min-height:1.1rem;white-space:nowrap;"></span>
-      <div class="sex-toggle" id="sex_toggle" onclick="toggleSex()">
-        <div class="sex-knob" id="sex_knob"></div>
-        <span class="sex-label-left">Dziewczynka</span>
-        <span class="sex-label-right">Chłopiec</span>
+      <span id="toggle_age_display" style="font-size:0.75rem;font-weight:800;color:#e00020;text-align:center;min-height:1rem;white-space:nowrap;"></span>
+      <div class="sex-toggle" id="sex_toggle" onclick="toggleSex()" style="width:152px;height:28px;border-radius:14px;">
+        <div class="sex-knob" id="sex_knob" style="width:70px;height:22px;border-radius:11px;"></div>
+        <span class="sex-label-left" style="font-size:0.65rem;">Dziewczynka</span>
+        <span class="sex-label-right" style="font-size:0.65rem;">Chłopiec</span>
       </div>
     </div>
     <input type="hidden" id="sex" value="girl"/>
@@ -447,8 +471,8 @@
   <div class="field">
     <label>DOB / Wiek / PESEL</label>
     <input type="text" id="pt_dob"
-           placeholder="ddmmrrrr / RRMMDD / 8 / 7/12"
-           oninput="onDobRaw(this)" style="width:140px;" maxlength="10"
+           placeholder="ddmmrrrr / RRMMDD"
+           oninput="onDobRaw(this)" style="width:115px;font-size:0.82rem;" maxlength="10"
            title="Data urodzenia: ddmmrrrr (np. 12052018)&#10;Pierwsze 6 cyfr PESEL (np. 180512)&#10;Wiek w latach: np. 8&#10;Wiek w miesiącach: np. 7/12&#10;Lata i miesiące: np. 2 7/12"/>
   </div>
   <div class="field">
@@ -907,6 +931,15 @@
 
   </div>
 
+  <!-- KARTA ECHO ROZSZERZONE -->
+  <div id="tab-echoext" class="tab-panel">
+    <div style="padding:1rem 1.5rem;max-width:1400px;margin:0 auto;">
+      <div id="echoext_main"></div>
+    </div>
+  </div><!-- end tab-echoext -->
+
+
+
   <!-- KARTA EKG -->
   <div id="tab-ekg" class="tab-panel">
 
@@ -1059,7 +1092,101 @@
     </div><!-- /grid EKG -->
   </div>
 
-  <!-- KARTA KONSULTACJA -->
+  <!-- KARTA cMR -->
+  <div id="tab-cmr" class="tab-panel">
+    <!-- EKRAN HASŁA -->
+    <div id="cmr_lock" style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:1.2rem;">
+      <div style="font-size:2rem;">🧲</div>
+      <div style="font-weight:800;font-size:1.1rem;color:#742a2a;letter-spacing:0.05em;">cMR serca — dostęp chroniony</div>
+      <div style="display:flex;gap:0.5rem;align-items:center;">
+        <input type="password" id="cmr_pwd" placeholder="Hasło…"
+          style="padding:0.5rem 0.8rem;border:2px solid #a855f7;border-radius:8px;font-size:1rem;width:180px;"
+          onkeydown="if(event.key==='Enter')cmrUnlock()"/>
+        <button onclick="cmrUnlock()"
+          style="background:#a855f7;color:#fff;border:none;border-radius:8px;padding:0.5rem 1rem;font-weight:700;cursor:pointer;font-size:0.9rem;">
+          Wejdź
+        </button>
+      </div>
+      <div id="cmr_pwd_err" style="color:#e00020;font-size:0.82rem;display:none;">Nieprawidłowe hasło</div>
+    </div>
+
+    <!-- TREŚĆ cMR (ukryta do czasu wpisania hasła) -->
+    <div id="cmr_content" style="display:none;padding:1rem 1.5rem;max-width:1400px;margin:0 auto;">
+
+      <!-- Pasek nagłówkowy z przyciskiem reset -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.8rem;flex-wrap:wrap;gap:0.5rem;">
+        <div style="font-size:0.72rem;color:#718096;font-style:italic;">
+          Centyle wg wzrostu i płci &mdash; Kawel-Boehm i wsp. 2025 (bSSFP CMR)
+        </div>
+        <div style="display:flex;gap:0.5rem;">
+          <span id="cmr_range_warn" style="display:none;font-size:0.68rem;color:#e00020;font-weight:700;padding:0.3rem 0.6rem;background:#fff5f5;border-radius:6px;">poza zakresem tabel — wynik z brzegu</span>
+          <button onclick="cmrReset()"
+            style="background:#fff;color:#742a2a;border:2px solid #742a2a;border-radius:7px;padding:0.35rem 0.9rem;font-size:0.78rem;font-weight:700;cursor:pointer;letter-spacing:0.03em;">
+            ↺ Reset pomiarów MR
+          </button>
+          <button onclick="cmrLock()"
+            style="background:#fff;color:#718096;border:1px solid #cbd5e0;border-radius:7px;padding:0.35rem 0.7rem;font-size:0.78rem;cursor:pointer;">
+            🔒 Zablokuj
+          </button>
+        </div>
+      </div>
+
+      <!-- LV + RV w dwóch boksach obok siebie -->
+      <div style="display:flex;flex-wrap:wrap;gap:1rem;margin-bottom:1rem;">
+
+        <!-- BOX LEWY: LV -->
+        <div class="calc-card" style="flex:1 1 340px;min-width:300px;">
+          <h2>Lewa komora (LV)</h2>
+          <div style="font-size:0.65rem;color:#a0aec0;font-style:italic;margin-bottom:0.8rem;">wg wzrostu i płci; Kawel-Boehm 2025</div>
+
+          <div style="font-size:0.72rem;font-weight:700;color:#742a2a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;">Objętości</div>
+          <div class="tbl-row" id="cmr_row_LV_EDV"></div>
+          <div class="tbl-row" id="cmr_row_LV_ESV"></div>
+          <div class="tbl-row" id="cmr_row_LV_SV"></div>
+
+          <!-- separator -->
+          <div style="border-top:3px solid #fed7d7;margin:0.8rem 0 0.6rem;"></div>
+
+          <div style="font-size:0.72rem;font-weight:700;color:#742a2a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;">Masa końcoworozkurczowa</div>
+          <div class="tbl-row" id="cmr_row_LV_MASS"></div>
+        </div>
+
+        <!-- BOX PRAWY: RV -->
+        <div class="calc-card" style="flex:1 1 340px;min-width:300px;">
+          <h2>Prawa komora (RV)</h2>
+          <div style="font-size:0.65rem;color:#a0aec0;font-style:italic;margin-bottom:0.8rem;">wg wzrostu i płci; Kawel-Boehm 2025</div>
+
+          <div style="font-size:0.72rem;font-weight:700;color:#742a2a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;">Objętości</div>
+          <div class="tbl-row" id="cmr_row_RV_EDV"></div>
+          <div class="tbl-row" id="cmr_row_RV_ESV"></div>
+          <div class="tbl-row" id="cmr_row_RV_SV"></div>
+
+          <!-- separator -->
+          <div style="border-top:3px solid #fed7d7;margin:0.8rem 0 0.6rem;"></div>
+
+          <div style="font-size:0.72rem;font-weight:700;color:#742a2a;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.3rem;">Masa końcoworozkurczowa</div>
+          <div class="tbl-row" id="cmr_row_RV_MASS"></div>
+        </div>
+
+      </div>
+
+      <!-- Podsumowanie -->
+      <div class="calc-card" style="border-top-color:#742a2a;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.5rem;flex-wrap:wrap;gap:0.5rem;">
+          <h2 style="margin-bottom:0;">Wklej do dokumentacji</h2>
+          <button id="cmr_copy_btn" onclick="cmrCopySummary()"
+            style="background:#e00020;color:#fff;border:none;padding:0.5rem 1.1rem;border-radius:7px;font-size:0.8rem;font-weight:700;cursor:pointer;text-transform:uppercase;">
+            📋 Kopiuj
+          </button>
+        </div>
+        <textarea id="cmr_summary_box" readonly
+          style="width:100%;min-height:160px;padding:0.8rem;border:1.5px solid #feb2b2;border-radius:8px;font-family:'Consolas','Courier New',monospace;font-size:0.85rem;color:#2d3748;background:#fff5f5;resize:vertical;line-height:1.5;"></textarea>
+      </div>
+
+    </div><!-- end cmr_content -->
+  </div><!-- end tab-cmr -->
+
+    <!-- KARTA KONSULTACJA -->
 <div id="tab-konsultacja" class="tab-panel active-tab">
 
     <!-- ── RZĄD 1: 3 kafle ── -->
@@ -1936,7 +2063,7 @@
     { type: 'text',    text: 'Łuk aorty prawidłowy lewostronny. Przepływ w ao-abd. pulsacyjny.' },
   ];
 
-  function buildEchoDescription(bsa, sex) {
+  function buildEchoDescription(bsa, sex, skipPatientLine) {
     const htmlLines = [];
 
     // ── Dynamiczna numeracja źródeł ─────────────────────────────────────
@@ -1979,10 +2106,13 @@
     if (!isNaN(w) && w > 0)   headerParts.push('Masa: ' + w + ' kg' + wPct);
     if (!isNaN(h) && h > 0)   headerParts.push('Wzrost: ' + h + ' cm' + hPct);
     if (bsaVal !== null)       headerParts.push('BSA: ' + bsaVal.toFixed(3) + ' m² (Haycock)');
-    if (headerParts.length)    htmlLines.push('<b>' + headerParts.join('  ') + '</b>');
+    const patientInfoLine = headerParts.length ? '<b>' + headerParts.join('  ') + '</b>' : null;
 
     ECHO_TEMPLATE_LINES.forEach(item => {
       if (item.type === 'text') {
+        if (item.text.startsWith('Płyn w worku') && patientInfoLine && !skipPatientLine) {
+          htmlLines.push(patientInfoLine);
+        }
         htmlLines.push(item.text);
       } else if (item.type === 'atria_area') {
         // RA i LA niepowiększone + opcjonalnie LA area i RA area (Cantinotti 2014)
@@ -4256,7 +4386,7 @@
     recalcKons();
     // Pokaż zakładkę Lab i pola BP jeśli ?lab=1 w URL
     if(new URLSearchParams(window.location.search).get('lab') === '1'){
-      ['tab-btn-lab','tab-btn-echo','tab-btn-echophn'].forEach(id=>{
+      ['tab-btn-lab','tab-btn-echo','tab-btn-echophn','tab-btn-echoext'].forEach(id=>{
         const btn = document.getElementById(id);
         if(btn) btn.style.display = '';
       });
@@ -4280,6 +4410,8 @@
     if(name==='echophn') { recalcPHN(); recalcCant(); }
     if(name==='ekg'){ recalcHR(); recalcREKG(); }
     if(name==='konsultacja') recalcKons();
+    if(name==='echoext') recalcEchoExt();
+    if(name==='cmr') cmrRecalc();
   }
   // ── Spoczynkowe EKG (Bratincskák 2020) ─────────────────────────────
   // Dane: [wiekMin, wiekMax, sex, [HR_z-2.5,z0,z+2.5], [QTc], [PR], [QRS], [RV6_z-2.5,z0,z+2.5], [AXIS_z-2.5,z0,z+2.5]]
@@ -5154,12 +5286,9 @@
     };
     const savedVariants = {};
     Object.keys(VARIANTS).forEach(k => { savedVariants[k] = VARIANTS[k]; VARIANTS[k] = KONS_VARIANTS[k] !== undefined ? KONS_VARIANTS[k] : VARIANTS[k]; });
-    let html = buildEchoDescription(bsa, sex);
+    let html = buildEchoDescription(bsa, sex, true);
     Object.keys(savedVariants).forEach(k => VARIANTS[k] = savedVariants[k]);
     document.getElementById = _orig;
-    // Usuń nagłówek (pierwsza linia z <b>)
-    const firstBr = html.indexOf('<br>');
-    if(firstBr !== -1) html = html.slice(firstBr + 4);
     return html.trim();
   }
 
@@ -5522,6 +5651,452 @@
   }
 
   // ─────────────────────────────────────────────────────────────────────
+  // ══════════════════════════════════════════
+  // ECHO ROZSZERZONE
+  // ══════════════════════════════════════════
+
+  // CSS dynamicznie
+  (function(){
+    const s=document.createElement('style');
+    s.textContent=`
+      .ext-results-box{font-size:0.76rem;margin:0 0 0.5rem 0;line-height:1.7;}
+      .ext-row{display:flex;flex-wrap:wrap;gap:0.2rem 0.5rem;align-items:baseline;}
+      .ext-pub{font-weight:700;color:#742a2a;font-size:0.70rem;min-width:82px;}
+      .ext-z-ok{color:#276749;font-weight:700;}
+      .ext-z-mild{color:#b7791f;font-weight:700;}
+      .ext-z-warn{color:#c05621;font-weight:700;}
+      .ext-z-bad{color:#e00020;font-weight:700;}
+      .ext-rng{color:#718096;font-size:0.68rem;}
+    `;
+    document.head.appendChild(s);
+  })();
+
+  // Koeficjenty
+  const _C14={
+    AoAnn:{m:'A',a:2.804,b:0.561,e:0.085},SoV:{m:'A',a:3.057,b:0.490,e:0.092},
+    STJ:{m:'A',a:2.808,b:0.529,e:0.096},AscAo:{m:'A',a:2.921,b:0.465,e:0.095},
+    Isthm:{m:'A',a:2.454,b:0.628,e:0.146},PVAnn:{m:'A',a:2.911,b:0.539,e:0.107},
+    TVAnn:{m:'A',a:3.139,b:0.430,e:0.100},LVPWd:{m:'A',a:1.842,b:0.471,e:0.181},
+    LVEDD:{m:'B',a:2.424,b:4.021,e:0.210},IVSd:{m:'B',a:1.106,b:1.689,e:0.188},
+    MVAnn:{m:'B',a:1.953,b:3.080,e:0.164},LVESD:{m:'C',a:7.577,b:17.970,e:1.782}
+  };
+  const _C14A={
+    LVEDArea:{a:2.924,b:0.946,e:0.132},LVESArea:{a:2.220,b:0.975,e:0.183},
+    LVLength:{a:4.099,b:0.469,e:0.077},RVEDArea:{a:2.443,b:0.955,e:0.171},
+    RV1:{a:3.445,b:0.499,e:0.113},RV2:{a:3.048,b:0.461,e:0.137},
+    LAArea:{a:2.191,b:0.894,e:0.165},RAArea:{a:2.235,b:0.911,e:0.178}
+  };
+  const _C20={
+    LVEDV:{a:3.870,b:1.406,e:0.211},LVESV:{a:2.765,b:1.436,e:0.287}
+  };
+  const _C24={
+    LMCAprox:{a:1.217,b:0.486,e:0.187},LMCA:{a:0.991,b:0.459,e:0.176},
+    LAD:{a:0.776,b:0.465,e:0.156},CX:{a:0.616,b:0.466,e:0.164},
+    RCAprox:{a:0.985,b:0.492,e:0.188},RCA:{a:0.767,b:0.484,e:0.193}
+  };
+  const _P08={
+    LVEDD:{b:[0.105,2.859,-2.119,0.552],mse:0.010},
+    LVESD:{b:[-0.371,2.833,-2.081,0.538],mse:0.016},
+    IVSd:{b:[-1.242,1.272,-0.762,0.208],mse:0.046},
+    LVPWd:{b:[-1.586,1.849,-1.188,0.313],mse:0.037},
+    RVDD:{b:[-0.317,1.850,-1.274,0.335],mse:0.058},
+    AoAnn:{b:[-0.874,2.708,-1.841,0.452],mse:0.010},
+    MVAnn:{b:[-0.271,2.446,-1.700,0.425],mse:0.022},
+    LADiam:{b:[-0.208,2.164,-1.597,0.429],mse:0.020}
+  };
+  const _D11={
+    LMCA:{a:-0.1817,b:2.9238,as:0.1801,bs:0.2530},
+    LAD:{a:-0.1502,b:2.2672,as:0.1709,bs:0.2293},
+    CX:{a:-0.2716,b:2.3458,as:0.1142,bs:0.3423},
+    RCA:{a:-0.3039,b:2.7521,as:0.1626,bs:0.2881}
+  };
+
+  function _c14z(id,v,bsa){const p=_C14[id];if(!p||!v||v<=0)return null;let z;if(p.m==='A')z=(Math.log(v)-(p.a+p.b*Math.log(bsa)))/p.e;else if(p.m==='B')z=(Math.sqrt(v)-(p.a+p.b*Math.sqrt(bsa)))/p.e;else z=(v-(p.a+p.b*bsa))/p.e;return z;}
+  function _c14r(id,bsa){const p=_C14[id];if(!p)return null;const rr=[-2,0,2].reduce((o,z)=>{let v;if(p.m==='A')v=Math.exp(p.a+p.b*Math.log(bsa)+z*p.e);else if(p.m==='B'){const s=p.a+p.b*Math.sqrt(bsa)+z*p.e;v=s*s;}else v=p.a+p.b*bsa+z*p.e;o[z]=v;return o;},{});return rr;}
+  function _llz(c,v,bsa){if(!c||!v||v<=0)return null;return(Math.log(v)-(c.a+c.b*Math.log(bsa)))/c.e;}
+  function _llr(c,bsa){if(!c)return null;return{'-2':Math.exp(c.a+c.b*Math.log(bsa)-2*c.e),'0':Math.exp(c.a+c.b*Math.log(bsa)),'2':Math.exp(c.a+c.b*Math.log(bsa)+2*c.e)};}
+  function _p08z(id,v,bsa){const p=_P08[id];if(!p||!v||v<=0)return null;const[b0,b1,b2,b3]=p.b;const m=b0+b1*bsa+b2*bsa*bsa+b3*bsa*bsa*bsa;return(Math.log(v)-m)/Math.sqrt(p.mse);}
+  function _p08r(id,bsa){const p=_P08[id];if(!p)return null;const[b0,b1,b2,b3]=p.b;const m=b0+b1*bsa+b2*bsa*bsa+b3*bsa*bsa*bsa;const s=Math.sqrt(p.mse);return{'-2':Math.exp(m-2*s),'0':Math.exp(m),'2':Math.exp(m+2*s)};}
+  function _d11z(id,v,bsa){const p=_D11[id];if(!p||!v||v<=0)return null;const x=Math.sqrt(bsa);return(v-(p.a+p.b*x))/(p.as+p.bs*x);}
+  function _d11r(id,bsa){const p=_D11[id];if(!p)return null;const x=Math.sqrt(bsa),m=p.a+p.b*x,se=p.as+p.bs*x;return{'-2':m-2*se,'0':m,'2':m+2*se};}
+  function _kmpz(id,v,bsaD){const kl=kampmannLookup(id,bsaD);return kl?(v-kl.mean)/kl.sd:null;}
+  function _kmpr(id,bsaD){const kl=kampmannLookup(id,bsaD);return kl?{'-2':kl.minus2tab,'0':kl.mean,'2':kl.plus2tab}:null;}
+  function _phnz(key,v,bsa){return phnZ(key,v,bsa);}
+  function _phnr(key,bsa){const p=PHN_PARAMS[key];if(!p)return null;const toV=z=>{const vi=(p.mean+z*p.sd)*Math.pow(bsa,p.alpha);return PHN_UNIT_DIV[key]===0?vi:vi*10;};return{'-2':toV(-2),'0':toV(0),'2':toV(2)};}
+
+  // Mapa: id → {unit, pubs:[{name, useD(czy DuBois), zFn, rFn}]}
+  const EXT_MAP={
+    AoAnn:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('AoAnn',v,b),r:(b)=>_c14r('AoAnn',b)},{n:'Pett.2008',z:(v,b)=>_p08z('AoAnn',v,b),r:(b)=>_p08r('AoAnn',b)},{n:'Lopez2017',z:(v,b)=>_phnz('ANN',v,b),r:(b)=>_phnr('ANN',b)}]},
+    SoV:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('SoV',v,b),r:(b)=>_c14r('SoV',b)},{n:'Lopez2017',z:(v,b)=>_phnz('ROOT',v,b),r:(b)=>_phnr('ROOT',b)}]},
+    STJ:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('STJ',v,b),r:(b)=>_c14r('STJ',b)},{n:'Lopez2017',z:(v,b)=>_phnz('STJ',v,b),r:(b)=>_phnr('STJ',b)}]},
+    AscAo:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('AscAo',v,b),r:(b)=>_c14r('AscAo',b)},{n:'Lopez2017',z:(v,b)=>_phnz('AAO',v,b),r:(b)=>_phnr('AAO',b)}]},
+    TArch:{u:'mm',pubs:[{n:'Pett.2008',z:(v,b)=>pettersenZ('TArch',v,b),r:(b)=>{const p=pettersen['TArch'];if(!p)return null;const[b0,b1,b2,b3,mse]=p,m=b0+b1*b+b2*b*b+b3*b*b*b,s=Math.sqrt(mse);return{'-2':Math.exp(m-2*s),'0':Math.exp(m),'2':Math.exp(m+2*s)};}},{n:'Lopez2017',z:(v,b)=>_phnz('ARCHPROX',v,b),r:(b)=>_phnr('ARCHPROX',b)}]},
+    DistArch:{u:'mm',pubs:[{n:'Pett.2008',z:(v,b)=>pettersenZ('DistAo',v,b),r:(b)=>{const p=pettersen['DistAo'];if(!p)return null;const[b0,b1,b2,b3,mse]=p,m=b0+b1*b+b2*b*b+b3*b*b*b,s=Math.sqrt(mse);return{'-2':Math.exp(m-2*s),'0':Math.exp(m),'2':Math.exp(m+2*s)};}},{n:'Lopez2017',z:(v,b)=>_phnz('ARCHDIST',v,b),r:(b)=>_phnr('ARCHDIST',b)}]},
+    Isthm:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('Isthm',v,b),r:(b)=>_c14r('Isthm',b)},{n:'Pett.2008',z:(v,b)=>pettersenZ('Isthm',v,b),r:(b)=>{const p=pettersen['Isthm'];if(!p)return null;const[b0,b1,b2,b3,mse]=p,m=b0+b1*b+b2*b*b+b3*b*b*b,s=Math.sqrt(mse);return{'-2':Math.exp(m-2*s),'0':Math.exp(m),'2':Math.exp(m+2*s)};}},{n:'Lopez2017',z:(v,b)=>_phnz('ISTH',v,b),r:(b)=>_phnr('ISTH',b)}]},
+    PVAnn:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('PVAnn',v,b),r:(b)=>_c14r('PVAnn',b)},{n:'Pett.2008',z:(v,b)=>pettersenZ('PVAnn',v,b),r:(b)=>{const p=pettersen['PVAnn'];if(!p)return null;const[b0,b1,b2,b3,mse]=p,m=b0+b1*b+b2*b*b+b3*b*b*b,s=Math.sqrt(mse);return{'-2':Math.exp(m-2*s),'0':Math.exp(m),'2':Math.exp(m+2*s)};}},{n:'Lopez2017',z:(v,b)=>_phnz('PVSAX',v,b),r:(b)=>_phnr('PVSAX',b)}]},
+    MPA:{u:'mm',pubs:[{n:'Pett.2008',z:(v,b)=>pettersenZ('MPA',v,b),r:(b)=>{const p=pettersen['MPA'];if(!p)return null;const[b0,b1,b2,b3,mse]=p,m=b0+b1*b+b2*b*b+b3*b*b*b,s=Math.sqrt(mse);return{'-2':Math.exp(m-2*s),'0':Math.exp(m),'2':Math.exp(m+2*s)};}},{n:'Lopez2017',z:(v,b)=>_phnz('MPA',v,b),r:(b)=>_phnr('MPA',b)}]},
+    RPA:{u:'mm',pubs:[{n:'Pett.2008',z:(v,b)=>pettersenZ('RPA',v,b),r:(b)=>{const p=pettersen['RPA'];if(!p)return null;const[b0,b1,b2,b3,mse]=p,m=b0+b1*b+b2*b*b+b3*b*b*b,s=Math.sqrt(mse);return{'-2':Math.exp(m-2*s),'0':Math.exp(m),'2':Math.exp(m+2*s)};}},{n:'Lopez2017',z:(v,b)=>_phnz('RPA',v,b),r:(b)=>_phnr('RPA',b)}]},
+    LPA:{u:'mm',pubs:[{n:'Pett.2008',z:(v,b)=>pettersenZ('LPA',v,b),r:(b)=>{const p=pettersen['LPA'];if(!p)return null;const[b0,b1,b2,b3,mse]=p,m=b0+b1*b+b2*b*b+b3*b*b*b,s=Math.sqrt(mse);return{'-2':Math.exp(m-2*s),'0':Math.exp(m),'2':Math.exp(m+2*s)};}},{n:'Lopez2017',z:(v,b)=>_phnz('LPA',v,b),r:(b)=>_phnr('LPA',b)}]},
+    MVAnn:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('MVAnn',v,b),r:(b)=>_c14r('MVAnn',b)},{n:'Pett.2008',z:(v,b)=>_p08z('MVAnn',v,b),r:(b)=>_p08r('MVAnn',b)},{n:'Lopez2017',z:(v,b)=>_phnz('MVAP',v,b),r:(b)=>_phnr('MVAP',b)}]},
+    TVAnn:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('TVAnn',v,b),r:(b)=>_c14r('TVAnn',b)},{n:'Lopez2017',z:(v,b)=>_phnz('TVAP',v,b),r:(b)=>_phnr('TVAP',b)}]},
+    LVEDD:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('LVEDD',v,b),r:(b)=>_c14r('LVEDD',b)},{n:'Pett.2008',z:(v,b)=>_p08z('LVEDD',v,b),r:(b)=>_p08r('LVEDD',b)},{n:'Kampmann',D:true,z:(v,b,d)=>_kmpz('LVEDD',v,d),r:(b,d)=>_kmpr('LVEDD',d)},{n:'Lopez2017',z:(v,b)=>_phnz('LVEDD',v,b),r:(b)=>_phnr('LVEDD',b)}]},
+    LVESD:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('LVESD',v,b),r:(b)=>_c14r('LVESD',b)},{n:'Pett.2008',z:(v,b)=>_p08z('LVESD',v,b),r:(b)=>_p08r('LVESD',b)},{n:'Kampmann',D:true,z:(v,b,d)=>_kmpz('LVESD',v,d),r:(b,d)=>_kmpr('LVESD',d)}]},
+    IVSd:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('IVSd',v,b),r:(b)=>_c14r('IVSd',b)},{n:'Pett.2008',z:(v,b)=>_p08z('IVSd',v,b),r:(b)=>_p08r('IVSd',b)},{n:'Kampmann',D:true,z:(v,b,d)=>_kmpz('IVSd',v,d),r:(b,d)=>_kmpr('IVSd',d)}]},
+    IVSs:{u:'mm',pubs:[{n:'Kampmann',D:true,z:(v,b,d)=>_kmpz('IVSs',v,d),r:(b,d)=>_kmpr('IVSs',d)}]},
+    LVPWd:{u:'mm',pubs:[{n:'Cant.2014',z:(v,b)=>_c14z('LVPWd',v,b),r:(b)=>_c14r('LVPWd',b)},{n:'Pett.2008',z:(v,b)=>_p08z('LVPWd',v,b),r:(b)=>_p08r('LVPWd',b)},{n:'Kampmann',D:true,z:(v,b,d)=>_kmpz('LVPWd',v,d),r:(b,d)=>_kmpr('LVPWd',d)}]},
+    LVPWs:{u:'mm',pubs:[{n:'Kampmann',D:true,z:(v,b,d)=>_kmpz('LVPWs',v,d),r:(b,d)=>_kmpr('LVPWs',d)}]},
+    RVDD:{u:'mm',pubs:[{n:'Pett.2008',z:(v,b)=>_p08z('RVDD',v,b),r:(b)=>_p08r('RVDD',b)},{n:'Kampmann',D:true,z:(v,b,d)=>_kmpz('RVDD',v,d),r:(b,d)=>_kmpr('RVDD',d)}]},
+    RVAWd:{u:'mm',pubs:[{n:'Kampmann',D:true,z:(v,b,d)=>_kmpz('RVAWd',v,d),r:(b,d)=>_kmpr('RVAWd',d)}]},
+    LADiam:{u:'mm',pubs:[{n:'Pett.2008',z:(v,b)=>_p08z('LADiam',v,b),r:(b)=>_p08r('LADiam',b)}]},
+    LVEDArea:{u:'cm²',pubs:[{n:'Cant.2014a',z:(v,b)=>_llz(_C14A['LVEDArea'],v,b),r:(b)=>_llr(_C14A['LVEDArea'],b)}]},
+    LVESArea:{u:'cm²',pubs:[{n:'Cant.2014a',z:(v,b)=>_llz(_C14A['LVESArea'],v,b),r:(b)=>_llr(_C14A['LVESArea'],b)}]},
+    LVLength:{u:'mm',pubs:[{n:'Cant.2014a',z:(v,b)=>_llz(_C14A['LVLength'],v,b),r:(b)=>_llr(_C14A['LVLength'],b)}]},
+    RV1:{u:'mm',pubs:[{n:'Cant.2014a',z:(v,b)=>_llz(_C14A['RV1'],v,b),r:(b)=>_llr(_C14A['RV1'],b)}]},
+    RV2:{u:'mm',pubs:[{n:'Cant.2014a',z:(v,b)=>_llz(_C14A['RV2'],v,b),r:(b)=>_llr(_C14A['RV2'],b)}]},
+    RVEDArea:{u:'cm²',pubs:[{n:'Cant.2014a',z:(v,b)=>_llz(_C14A['RVEDArea'],v,b),r:(b)=>_llr(_C14A['RVEDArea'],b)}]},
+    LAArea:{u:'cm²',pubs:[{n:'Cant.2014a',z:(v,b)=>_llz(_C14A['LAArea'],v,b),r:(b)=>_llr(_C14A['LAArea'],b)}]},
+    RAArea:{u:'cm²',pubs:[{n:'Cant.2014a',z:(v,b)=>_llz(_C14A['RAArea'],v,b),r:(b)=>_llr(_C14A['RAArea'],b)}]},
+    LVEDV:{u:'ml',pubs:[{n:'Cant.2020',z:(v,b)=>_llz(_C20['LVEDV'],v,b),r:(b)=>_llr(_C20['LVEDV'],b)}]},
+    LVESV:{u:'ml',pubs:[{n:'Cant.2020',z:(v,b)=>_llz(_C20['LVESV'],v,b),r:(b)=>_llr(_C20['LVESV'],b)}]},
+    LMCA:{u:'mm',pubs:[{n:'Cant.2024',z:(v,b)=>_llz(_C24['LMCA'],v,b),r:(b)=>_llr(_C24['LMCA'],b)},{n:'Dall.2011',z:(v,b)=>_d11z('LMCA',v,b),r:(b)=>_d11r('LMCA',b)},{n:'Lopez2017',z:(v,b)=>_phnz('LMCA',v,b),r:(b)=>_phnr('LMCA',b)}]},
+    LMCAprox:{u:'mm',pubs:[{n:'Cant.2024',z:(v,b)=>_llz(_C24['LMCAprox'],v,b),r:(b)=>_llr(_C24['LMCAprox'],b)}]},
+    LAD:{u:'mm',pubs:[{n:'Cant.2024',z:(v,b)=>_llz(_C24['LAD'],v,b),r:(b)=>_llr(_C24['LAD'],b)},{n:'Dall.2011',z:(v,b)=>_d11z('LAD',v,b),r:(b)=>_d11r('LAD',b)},{n:'Lopez2017',z:(v,b)=>_phnz('LAD',v,b),r:(b)=>_phnr('LAD',b)}]},
+    CX:{u:'mm',pubs:[{n:'Cant.2024',z:(v,b)=>_llz(_C24['CX'],v,b),r:(b)=>_llr(_C24['CX'],b)},{n:'Dall.2011',z:(v,b)=>_d11z('CX',v,b),r:(b)=>_d11r('CX',b)}]},
+    RCA:{u:'mm',pubs:[{n:'Cant.2024',z:(v,b)=>_llz(_C24['RCA'],v,b),r:(b)=>_llr(_C24['RCA'],b)},{n:'Dall.2011',z:(v,b)=>_d11z('RCA',v,b),r:(b)=>_d11r('RCA',b)},{n:'Lopez2017',z:(v,b)=>_phnz('RCA',v,b),r:(b)=>_phnr('RCA',b)}]},
+    RCAprox:{u:'mm',pubs:[{n:'Cant.2024',z:(v,b)=>_llz(_C24['RCAprox'],v,b),r:(b)=>_llr(_C24['RCAprox'],b)}]},
+  };
+
+  const _extValues={};
+  const EXT_PARAM_LABELS={
+    AoAnn:'Ao Annulus',SoV:'Sinuses of Valsalva',STJ:'STJ',AscAo:'Asc. Aorta',
+    TArch:'Trans. Arch',DistArch:'Distal Arch',Isthm:'Isthmus',
+    PVAnn:'PV Annulus',MPA:'MPA',RPA:'RPA',LPA:'LPA',
+    MVAnn:'MV Annulus',TVAnn:'TV Annulus',
+    LVEDD:'LVEDD',LVESD:'LVESD',IVSd:'IVSd',IVSs:'IVSs',
+    LVPWd:'LVPWd',LVPWs:'LVPWs',RVDD:'RVDD',RVAWd:'RVAWd',LADiam:'LA Diam',
+    LVEDArea:'LVED Area',LVESArea:'LVES Area',LVLength:'LV Length',
+    RV1:'RV1 (bazalny)',RV2:'RV2 (środk.)',RVEDArea:'RVED Area',
+    LAArea:'LA Area',RAArea:'RA Area',
+    LVEDV:'LVEDV',LVESV:'LVESV',
+    LMCA:'LMCA std',LMCAprox:'LMCA prox',LAD:'LAD',CX:'CX',
+    RCA:'RCA std',RCAprox:'RCA prox',
+  };
+
+  function recalcEchoExt(){
+    const h=parseFloat((document.getElementById('height')||{}).value);
+    const w=parseFloat((document.getElementById('weight')||{}).value);
+    const main=document.getElementById('echoext_main');
+    if(!main) return;
+    if(isNaN(h)||isNaN(w)||h<=0||w<=0){
+      main.innerHTML='<p style="color:#a0aec0;padding:1rem;">Wpisz wagę i wzrost pacjenta.</p>';
+      return;
+    }
+    const bsaH=0.024265*Math.pow(w,0.5378)*Math.pow(h,0.3964);
+    const bsaD=0.007184*Math.pow(w,0.425)*Math.pow(h,0.725);
+
+    function zCol(z){if(z===null||isNaN(z))return'#a0aec0';const a=Math.abs(z);return a<=2?'#276749':a<=2.5?'#b7791f':a<=3?'#c05621':'#e00020';}
+    function zBg(z){if(z===null||isNaN(z))return'transparent';const a=Math.abs(z);return a<=2?'#f0fff4':a<=2.5?'#fefcbf':a<=3?'#feebcb':'#fff5f5';}
+    function fSign(z){return z>=0?'+':'';}
+
+    // Render jednego wiersza parametru
+    function renderParam(pid, cfg){
+      const val=parseFloat(_extValues[pid]||'');
+      const label=EXT_PARAM_LABELS[pid]||pid;
+      const stored=_extValues[pid]||'';
+
+      // Oblicz z-score dla każdej pub
+      const results=cfg.pubs.map(pub=>{
+        if(isNaN(val)||val<=0) return {n:pub.n,z:null,r:null};
+        const bsa=pub.D?bsaD:bsaH;
+        const z=pub.D?pub.z(val,bsaH,bsaD):pub.z(val,bsa);
+        const r=pub.D?pub.r(bsaH,bsaD):pub.r(bsa);
+        return {n:pub.n,z,r};
+      }).filter(x=>x.z!==null&&!isNaN(x.z));
+
+      // Wiersz z-score + wiersz źródeł
+      let zRow='', srcRow='';
+      results.forEach(res=>{
+        const d=cfg.u==='ml'?0:cfg.u==='cm²'?2:1;
+        const rng=res.r?`${Number(res.r['-2']).toFixed(d)}–${Number(res.r['2']).toFixed(d)}`:'';
+        zRow+=`<span style="display:inline-block;text-align:center;min-width:64px;margin-right:4px;background:${zBg(res.z)};border-radius:4px;padding:1px 4px;font-weight:700;color:${zCol(res.z)};font-size:0.82rem;">${fSign(res.z)}${res.z.toFixed(2)}z</span>`;
+        srcRow+=`<span style="display:inline-block;min-width:64px;margin-right:4px;text-align:center;font-size:0.65rem;color:#718096;padding:0 4px;">${res.n}${rng?'<br><span style=\'color:#a0aec0;\'>'+rng+'</span>':''}</span>`;
+      });
+
+      return `<div style="display:flex;align-items:baseline;gap:0.5rem;flex-wrap:wrap;padding:0.3rem 0;border-bottom:1px solid #f0f0f0;">
+        <span style="font-size:0.80rem;font-weight:600;color:#2d3748;min-width:95px;">${label}</span>
+        <span style="display:inline-flex;align-items:center;gap:3px;">
+          <input type="number" id="ext_${pid}" step="0.1" min="0" placeholder="—" value="${stored}"
+            style="width:65px;padding:0.15rem 0.3rem;border:1px solid #cbd5e0;border-radius:4px;font-size:0.82rem;text-align:right;"
+            oninput="_extValues['${pid}']=this.value;recalcEchoExt()"/>
+          <span style="font-size:0.72rem;color:#a0aec0;">${cfg.u}</span>
+        </span>
+        ${results.length?`<span style="display:inline-flex;flex-direction:column;gap:1px;">\
+<span style="display:flex;">${zRow}</span>\
+<span style="display:flex;">${srcRow}</span>\
+</span>`:''}
+      </div>`;
+    }
+
+    // Sekcje → boxy
+    const sections=[
+      {label:'Aorta (2D)', params:['AoAnn','SoV','STJ','AscAo','TArch','DistArch','Isthm']},
+      {label:'Tętnica płucna (2D)', params:['PVAnn','MPA','RPA','LPA']},
+      {label:'Pierścienie zastawek AV (2D)', params:['MVAnn','TVAnn']},
+      {label:'LV M-mode', params:['LVEDD','LVESD','IVSd','IVSs','LVPWd','LVPWs']},
+      {label:'RV / inne M-mode', params:['RVDD','RVAWd','LADiam']},
+      {label:'Jamy serca 2D', params:['LVEDArea','LVESArea','LVLength','RV1','RV2','RVEDArea','LAArea','RAArea']},
+      {label:'Objętości LV 2D (Cant. 2020)', params:['LVEDV','LVESV']},
+      {label:'Tętnice wieńcowe (2D)', params:['LMCA','LMCAprox','LAD','CX','RCA','RCAprox']},
+    ];
+
+    // Grupowanie w wiersze boksów (max 2 na wiersz dla dużych, więcej dla małych)
+    const boxStyle='background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:0;overflow:hidden;flex:1 1 320px;min-width:300px;max-width:500px;box-shadow:0 1px 3px rgba(0,0,0,0.07);';
+    const hdrStyle='background:linear-gradient(135deg,#742a2a,#9b2c2c);color:#fff;font-size:0.78rem;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:0.45rem 0.8rem;margin:0;';
+    const bodyStyle='padding:0.4rem 0.7rem;';
+    let html='<div style="display:flex;flex-wrap:wrap;gap:1rem;align-items:flex-start;">';
+    sections.forEach(sec=>{
+      const inner=sec.params.map(pid=>{
+        const cfg=EXT_MAP[pid]; if(!cfg) return '';
+        return renderParam(pid,cfg);
+      }).join('');
+      html+=`<div style="${boxStyle}">
+        <div style="${hdrStyle}">${sec.label}</div>
+        <div style="${bodyStyle}">${inner}</div>
+      </div>`;
+    });
+    html+='</div>';
+    main.innerHTML=html;
+  }
+
+  // ══════════════════════════════════════════
+  // cMR — MR serca (Kawel-Boehm 2025)
+  // ══════════════════════════════════════════
+  const CMR_DATA = {"LV_EDV": {"boys": {"excl": {"110": [45,47,50,54,59,64,68], "120": [52,55,59,64,70,76,80], "130": [61,64,69,75,82,90,95], "140": [71,75,81,89,97,107,112], "150": [82,87,95,105,115,126,133], "160": [95,101,111,123,137,149,157], "170": [110,118,130,146,162,177,186], "180": [127,136,153,172,191,209,220], "190": [145,158,179,203,226,247,260], "200": [164,181,209,239,267,292,306]}, "incl": {"110": [47,49,53,58,66,79,93], "120": [55,58,62,69,78,93,108], "130": [65,68,73,81,92,106,119], "140": [75,79,86,95,107,120,130], "150": [88,92,101,112,124,138,147], "160": [102,108,119,132,145,158,167], "170": [118,126,140,155,170,183,191], "180": [136,147,164,182,198,212,220], "190": [157,172,193,214,232,247,255], "200": [181,201,228,251,271,271,295]}}, "girls": {"excl": {"120": [21,28,39,51,64,75,81], "130": [38,44,55,67,78,89,95], "140": [55,61,71,82,93,103,109], "150": [72,78,87,98,108,118,124], "160": [89,94,103,113,123,132,138], "170": [105,110,119,129,138,147,152], "180": [122,127,135,144,153,162,167]}, "incl": {"120": [17,25,39,55,71,85,94], "130": [37,44,57,72,86,99,107], "140": [56,63,75,89,102,114,121], "150": [75,82,93,105,118,129,135], "160": [95,101,111,122,133,144,150], "170": [114,119,129,139,149,159,164], "180": [132,138,146,156,165,174,179]}}}, "LV_ESV": {"boys": {"excl": {"110": [14,14,16,18,21,24,26], "120": [16,17,19,22,25,29,31], "130": [19,21,23,26,30,35,38], "140": [23,25,28,32,37,42,46], "150": [27,29,33,39,45,51,55], "160": [32,35,40,47,54,62,67], "170": [38,42,48,56,66,75,81], "180": [44,49,58,68,79,90,98], "190": [52,58,69,82,96,110,118], "200": [60,68,83,99,116,132,142]}, "incl": {"110": [16,17,19,21,24,27,29], "120": [19,21,23,26,29,33,36], "130": [23,25,27,31,35,40,43], "140": [27,29,33,38,43,49,52], "150": [33,35,40,45,52,59,64], "160": [39,42,48,55,63,72,77], "170": [45,50,57,66,77,87,93], "180": [53,59,69,80,93,105,113], "190": [63,70,82,97,113,127,137], "200": [73,82,98,117,136,154,165]}}, "girls": {"excl": {"120": [14,15,18,21,24,27,29], "130": [18,20,23,27,30,34,36], "140": [22,25,28,33,37,40,43], "150": [27,29,33,38,43,47,50], "160": [30,33,38,44,49,54,57], "170": [34,37,43,49,56,61,65], "180": [37,41,48,55,62,69,73]}, "incl": {"120": [13,16,21,26,31,36,39], "130": [19,22,27,33,38,43,46], "140": [25,28,34,39,45,50,53], "150": [31,35,40,46,52,57,60], "160": [37,41,46,52,59,64,68], "170": [43,47,53,59,66,71,75], "180": [49,53,59,66,72,79,82]}}}, "LV_SV": {"boys": {"excl": {"110": [27,29,33,37,41,45,48], "120": [31,34,38,42,48,52,55], "130": [36,39,44,49,55,61,64], "140": [42,45,51,57,64,70,74], "150": [49,52,59,66,74,81,86], "160": [57,61,68,76,85,94,99], "170": [66,70,78,88,98,108,114], "180": [76,82,91,102,114,125,132], "190": [88,95,105,118,132,145,153], "200": [102,109,122,136,152,167,176]}, "incl": {"110": [19,21,25,28,32,36,38], "120": [28,30,34,39,43,47,50], "130": [36,39,44,49,55,59,62], "140": [44,47,53,59,66,72,75], "150": [51,55,62,70,77,84,88], "160": [59,64,71,80,89,96,101], "170": [67,72,81,90,100,108,114], "180": [76,81,90,101,111,120,126], "190": [84,90,100,111,122,132,138], "200": [93,99,110,121,133,143,150]}}, "girls": {"excl": {"120": [14,17,23,29,36,41,45], "130": [23,27,33,39,46,52,55], "140": [32,36,42,49,56,63,66], "150": [41,45,52,59,67,74,78], "160": [50,54,62,69,77,84,89], "170": [59,64,71,79,88,95,100], "180": [68,73,81,89,98,106,111]}, "incl": {"120": [14,17,23,29,35,40,44], "130": [23,26,32,39,46,52,55], "140": [32,36,42,49,56,63,67], "150": [41,45,52,59,67,74,78], "160": [49,54,61,70,78,85,90], "170": [58,63,71,80,89,97,102], "180": [67,72,80,90,100,108,113]}}}, "RV_EDV": {"boys": {"excl": {"110": [38,40,44,49,54,59,63], "120": [44,47,52,58,64,71,75], "130": [52,56,62,69,77,84,89], "140": [62,66,73,82,91,100,106], "150": [73,78,87,97,109,119,126], "160": [86,92,103,116,129,142,150], "170": [101,109,122,138,154,169,179], "180": [119,129,145,164,183,201,213], "190": [140,152,172,195,218,240,253], "200": [165,179,204,231,259,285,300]}, "incl": {"110": [46,48,51,55,62,72,81], "120": [55,57,61,66,74,85,95], "130": [64,67,72,79,89,101,111], "140": [76,79,86,95,106,119,129], "150": [89,94,102,113,127,141,151], "160": [104,110,121,135,151,167,177], "170": [121,130,144,162,180,198,209], "180": [140,152,172,193,215,235,247], "190": [160,177,204,231,257,279,292], "200": [180,205,241,276,306,331,345]}}, "girls": {"excl": {"120": [24,28,36,45,54,62,67], "130": [38,43,51,60,70,78,83], "140": [52,57,66,76,85,94,100], "150": [66,71,80,91,101,110,116], "160": [79,85,95,106,117,127,133], "170": [93,99,110,121,133,143,149], "180": [107,113,124,136,149,160,166]}, "incl": {"120": [26,32,42,54,65,75,81], "130": [43,49,60,71,83,94,100], "140": [60,66,77,89,102,112,119], "150": [77,83,95,107,120,131,138], "160": [94,101,112,125,138,150,157], "170": [110,118,130,143,156,168,176], "180": [127,135,147,161,175,187,195]}}}, "RV_ESV": {"boys": {"excl": {"110": [12,13,15,18,20,22,24], "120": [14,16,19,21,24,27,29], "130": [17,19,22,26,30,33,35], "140": [21,23,27,32,36,40,43], "150": [25,28,33,38,44,49,52], "160": [30,33,40,46,53,60,64], "170": [36,40,48,56,65,73,77], "180": [43,49,58,68,79,88,94], "190": [52,58,70,83,96,108,115], "200": [62,70,84,100,116,131,139]}, "incl": {"110": [16,17,19,22,25,29,32], "120": [20,21,23,27,31,35,39], "130": [24,26,29,33,38,43,47], "140": [29,31,35,40,46,53,57], "150": [35,38,43,49,56,64,70], "160": [42,46,52,60,69,79,85], "170": [51,55,63,73,85,96,103], "180": [61,67,77,90,104,117,126], "190": [73,81,94,110,127,143,153], "200": [88,97,114,134,155,174,186]}}, "girls": {"excl": {"120": [20,20,21,21,21,22,22], "130": [23,24,25,26,28,29,30], "140": [24,26,29,32,35,38,39], "150": [24,27,32,37,42,47,50], "160": [27,30,36,42,49,54,58], "170": [33,36,42,48,54,59,62], "180": [41,44,48,53,57,62,64]}, "incl": {"120": [21,22,22,23,24,24,25], "130": [26,27,29,31,33,35,36], "140": [29,31,35,39,43,47,50], "150": [30,33,40,47,54,61,65], "160": [36,40,47,55,63,70,75], "170": [48,51,57,63,70,75,79], "180": [62,64,67,71,75,79,81]}}}, "RV_SV": {"boys": {"excl": {"110": [15,18,22,26,31,35,38], "120": [22,25,29,35,40,45,47], "130": [29,32,37,43,49,55,58], "140": [36,39,45,52,59,65,69], "150": [42,46,54,61,69,76,80], "160": [50,55,63,72,80,89,93], "170": [58,63,73,83,93,102,108], "180": [66,72,83,95,106,117,123], "190": [74,81,93,106,120,132,139], "200": [80,89,102,118,133,147,155]}, "incl": {"110": [26,28,31,35,41,49,56], "120": [30,32,36,41,47,55,62], "130": [35,38,42,47,54,62,68], "140": [41,44,49,55,63,71,77], "150": [48,51,57,65,73,81,87], "160": [55,59,67,75,85,93,99], "170": [64,69,78,88,98,107,113], "180": [74,80,91,103,114,124,129], "190": [85,93,106,120,132,143,149], "200": [98,109,124,140,153,165,171]}}, "girls": {"excl": {"120": [10,13,18,23,28,33,36], "130": [19,22,27,33,39,45,48], "140": [27,31,37,43,50,56,59], "150": [36,40,46,53,61,67,71], "160": [44,49,56,64,72,79,83], "170": [53,57,65,74,83,90,95], "180": [61,66,74,84,94,102,107]}, "incl": {"120": [15,18,23,28,34,38,41], "130": [24,27,32,38,45,50,53], "140": [32,36,42,49,56,62,66], "150": [40,44,51,59,67,74,78], "160": [48,53,61,69,78,86,91], "170": [56,61,70,80,90,98,104], "180": [63,69,79,90,101,111,117]}}}, "LV_MASS": {"incl": {"boys": {"110": [27,28,31,35,39,43,46], "120": [32,33,37,41,47,52,55], "130": [37,40,44,50,56,62,66], "140": [44,47,53,59,67,74,79], "150": [52,56,63,71,80,89,95], "160": [62,67,75,85,96,107,113], "170": [73,79,90,102,115,128,136], "180": [86,94,107,122,138,153,163], "190": [101,111,128,146,166,184,194], "200": [119,131,152,175,198,220,232]}, "girls": {"120": [18,22,29,37,45,52,57], "130": [27,31,39,48,56,64,69], "140": [35,40,49,58,68,76,81], "150": [43,49,58,69,79,88,94], "160": [51,57,68,79,91,101,107], "170": [59,66,77,90,102,113,120], "180": [66,74,86,100,114,126,133]}}, "excl": {"boys": {"110": [24,26,29,32,35,37,39], "120": [28,31,34,38,41,45,47], "130": [34,36,40,45,50,54,56], "140": [40,43,48,54,60,65,68], "150": [47,51,57,64,72,78,82], "160": [56,60,68,77,86,94,99], "170": [66,71,81,92,103,113,120], "180": [78,85,96,110,124,137,145], "190": [92,100,115,131,149,165,175], "200": [108,118,136,156,178,199,212]}, "girls": {"120": [20,23,28,34,39,44,47], "130": [27,31,36,43,49,55,58], "140": [34,38,45,52,59,65,69], "150": [41,45,53,61,69,76,81], "160": [48,53,61,70,79,87,92], "170": [54,59,69,79,89,98,104], "180": [60,66,76,88,100,110,116]}}}, "RV_MASS": {"incl": {"boys": {"110": [14,15,16,19,22,25,28], "120": [16,17,19,22,25,29,32], "130": [19,20,23,26,30,34,37], "140": [22,24,26,30,35,40,43], "150": [26,28,31,35,41,46,50], "160": [30,33,36,42,48,54,59], "170": [36,38,43,49,56,63,68], "180": [42,45,50,57,65,74,80], "190": [49,53,59,67,77,86,93], "200": [57,61,69,79,90,101,108]}, "girls": {"120": [10,12,14,17,20,23,25], "130": [14,16,19,23,26,29,31], "140": [18,20,24,28,32,36,38], "150": [22,25,29,33,38,42,45], "160": [26,29,33,39,44,49,52], "170": [29,32,38,44,50,55,59], "180": [32,36,42,49,56,63,66]}}, "excl": {"boys": {"110": [13,14,16,18,19,21,22], "120": [10,11,13,15,17,18,20], "130": [11,12,14,16,18,20,22], "140": [16,17,19,22,24,26,28], "150": [18,19,22,25,27,30,31], "160": [21,22,25,28,31,34,35], "170": [26,27,31,34,37,41,42], "180": [30,32,35,39,43,46,48], "190": [31,33,37,41,46,49,52], "200": [30,33,37,42,47,51,54]}, "girls": {"120": [9,10,11,13,15,16,17], "130": [11,12,14,16,18,20,21], "140": [13,14,17,19,21,23,24], "150": [15,17,19,22,25,27,29], "160": [18,20,23,26,29,32,34], "170": [21,23,27,30,34,37,39], "180": [24,27,31,35,39,43,46]}}}};
+  const CMR_PCTS=[5,10,25,50,75,90,95];
+  let cmrLastResults={};
+
+  function cmrUnlock(){
+    const pwd=document.getElementById('cmr_pwd').value;
+    if(pwd.toLowerCase()==='gadolin'){
+      document.getElementById('cmr_lock').style.display='none';
+      document.getElementById('cmr_content').style.display='block';
+      cmrBuildRows();
+      cmrRecalc();
+    } else {
+      document.getElementById('cmr_pwd_err').style.display='block';
+      document.getElementById('cmr_pwd').value='';
+    }
+  }
+  function cmrLock(){
+    document.getElementById('cmr_content').style.display='none';
+    document.getElementById('cmr_lock').style.display='flex';
+    document.getElementById('cmr_pwd').value='';
+    document.getElementById('cmr_pwd_err').style.display='none';
+  }
+  function cmrReset(){
+    ['LV_EDV','LV_ESV','LV_SV','LV_MASS','RV_EDV','RV_ESV','RV_SV','RV_MASS'].forEach(key=>{
+      ['excl','incl'].forEach(v=>{
+        const el=document.getElementById('cmr_inp_'+key+'_'+v);
+        if(el) el.value='';
+      });
+    });
+    cmrLastResults={};
+    cmrRecalc();
+  }
+
+  function cmrInterpRow(table,height){
+    const heights=Object.keys(table).map(Number).sort((a,b)=>a-b);
+    const hMin=heights[0],hMax=heights[heights.length-1];
+    let hC=height,oor=false;
+    if(height<=hMin){hC=hMin;if(height<hMin)oor=true;}
+    else if(height>=hMax){hC=hMax;if(height>hMax)oor=true;}
+    if(hC===hMin||hC===hMax) return{vals:table[hC],outOfRange:oor,hMin,hMax};
+    for(let i=0;i<heights.length-1;i++){
+      const h0=heights[i],h1=heights[i+1];
+      if(hC>=h0&&hC<=h1){const t0=table[h0],t1=table[h1],frac=(hC-h0)/(h1-h0);return{vals:t0.map((v,j)=>v+(t1[j]-v)*frac),outOfRange:oor,hMin,hMax};}
+    }
+    return{vals:table[hMin],outOfRange:oor,hMin,hMax};
+  }
+  function cmrEstPct(value,refs){
+    if(value<=refs[0]){const sl=(CMR_PCTS[1]-CMR_PCTS[0])/(refs[1]-refs[0]);return Math.max(0,CMR_PCTS[0]-sl*(refs[0]-value));}
+    if(value>=refs[6]){const sl=(CMR_PCTS[6]-CMR_PCTS[5])/(refs[6]-refs[5]);return Math.min(100,CMR_PCTS[6]+sl*(value-refs[6]));}
+    for(let i=0;i<6;i++){if(value>=refs[i]&&value<=refs[i+1]){if(refs[i+1]===refs[i])return CMR_PCTS[i];return CMR_PCTS[i]+(value-refs[i])/(refs[i+1]-refs[i])*(CMR_PCTS[i+1]-CMR_PCTS[i]);}}
+    return 50;
+  }
+  function cmrSevCls(p){if(p<5||p>95)return'error';if(p<10||p>90)return'warning';if(p<25||p>75)return'warning-mild';return'normal';}
+  function cmrFmt(n){return(Math.round(n*10)/10).toString();}
+
+  function cmrBuildRows(){
+    const rows={
+      LV_EDV:['cmr_row_LV_EDV','LV EDV','mL','bez beleczek','z beleczkami'],
+      LV_ESV:['cmr_row_LV_ESV','LV ESV','mL','bez beleczek','z beleczkami'],
+      LV_SV: ['cmr_row_LV_SV', 'LV SV', 'mL','bez beleczek','z beleczkami'],
+      LV_MASS:['cmr_row_LV_MASS','LV masa (EDM)','g','bez mm. brodawk.','z mm. brodawk.'],
+      RV_EDV:['cmr_row_RV_EDV','RV EDV','mL','bez beleczek','z beleczkami'],
+      RV_ESV:['cmr_row_RV_ESV','RV ESV','mL','bez beleczek','z beleczkami'],
+      RV_SV: ['cmr_row_RV_SV', 'RV SV', 'mL','bez beleczek','z beleczkami'],
+      RV_MASS:['cmr_row_RV_MASS','RV masa (EDM)','g','bez mm. brodawk.','z mm. brodawk.'],
+    };
+    const rowStyle='display:grid;grid-template-columns:90px 1fr 1fr;gap:0.5rem;align-items:start;padding:0.35rem 0.2rem;border-bottom:1px solid #fff5f5;';
+    function mkCol(key,variant,unit,lbl){
+      return `<div style="display:flex;flex-direction:column;gap:0.2rem;align-items:center;">
+        <div style="font-size:0.62rem;color:#e00020;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;">${lbl}</div>
+        <div class="input-wrap"><input type="number" id="cmr_inp_${key}_${variant}" step="0.1" oninput="cmrRecalc()" style="width:72px;"/><span class="unit">${unit}</span></div>
+        <div class="result-cell" id="cmr_res_${key}_${variant}">—</div>
+        <div class="zbar-wrap" id="cmr_zbar_${key}_${variant}" style="padding:0;width:100%;">
+          <div style="position:relative;padding-top:18px;">
+            <div class="zbar-track">
+              <div class="zbar-fill" id="cmr_fill_${key}_${variant}"></div>
+              <div class="zbar-dot"  id="cmr_dot_${key}_${variant}"  style="left:50%"></div>
+              <div class="zbar-val"  id="cmr_val_${key}_${variant}"></div>
+            </div>
+            <div class="zbar-labels">
+              <span id="cmr_lbl5_${key}_${variant}">—</span>
+              <span id="cmr_lbl50_${key}_${variant}">—</span>
+              <span id="cmr_lbl95_${key}_${variant}">—</span>
+            </div>
+          </div>
+        </div>
+      </div>`;
+    }
+    Object.entries(rows).forEach(([key,[containerId,label,unit,exclLbl,inclLbl]])=>{
+      const el=document.getElementById(containerId); if(!el) return;
+      el.style.cssText='';
+      el.innerHTML=`<div style="${rowStyle}">
+        <div class="var-name" style="padding-top:0.3rem;font-size:0.82rem;">${label}</div>
+        ${mkCol(key,'excl',unit,exclLbl)}
+        ${mkCol(key,'incl',unit,inclLbl)}
+      </div>`;
+    });
+  }
+
+  function cmrSexKey(){return (document.getElementById('sex')||{value:'girl'}).value==='boy'?'boys':'girls';}
+
+  function cmrGetTable(key,isMass){
+    const sx=cmrSexKey();
+    if(isMass) return{excl:CMR_DATA[key]['excl'][sx],incl:CMR_DATA[key]['incl'][sx]};
+    return{excl:CMR_DATA[key][sx]['excl'],incl:CMR_DATA[key][sx]['incl']};
+  }
+
+  function cmrUpdateCol(key,variant,table,unit,height,measured){
+    const resEl=document.getElementById('cmr_res_'+key+'_'+variant);
+    const zbarEl=document.getElementById('cmr_zbar_'+key+'_'+variant);
+    const dotEl=document.getElementById('cmr_dot_'+key+'_'+variant);
+    const fillEl=document.getElementById('cmr_fill_'+key+'_'+variant);
+    const valEl=document.getElementById('cmr_val_'+key+'_'+variant);
+    const lbl5=document.getElementById('cmr_lbl5_'+key+'_'+variant);
+    const lbl50=document.getElementById('cmr_lbl50_'+key+'_'+variant);
+    const lbl95=document.getElementById('cmr_lbl95_'+key+'_'+variant);
+    if(!resEl) return null;
+    if(!height||isNaN(height)){
+      resEl.textContent='—';resEl.className='result-cell';
+      if(zbarEl) zbarEl.classList.remove('visible');
+      return null;
+    }
+    const{vals}=cmrInterpRow(table,height);
+    // Etykiety p5/p50/p95 pod paskiem
+    if(lbl5)  lbl5.textContent=cmrFmt(vals[0]);
+    if(lbl50) lbl50.textContent=cmrFmt(vals[3]);
+    if(lbl95) lbl95.textContent=cmrFmt(vals[6]);
+    if(zbarEl) zbarEl.classList.add('visible');
+    if(!measured||isNaN(measured)){
+      resEl.textContent=`${cmrFmt(vals[0])}–${cmrFmt(vals[6])} ${unit}`;
+      resEl.className='result-cell';
+      if(dotEl){dotEl.style.left='50%';dotEl.className='zbar-dot';}
+      if(fillEl){fillEl.style.width='50%';fillEl.className='zbar-fill';}
+      if(valEl) valEl.textContent='';
+      return null;
+    }
+    const pct=cmrEstPct(measured,vals);
+    const cls=cmrSevCls(pct);
+    resEl.className='result-cell '+cls;
+    let pctLabel;
+    if(pct<=0.5) pctLabel='<1. pc';
+    else if(pct>=99.5) pctLabel='>99. pc';
+    else pctLabel=cmrFmt(pct)+'. pc';
+    resEl.textContent=pctLabel;
+    const pctClamped=Math.max(0,Math.min(100,pct));
+    if(dotEl){dotEl.style.left=pctClamped+'%';dotEl.className='zbar-dot '+cls;}
+    if(fillEl){fillEl.style.width=pctClamped+'%';fillEl.className='zbar-fill '+cls;}
+    if(valEl){valEl.style.left=pctClamped+'%';valEl.className='zbar-val '+cls;valEl.textContent=pctLabel;}
+    return{pct,pctLabel};
+  }
+
+  function cmrUpdateParam(key,unit,isMass){
+    const height=parseFloat((document.getElementById('height')||{}).value);
+    const mExcl=parseFloat((document.getElementById('cmr_inp_'+key+'_excl')||{}).value);
+    const mIncl=parseFloat((document.getElementById('cmr_inp_'+key+'_incl')||{}).value);
+    if(!CMR_DATA[key]) return;
+    const{excl,incl}=cmrGetTable(key,isMass);
+    if(!excl||!incl) return;
+    const rExcl=cmrUpdateCol(key,'excl',excl,unit,height,mExcl);
+    const rIncl=cmrUpdateCol(key,'incl',incl,unit,height,mIncl);
+    if(height&&!isNaN(height)){const{hMin,hMax}=cmrInterpRow(excl,height);const w=document.getElementById('cmr_range_warn');if(w)w.style.display=(height<hMin||height>hMax)?'block':'none';}
+    const hE=!isNaN(mExcl)&&mExcl,hI=!isNaN(mIncl)&&mIncl;
+    if(hE||hI){cmrLastResults[key]={unit,measuredExcl:hE?mExcl:null,measuredIncl:hI?mIncl:null,exclLabel:rExcl?rExcl.pctLabel:null,inclLabel:rIncl?rIncl.pctLabel:null};}else{delete cmrLastResults[key];}
+  }
+
+  function cmrUpdateSummary(){
+    const box=document.getElementById('cmr_summary_box'); if(!box) return;
+    const h=parseFloat((document.getElementById('height')||{}).value);
+    const w=parseFloat((document.getElementById('weight')||{}).value);
+    const sx=cmrSexKey()==='boys'?'Chłopiec':'Dziewczynka';
+    const age=(document.getElementById('toggle_age_display')||{}).textContent||'';
+    const bsaH=(!isNaN(h)&&!isNaN(w)&&h>0&&w>0)?0.024265*Math.pow(w,0.5378)*Math.pow(h,0.3964):null;
+
+    const lines=[];
+
+    // Wiersz 1: płeć + wiek
+    let line1=sx;
+    if(age) line1+='  Wiek: '+age;
+    lines.push(line1);
+
+    // Wiersz 2: masa, wzrost, BSA
+    const pt2=[];
+    if(!isNaN(w)&&w>0) pt2.push('Masa: '+w+' kg');
+    if(!isNaN(h)&&h>0) pt2.push('Wzrost: '+h+' cm');
+    if(bsaH!==null) pt2.push('BSA: '+bsaH.toFixed(3)+' m² (Haycock)');
+    if(pt2.length) lines.push(pt2.join('  '));
+
+    lines.push('');
+
+    // Pomiary
+    const volKeys=['LV_EDV','LV_ESV','LV_SV','RV_EDV','RV_ESV','RV_SV'];
+    const massKeys=['LV_MASS','RV_MASS'];
+    const labels={LV_EDV:'LV EDV',LV_ESV:'LV ESV',LV_SV:'LV SV',RV_EDV:'RV EDV',RV_ESV:'RV ESV',RV_SV:'RV SV',LV_MASS:'LV masa (EDM)',RV_MASS:'RV masa (EDM)'};
+    function fl(label,r,en,in_){
+      const p=[];
+      if(r.measuredExcl!==null) p.push(en+': '+cmrFmt(r.measuredExcl)+' '+r.unit+' ('+r.exclLabel+')');
+      if(r.measuredIncl!==null) p.push(in_+': '+cmrFmt(r.measuredIncl)+' '+r.unit+' ('+r.inclLabel+')');
+      return label+' — '+p.join('; ');
+    }
+    const vl=volKeys.filter(k=>cmrLastResults[k]).map(k=>fl(labels[k],cmrLastResults[k],'bez beleczek','z beleczkami'));
+    if(vl.length){lines.push('Objętości:');lines.push(...vl);lines.push('');}
+    const ml=massKeys.filter(k=>cmrLastResults[k]).map(k=>fl(labels[k],cmrLastResults[k],'bez mm. brodawk.','z mm. brodawk.'));
+    if(ml.length){lines.push('Masa:');lines.push(...ml);lines.push('');}
+    if(!vl.length&&!ml.length){lines.push('(brak wprowadzonych pomiarów)');lines.push('');}
+
+    // Źródło
+    lines.push('Kawel-Boehm i wsp. 2025');
+
+    box.value=lines.join('\n');
+  }
+
+  function cmrRecalc(){
+    if(document.getElementById('cmr_content')&&document.getElementById('cmr_content').style.display==='none') return;
+    if(!document.getElementById('cmr_row_LV_EDV')||!document.getElementById('cmr_row_LV_EDV').innerHTML) cmrBuildRows();
+    ['LV_EDV','LV_ESV','LV_SV','RV_EDV','RV_ESV','RV_SV'].forEach(k=>cmrUpdateParam(k,'mL',false));
+    ['LV_MASS','RV_MASS'].forEach(k=>cmrUpdateParam(k,'g',true));
+    cmrUpdateSummary();
+  }
+
+  function cmrCopySummary(){
+    const box=document.getElementById('cmr_summary_box');const btn=document.getElementById('cmr_copy_btn');
+    const done=()=>{if(btn){const o=btn.textContent;btn.textContent='✓ Skopiowano';setTimeout(()=>{btn.textContent=o;},1500);}};
+    if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(box.value).then(done).catch(()=>{box.select();document.execCommand('copy');done();});}
+    else{box.select();document.execCommand('copy');done();}
+  }
+
   // Rejestracja Service Worker (PWA)
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
