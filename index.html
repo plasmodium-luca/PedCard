@@ -4466,7 +4466,7 @@
     if(name==='ekg'){ recalcHR(); recalcREKG(); }
     if(name==='konsultacja') recalcKons();
     if(name==='echoext') recalcEchoExt();
-    if(name==='cmr') cmrRecalc();
+    if(name==='cmr') { cmrRecalc(); setTimeout(()=>{ const p=document.getElementById('cmr_pwd'); if(p&&p.closest('#cmr_lock')&&p.closest('#cmr_lock').style.display!=='none') p.focus(); },50); }
   }
   // ── Spoczynkowe EKG (Bratincskák 2020) ─────────────────────────────
   // Dane: [wiekMin, wiekMax, sex, [HR_z-2.5,z0,z+2.5], [QTc], [PR], [QRS], [RV6_z-2.5,z0,z+2.5], [AXIS_z-2.5,z0,z+2.5]]
