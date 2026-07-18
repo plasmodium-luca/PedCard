@@ -6349,13 +6349,11 @@
       if(isNaN(val)||val<=0) return;
       lines.push((key==='LA'?'LA':'RA')+' max: '+cmrFmt(val)+' mL — '+resEl.textContent);
     });
+    // Źródło LA/RA
     if(document.getElementById('cmr_res_LA')?.textContent&&document.getElementById('cmr_res_LA').textContent!=='—'||
        document.getElementById('cmr_res_RA')?.textContent&&document.getElementById('cmr_res_RA').textContent!=='—'){
       lines.push('(Sarikouch et al. 2011)');lines.push('');
     }
-
-    // Źródło
-    lines.push('Voges et al. 2023');
 
     box.value=lines.join('\n');
   }
