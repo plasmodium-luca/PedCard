@@ -203,6 +203,11 @@
     .result-cell.warning-mild{color:#ffd700;}
     .result-cell.warning{color:#ff4a0f;}
     .result-cell.error{color:#e00020;}
+    /* cMR — żółty dla 5-10 i 90-95 pc */
+    #tab-cmr .result-cell.warning{color:#b7791f;}
+    #tab-cmr .zbar-dot.warning{background:#d69e2e;box-shadow:0 0 0 1.5px #d69e2e;}
+    #tab-cmr .zbar-fill.warning{background:#d69e2e;}
+    #tab-cmr .zbar-val.warning{color:#b7791f;}
 
     /* ── ACM kalkulator ── */
     .acm-item { display:flex; align-items:flex-start; gap:0.35rem; font-size:0.72rem; margin-bottom:0.25rem; cursor:pointer; line-height:1.35; }
@@ -5924,7 +5929,7 @@
     for(let i=0;i<6;i++){if(value>=refs[i]&&value<=refs[i+1]){if(refs[i+1]===refs[i])return CMR_PCTS[i];return CMR_PCTS[i]+(value-refs[i])/(refs[i+1]-refs[i])*(CMR_PCTS[i+1]-CMR_PCTS[i]);}}
     return 50;
   }
-  function cmrSevCls(p){if(p<5||p>95)return'error';if(p<10||p>90)return'warning';if(p<25||p>75)return'warning-mild';return'normal';}
+  function cmrSevCls(p){if(p<5||p>95)return'error';if(p<=10||p>=90)return'warning';return'normal';}
   function cmrFmt(n){return(Math.round(n*10)/10).toString();}
 
   function cmrBuildRows(){
